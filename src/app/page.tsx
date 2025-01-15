@@ -5,7 +5,7 @@ import {parseDate} from "@internationalized/date";
 export default function Home() {
   return (
     <div className="flex gap-x-4">
-      <Calendar aria-label="Date (Uncontrolled)" defaultValue={parseDate("2025-01-15")} />
+      <Calendar id="e2eCalendar" aria-label="Date (Uncontrolled)" defaultValue={parseDate(new Date().toISOString().split('T')[0])} />
     </div>
   );
 }
