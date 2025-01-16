@@ -19,3 +19,9 @@ body {
   background: var(--background);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+.fc-daygrid-event {
+  background-color: green ;
+  border-color: green ;
+  color: white ;
+}
