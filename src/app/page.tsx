@@ -1,11 +1,5 @@
 "use client";
 
-import FullCalendar from "@fullcalendar/react";
-import dayGridPlugin from "@fullcalendar/daygrid";
-import interactionPlugin from "@fullcalendar/interaction";
-import timeGridPlugin from "@fullcalendar/timegrid";
-import listPlugin from "@fullcalendar/list";
-import dynamic from "next/dynamic";
 import { EventInput } from "@fullcalendar/core/index.js";
 import Calendar from "@/app/components/Calendar";
 

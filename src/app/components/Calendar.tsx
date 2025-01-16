@@ -1,7 +1,5 @@
 import React, { useRef } from "react";
 import FullCalendar from "@fullcalendar/react";
-import { EventClickArg } from "@fullcalendar/core/index.js";
-import { DateClickArg } from "@fullcalendar/interaction/index.js";
 import { EventInput } from "@fullcalendar/core/index.js";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
