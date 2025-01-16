@@ -6,7 +6,14 @@ import interactionPlugin from "@fullcalendar/interaction";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import listPlugin from "@fullcalendar/list";
 
-export default function Home() {
+export default function DownloadICS() {
+    const downloadICS = () => {
+        const link = document.createElement("a");
+        link.href = "/api/event";
+        link.download = "event.ics";
+        link.click();
+    };
+
   const handleDateClick = (arg: any) => {
     console.log(arg)
     alert(arg);
@@ -27,6 +34,7 @@ export default function Home() {
   ];
 
   return (
+    <div  id="HomePageLayout"  className="grid grid-rows-[] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
     <div className="ml-8 mr-8">
       <FullCalendar height={"100vh"}
         plugins={[dayGridPlugin, interactionPlugin, timeGridPlugin,listPlugin]}
@@ -37,6 +45,10 @@ export default function Home() {
         initialView="dayGridMonth"
       />
     </div>
+    <div id="DownloadDivCalendar">
+    <button id="Calendardownload" className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full" onClick={downloadICS}>Kalender-Eintrag herunterladen</button>
+  </div>
+  </div>
   );
 }
 function renderEventContent(eventInfo: any) {

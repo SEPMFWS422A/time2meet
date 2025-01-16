@@ -13,6 +13,9 @@
 # testing
 /coverage
 
+#Cypress
+/cypress/downloads
+
 # next.js
 /.next/
 /out/
@@ -41,3 +44,4 @@ yarn-error.log*
 next-env.d.ts
 .idea/
 package-lock.json
+
