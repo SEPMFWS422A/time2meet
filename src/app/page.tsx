@@ -1,42 +1,18 @@
 "use client";
 
-import { EventInput } from "@fullcalendar/core/index.js";
 import Calendar from "@/app/components/Calendar";
+import  { events} from "@/app/lib/data/events";
 
 export default function Home() {
   const downloadICS = () => {
     const link = document.createElement("a");
     link.href = "/api/event";
-    link.download = "event.ics";
+    link.download = "events.ics";
     link.click();
   };
 
-  const events: EventInput[] = [
-    {
-      title: "event1",
-      start: "2025-01-17T10:00:00",
-      end: "2025-01-17T12:00:00",
-      description: "event 1 description cdwbgcjkhb cwdhbcjgb cwhbjzgbcw",
-      backgroundColor: "green",
-    },
-    {
-      title: "event2",
-      start: "2025-01-20",
-      allDay: true,
-      description: "event 2 description",
-      backgroundColor: "blue",
-    },
-    {
-      title: "event3",
-      start: "2025-01-22T08:00:00",
-      end: "2025-01-23T18:00:00",
-      description: "event 3 description",
-    },
-  ];
-
   return (
     <div id="HomePageLayout" className="min-h-screen">
-      <h1>time2meet Kalender</h1>
       <div className="ml-8 mr-8">
         <Calendar events={events} />
       </div>

@@ -1,33 +1,55 @@
 import { NextResponse } from 'next/server';
+import  { events } from "@/app/lib/data/events";
+
 
 export async function GET() {
-    const event = {
-        start: "20250116T120000Z", 
-        end: "20250116T130000Z", 
-        title: "Statisches Event",
-        description: "Dies ist ein statisches Beispiel-Event.",
-        location: "Online"
-    };
 
-    // ICS-Dateiinhalt 
-    const icsContent = `
-    BEGIN:VCALENDAR
-    VERSION:2.0
-    CALSCALE:GREGORIAN
-    BEGIN:VEVENT
-    SUMMARY:${event.title}
-    DTSTART:${event.start}
-    DTEND:${event.end}
-    DESCRIPTION:${event.description}
-    LOCATION:${event.location}
-    END:VEVENT
-    END:VCALENDAR
+    const vevents = events.map((events) => {
+
+        let start = "";
+        let end = "";
+
+        if (events.allDay == true) {
+            start = ";VALUE=DATE:" + String(events.start).replace(/[-:]/g, "").split('T')[0];
+            // @ts-ignore
+            const newDate = new Date(events.start);
+            // const newDateaddOne = newDate.setDate(newDate.getDate() + 1);
+            newDate.setDate(newDate.getDate() + 1);
+            const year = newDate.getFullYear();
+            const month = String(newDate.getMonth() + 1).padStart(2, '0');  // Monat ist 0-basiert
+            const day = String(newDate.getDate()).padStart(2, '0');
+            end = ";VALUE=DATE:" + year+month+day
+            console.log(end);
+
+        } else {
+            start = ":" + String(events.start).replace(/[-:]/g, "") + "Z";
+            end = ":" + String(events.end).replace(/[-:]/g, "") + "Z";
+
+        }
+
+        return `
+BEGIN:VEVENT
+SUMMARY:${events.title}
+DTSTART${start}
+DTEND${end}
+DESCRIPTION:${events.description || ''}
+LOCATION:${events.location || 'Online'}
+END:VEVENT
     `.trim();
+    });
+
+    const icsContent = `
+BEGIN:VCALENDAR
+VERSION:2.0
+CALSCALE:GREGORIAN
+${vevents.join('\n')}
+END:VCALENDAR
+  `.trim();
 
     return new NextResponse(icsContent, {
         headers: {
             'Content-Type': 'text/calendar',
-            'Content-Disposition': 'attachment; filename="event.ics"',
+            'Content-Disposition': 'attachment; filename="events.ics"',
         },
     });
 }
