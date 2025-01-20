@@ -5,6 +5,7 @@ import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import listPlugin from "@fullcalendar/list";
+import deLocale from "@fullcalendar/core/locales/de";
 
 interface CalendarProps {
   events: EventInput[];
@@ -42,6 +43,7 @@ const Calendar: React.FC<CalendarProps> = ({ events }) => {
         dateClick={handleDateClick}
         eventClick={handleEventClick}
         eventColor="green"
+        locale={deLocale}
       />
     </div>
   );
