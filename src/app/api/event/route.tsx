@@ -11,9 +11,8 @@ export async function GET() {
 
         if (events.allDay == true) {
             start = ";VALUE=DATE:" + String(events.start).replace(/[-:]/g, "").split('T')[0];
-            // @ts-ignore
-            const newDate = new Date(events.start);
-            // const newDateaddOne = newDate.setDate(newDate.getDate() + 1);
+
+            const newDate = new Date(events.start as string);
             newDate.setDate(newDate.getDate() + 1);
             const year = newDate.getFullYear();
             const month = String(newDate.getMonth() + 1).padStart(2, '0');  // Monat ist 0-basiert
