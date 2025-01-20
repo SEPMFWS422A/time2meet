@@ -22,8 +22,8 @@ export async function GET() {
             console.log(end);
 
         } else {
-            start = ":" + String(events.start).replace(/[-:]/g, "") + "Z";
-            end = ":" + String(events.end).replace(/[-:]/g, "") + "Z";
+            start = ":" + String(events.start).replace(/[-:]/g, "");
+            end = ":" + String(events.end).replace(/[-:]/g, "");
 
         }
 
