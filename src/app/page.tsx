@@ -25,7 +25,7 @@ export default function Home() {
           className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full"
           onClick={downloadICS}
         >
-          Kalender-Eintrag herunterladen
+          Alle Events Herunterladen
         </button>
       </div>
     </div>
