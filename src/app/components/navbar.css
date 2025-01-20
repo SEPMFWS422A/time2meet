@@ -1,0 +1,36 @@
+.navbar {
+    position: fixed;
+    bottom: 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #4897d4;
+    color: #3f9cab;
+    padding: 1rem;
+    z-index: 10;
+    width: 100%;
+
+
+}
+
+.navbar-pages .nav-links {
+    list-style-type: none;
+    display: flex;
+    margin: 0;
+    padding: 0;
+}
+
+.navbar-pages .nav-links li {
+    margin-right: 1rem;
+}
+
+.navbar-pages .nav-links a {
+    color: #ffffff;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.navbar-pages .nav-links img {
+    display: block;
+    width: 100%
+}
