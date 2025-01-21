@@ -54,87 +54,87 @@ const AddEventModalContent: React.FC<AddEventModalContentProps> = ({ onClose }) 
 
   return (
     <div>
-      <Form className="p-4 space-y-4" validationBehavior="native">
-      
-      <Input
-        label="Title"
-        isRequired
-        placeholder="Enter the event title"
-        variant="bordered"
-        value={title}
-        onChange={(e) => setTitle(e.target.value)}
-      />
-      
-      <Input
-        label="Description"
-        isRequired
-        placeholder="Enter event description"
-        variant="bordered"
-        value={description}
-        onChange={(e) => setDescription(e.target.value)}
-      />
-      
-      <Input
-        label="Start Time"
-        isRequired
-        placeholder="Select start date and time"
-        variant="bordered"
-        type="datetime-local" 
-        value={startTime}
-        onChange={(e) => setStartTime(e.target.value)}
-      />
-      
-      {!isAllDay && (
-        <>
-          <Input
-            label="End Time"
-            isRequired
-            placeholder="Select end date and time"
-            variant="bordered"
-            type="datetime-local" 
-            value={endTime}
-            onChange={(e) => setEndTime(e.target.value)}
-          />
-        </>
-      )}
-      
-      <Input
-        label="Location"
-        isRequired
-        placeholder="Enter Location"
-        variant="bordered"
-        value={location}
-        onChange={(e) => setLocation(e.target.value)}
-      />
+      <Form id="addEventForm" className="p-4 space-y-4" validationBehavior="native">
+        <Input
+          label="Titel"
+          isRequired
+          placeholder="Geben Sie den Titel des Ereignisses ein"
+          variant="bordered"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+        />
 
-      <div>
-        <label>
-          <Checkbox
-            type="checkbox"
-            checked={isAllDay}
-            onChange={() => setIsAllDay(!isAllDay)}
-          />
-           All Day Event
-        </label>
-      </div>
-      <div className="flex justify-end space-x-4 pt-4">
+        <Input
+          label="Beschreibung"
+          isRequired
+          placeholder="Geben Sie die Beschreibung des Ereignisses ein"
+          variant="bordered"
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+        />
+
+        <Input
+          label="Startzeit"
+          isRequired
+          placeholder="Wählen Sie Startdatum und -uhrzeit"
+          variant="bordered"
+          type="datetime-local"
+          value={startTime}
+          onChange={(e) => setStartTime(e.target.value)}
+        />
+
+        {!isAllDay && (
+          <>
+            <Input
+              label="Endzeit"
+              isRequired
+              placeholder="Wählen Sie Enddatum und -uhrzeit"
+              variant="bordered"
+              type="datetime-local"
+              value={endTime}
+              onChange={(e) => setEndTime(e.target.value)}
+            />
+          </>
+        )}
+
+        <Input
+          label="Ort"
+          isRequired
+          placeholder="Geben Sie den Ort ein"
+          variant="bordered"
+          value={location}
+          onChange={(e) => setLocation(e.target.value)}
+        />
+
+        <div>
+          <label>
+            <Checkbox
+              type="checkbox"
+              checked={isAllDay}
+              onChange={() => setIsAllDay(!isAllDay)}
+            />
+            Ganztägiges Ereignis
+          </label>
+        </div>
+
+        <div className="flex justify-end space-x-4 pt-4">
           <Button color="danger" variant="light" onPress={onClose}>
-            Close
+            Schließen
           </Button>
           <Button
             color="primary"
             onPress={getFormData}
-            isDisabled={!isFormValid()}  // Button deaktivieren, wenn das Formular ungültig ist
+            isDisabled={!isFormValid()} // Button deaktivieren, wenn das Formular ungültig ist
           >
-            Save Event
+            Ereignis speichern
           </Button>
-        {!isFormValid() && (
-          <div className="text-sm text-red-500 mt-2">
-            Leere Werte!
-          </div>
-        )}
+          {!isFormValid() && (
+            <div className="text-sm text-red-500 mt-2">
+              Bitte alle Felder ausfüllen!
+            </div>
+          )}
         </div>
-    </Form>
+      </Form>
     </div>
   );
 };
