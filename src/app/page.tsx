@@ -17,7 +17,7 @@ export default function Home() {
   return (
       <div>
           <Navbar />
-          <div id="HomePageLayout" className="min-h-screen">
+          <div id="HomePageLayout" className="min-h-screen pt-20">
               <div className="ml-8 mr-8">
                   <Calendar events={events}/>
               </div>
