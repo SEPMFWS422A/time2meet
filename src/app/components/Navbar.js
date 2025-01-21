@@ -6,10 +6,10 @@ import '@/app/components/navbar.css';
 const Navbar = () => {
     return (
 
-        <nav className="navbar">
+        <nav className="navbar" id="navbar">
             <div className="navbar-pages">
 
-                <ul className="nav-links">
+                <ul className="nav-links" >
                     <li>
                         <a href="/"> Home</a>
                     </li>
