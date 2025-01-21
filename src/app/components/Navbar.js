@@ -14,19 +14,19 @@ const Navbar = () => {
                         <a href="/"> Home</a>
                     </li>
                     <li>
-                        <a href="/">Freundeslist</a>
+                        <a href="/friendlist">Freundeslist</a>
                     </li>
                     <li>
-                        <a href="/">Gruppenliste</a>
+                        <a href="/grouplist">Gruppenliste</a>
                     </li>
                     <li>
-                        <a href="/"> Offene Umfragen</a>
+                        <a href="/surveylist"> Offene Umfragen</a>
                     </li>
                     <li>
-                        <a href="/"> Benachrichtigungen</a>
+                        <a href="/messages"> Benachrichtigungen</a>
                     </li>
                     <li>
-                        <a href="/"> Profil verwalten</a>
+                        <a href="/manageprofile"> Profil verwalten</a>
                     </li>
                 </ul>
             </div>
