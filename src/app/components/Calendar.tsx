@@ -16,16 +16,24 @@ const Calendar: React.FC<CalendarProps> = ({onOpenDate, onOpenEvent }) => {
   const calendarRef = useRef<FullCalendar>(null);
 
   //events aus dem eventsContext rausziehen ~Chris
-  const { events } = useEvents(); 
+  const { events } = useEvents();
 
   const handleDateClick = (info: any) => {
     onOpenDate();
   };
 
-  const handleEventClick = (info: any) => {
-    onOpenEvent(info.event);
-    alert(`Event geklickt: ${info.event.start}`);
-  };
+    const handleEventClick = (info: any) => {
+        onOpenEvent({
+            title: info.event.title,
+            start: info.event.start?.toISOString(),
+            end: info.event.end?.toISOString(),
+            allDay: info.event.allDay,
+            extendedProps: {
+                description: info.event.extendedProps.description,
+                location: info.event.extendedProps.location,
+            },
+        });
+    };
 
   return (
     <div>

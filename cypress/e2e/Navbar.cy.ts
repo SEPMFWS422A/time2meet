@@ -1,13 +1,17 @@
+beforeEach(() => {
+  // Besuche die lokale Anwendung vor jedem Test
+  cy.visit('http://localhost:3000');
+});
+
+
 describe('template spec', () => {
 
 
   it('visit homepage', () => {
-    cy.visit('http://localhost:3000')
   })
 
   it('navigate to Friendlist by clicking on Navigationbar', () => {
 
-    cy.visit('http://localhost:3000')
 
     cy.get('#navbar')
         .find('a[href="/friendlist"]')
@@ -18,7 +22,6 @@ describe('template spec', () => {
 
   it('should stay on friendlist when clicking the button again', () => {
 
-    cy.visit('http://localhost:3000/friendlist')
 
     cy.get('#navbar')
         .find('a[href="/friendlist"]')
@@ -29,7 +32,6 @@ describe('template spec', () => {
 
   it('should navigate back home', () => {
 
-    cy.visit('http://localhost:3000/friendlist')
 
     cy.get('#navbar')
         .find('a[href="/"]')

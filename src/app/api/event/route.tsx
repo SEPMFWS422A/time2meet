@@ -3,27 +3,27 @@ import {EventInput} from "@fullcalendar/core";
 
 export const events: EventInput[] = [
     {
-        title: "event1",
+        title: "Orangensaft-Verschüttung",
         start: "2025-01-17T10:00:00",
         end: "2025-01-17T12:00:00",
-        description: "event 1 description cdwbgcjkhb cwdhbcjgb cwhbjzgbcw",
+        description: "Frag nicht was für Saft, einfach Orangensaft. Turn up!",
         backgroundColor: "white",
-        location: "Büro",
+        location: "Ritz Carlton",
     },
     {
-        title: "event2",
+        title: "Meeting",
         start: "2025-01-20",
         allDay: true,
-        description: "event 2 description",
-        backgroundColor: "Blue",
-        location: "Büro",
+        description: "Ganztägiges Meeting im Büro.",
+        location: "Konferenzraum A",
+        backgroundColor: "blue",
     },
     {
-        title: "event3",
-        start: "2025-01-22T08:00:00",
-        end: "2025-01-23T18:00:00",
-        description: "event 3 description",
-        location: "Büro",
+        title: "Fortbildung",
+        start: "2025-01-22T10:00:00",
+        end: "2025-01-24T12:00:00",
+        description: "Workshop zu neuen Technologien.",
+        location: "Büro B",
     },
 ];
 

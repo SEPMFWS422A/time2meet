@@ -1,25 +1,35 @@
 "use client";
 
 import Calendar from "@/app/components/Calendar";
-import { EventProvider } from "@/app/lib/data/events";
+import {EventProvider, useEvents} from "@/app/lib/data/events";
 import Navbar from "@/app/components/Navbar";
 import React, { useState } from "react";
 import ModalWindow from "./components/ModalWindow";
 import  AddEventModalContent  from "./lib/modalContents/AddEventModalContent";
+import EventInfoModalContent from "@/app/lib/modalContents/EventInfoModalContent";
 
 export default function Home() {
 
-  const [isModalOpen, setModalOpen] = useState(false);
+  const [isAddEventModalOpen, setAddEventModalOpen] = useState(false);
+  const [isEventInfoModalOpen, setEventInfoModalOpen] = useState(false);
+  const [modalData, setModalData] = useState(null);
 
   const onOpenDate = () => {
-    setModalOpen(true);
+    setAddEventModalOpen(true);
   };
-  const onOpenEvent=()=>{
 
-  }
+  const onOpenEvent = (events: any) => {
+    setModalData(events);
+    setEventInfoModalOpen(true);
+  };
 
-  const closeModal = () =>{
-    setModalOpen(false);
+  const closeAddEventModal = () => {
+    setAddEventModalOpen(false);
+  };
+
+  const closeEventInfoModal = () => {
+    setEventInfoModalOpen(false);
+    setModalData(null);
   };
 
   const downloadICS = () => {
@@ -48,16 +58,30 @@ export default function Home() {
             className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full"
             onClick={downloadICS}
           >
-            Alle Events Herunterladen
+            Alle Events als .ics herunterladen
           </button>
         </div>
-        {isModalOpen && (
-          <ModalWindow
-            isOpen={isModalOpen}
-            onOpenChange={setModalOpen}
-            title="Event hinzufügen"
-            content= {<AddEventModalContent onClose={closeModal}/>}
-            ></ModalWindow>
+        {isAddEventModalOpen && (
+            <ModalWindow
+                isOpen={isAddEventModalOpen}
+                onOpenChange={setAddEventModalOpen}
+                title="Event hinzufügen"
+                content={<AddEventModalContent onClose={closeAddEventModal} />}
+            />
+        )}
+
+        {isEventInfoModalOpen && modalData && (
+            <div
+            id="eventInfoModal"
+            data-is-open={isEventInfoModalOpen}
+            >
+              <ModalWindow
+                isOpen={isEventInfoModalOpen}
+                onOpenChange={setEventInfoModalOpen}
+                title="Event Informationen"
+                content={<EventInfoModalContent modalData={modalData} onClose={closeEventInfoModal} />}
+              />
+            </div>
         )}
       </div>
     </div>

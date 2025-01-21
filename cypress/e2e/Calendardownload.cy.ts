@@ -1,9 +1,12 @@
 import { events } from '../../src/app/api/event/route';
 
+beforeEach(() => {
+
+    cy.visit('http://localhost:3000');
+});
+
 describe('Event API Integration Test', () => {
     it('should return a valid ICS file with correct content', () => {
-
-        cy.visit('http://localhost:3000')
 
         cy.get("#Calendardownload").click()
 

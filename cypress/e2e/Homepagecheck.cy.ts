@@ -1,12 +1,15 @@
+beforeEach(() => {
+  // Besuche die lokale Anwendung vor jedem Test
+  cy.visit('http://localhost:3000');
+});
+
 describe('Homepagecheck', () => {
 
   it('should open the home page', () => {
-    cy.visit('http://localhost:3000')
   })
 
 
   it('should initializes Calendar with month view and days visible', () => {
-    cy.visit('http://localhost:3000'); 
 
     cy.get('#HomePageLayout')
       .find('.fc-dayGridMonth-view') 
@@ -15,7 +18,6 @@ describe('Homepagecheck', () => {
 
   it('should turn to week grid view on week-button click', ()=>{
 
-    cy.visit('http://localhost:3000'); 
 
     cy.get('#HomePageLayout').find('button[title="week view"]').click();
 
@@ -26,7 +28,6 @@ describe('Homepagecheck', () => {
 
   it('should turn to day grid view on day-button click', ()=>{
 
-    cy.visit('http://localhost:3000'); 
 
     cy.get('#HomePageLayout').find('button[title="day view"]').click();
 
@@ -36,8 +37,6 @@ describe('Homepagecheck', () => {
   })
 
   it('should turn to list grid view on list-button click', ()=>{
-
-    cy.visit('http://localhost:3000'); 
 
     cy.get('#HomePageLayout').find('button[title="list view"]').click();
 
