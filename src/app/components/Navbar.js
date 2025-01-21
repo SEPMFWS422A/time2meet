@@ -26,7 +26,7 @@ const Navbar = () => {
                         <a href="/messages"> Benachrichtigungen</a>
                     </li>
                     <li>
-                        <a href="/manageprofile"> Profil verwalten</a>
+                        <a href="profilsetting"> Profil verwalten</a>
                     </li>
                 </ul>
             </div>
