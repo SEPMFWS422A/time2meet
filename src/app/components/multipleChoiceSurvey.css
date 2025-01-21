@@ -1,0 +1,34 @@
+.multipleChoiceSurvey{
+    text-align: center;
+    padding: 1rem;
+    z-index: 1;
+    width: 100%;
+}
+.mcSurveyTitle {
+    font-size : 2.5em; /* 40px/16=2.5em */
+    color: #ffffff;
+    background-color: #4897d4;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.mcSurveyDescr {
+    font-size : 2em;
+    color: #4897d4;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.mcSurveyOptions{
+    color: #4897d4;
+    font-weight: bold;
+
+    text-decoration: none;
+}
+.mcSurveyOption{
+    color: #4897d4;
+    font-weight: bold;
+
+    text-decoration: none;
+
+}

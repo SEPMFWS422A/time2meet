@@ -2,6 +2,7 @@
 
 import Navbar from "@/app/components/Navbar";
 import React from "react";
+import MultipleChoiceSurvey from "@/app/components/MultipleChoiceSurvey";
 
 export default function About() {
 
@@ -10,7 +11,11 @@ export default function About() {
         <div>
             <Navbar />
             <div>
-            Dummypage für Umfragen
+                <MultipleChoiceSurvey
+                    options={['option1','option2','option45']}
+                    name= "Meine Umfrage"
+                    description = "Eine coole Umfrage" />
+
             </div>
         </div>
     )
