@@ -1,8 +1,9 @@
 .multipleChoiceSurvey{
+
     text-align: center;
-    padding: 1rem;
-    z-index: 1;
+    padding: 4rem;
     width: 100%;
+
 }
 .mcSurveyTitle {
     font-size : 2.5em; /* 40px/16=2.5em */
