@@ -1,4 +1,4 @@
-import { events } from '../../src/app/lib/data/events';
+import { events } from '../../src/app/api/event/route';
 
 describe('Event API Integration Test', () => {
     it('should return a valid ICS file with correct content', () => {

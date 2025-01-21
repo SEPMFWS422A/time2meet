@@ -16,6 +16,8 @@
     "@fullcalendar/list": "^6.1.15",
     "@fullcalendar/react": "^6.1.15",
     "@fullcalendar/timegrid": "^6.1.15",
+    "@heroui/modal": "^2.2.8",
+    "@heroui/react": "^2.6.14",
     "@nextui-org/calendar": "^2.2.9",
     "@nextui-org/react": "^2.6.11",
     "@nextui-org/system": "^2.4.6",

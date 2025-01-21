@@ -1,27 +1,30 @@
-import React, { useRef } from "react";
+import React, { useRef, useState } from "react";
 import FullCalendar from "@fullcalendar/react";
-import { EventInput } from "@fullcalendar/core/index.js";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import listPlugin from "@fullcalendar/list";
+import { useEvents } from "../lib/data/events";
 import deLocale from "@fullcalendar/core/locales/de";
 
 interface CalendarProps {
-  events: EventInput[];
+  onOpenDate: () => void;
+  onOpenEvent: (info:any) => void;
 }
 
-const Calendar: React.FC<CalendarProps> = ({ events }) => {
+const Calendar: React.FC<CalendarProps> = ({onOpenDate, onOpenEvent }) => {
   const calendarRef = useRef<FullCalendar>(null);
 
-  //Handler für Date-klick
+  //events aus dem eventsContext rausziehen ~Chris
+  const { events } = useEvents(); 
+
   const handleDateClick = (info: any) => {
-    alert("Datum geklickt: ${info.dateStr}");
+    onOpenDate();
   };
 
-  // Handle für Event-Klick
   const handleEventClick = (info: any) => {
-    alert("Event geklickt: ${info.event.title}");
+    onOpenEvent(info.event);
+    alert(`Event geklickt: ${info.event.start}`);
   };
 
   return (
@@ -38,7 +41,7 @@ const Calendar: React.FC<CalendarProps> = ({ events }) => {
         initialView="dayGridMonth"
         selectable={true}
         editable={true}
-        events={events}
+        events={events} //Hier habe ich die Events aus dem EventsContext gezogen und eingefügt ~Chris
         eventContent={renderEventContent}
         dateClick={handleDateClick}
         eventClick={handleEventClick}
