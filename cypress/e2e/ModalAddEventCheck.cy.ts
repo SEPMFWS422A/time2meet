@@ -14,17 +14,19 @@ describe('AddModalContentCheck', () => {
         cy.get('input[placeholder="Wählen Sie Startdatum und -uhrzeit"]').should('be.visible');
         cy.get('input[placeholder="Geben Sie den Ort ein"]').should('be.visible');
         cy.get('button').contains('Schließen').should('be.visible');
-        cy.get('button').contains('Ereignis speichern').should('be.visible').should('be.disabled');
+        cy.get('button').contains('Ereignis speichern').should('be.visible');
     });
 
-    it('should disable Save button for invalid form and show error message', () => {
+    it('should on invalid Input show an error message', () => {
         cy.get('section[role="dialog"]').should('be.visible');
-        cy.get('button').contains('Ereignis speichern').should('be.disabled'); 
+        cy.get('button').contains('Ereignis speichern').click(); 
+        cy.get('#generalFormError').should('be.visible');
 
         cy.get('input[placeholder="Geben Sie den Titel des Ereignisses ein"]').type('Test Event');
-        cy.get('button').contains('Ereignis speichern').should('be.disabled'); 
+        cy.get('button').contains('Ereignis speichern').click();
+        cy.get('#generalFormError').should('be.visible');
 
-        cy.get('.text-red-500').should('contain', 'Bitte alle Felder ausfüllen!');
+        cy.get('#generalFormError').should('contain', 'Überprüfen Sie Ihre Eingaben');
     });
 
     it('should save an all-day event', () => {
@@ -49,7 +51,7 @@ describe('AddModalContentCheck', () => {
         cy.get('input[placeholder="Geben Sie den Titel des Ereignisses ein"]').type('Test normal Event');
         cy.get('input[placeholder="Geben Sie die Beschreibung des Ereignisses ein"]').type('Test description');
         cy.get('input[placeholder="Wählen Sie Startdatum und -uhrzeit"]').type('2025-01-22T10:00');
-        cy.get('input[placeholder="Wählen Sie Enddatum und -uhrzeit"]').type('2025-01-21T12:00');
+        cy.get('input[placeholder="Wählen Sie Enddatum und -uhrzeit"]').type('2025-01-22T12:00');
         cy.get('input[placeholder="Geben Sie den Ort ein"]').type('Test location');
       
         cy.get('button').contains('Ereignis speichern').should('not.be.disabled');
@@ -58,5 +60,17 @@ describe('AddModalContentCheck', () => {
         cy.get('section[role="dialog"]').should('not.exist');
 
         cy.get('#HomePageLayout').find('td[data-date="2025-01-22"]').find('a.fc-event').should('have.class', 'fc-event').and('include.text', 'Test normal Event');
+    });
+
+    it('should show invalid input for "Endtime" when "Endtime" is in the past compared to "Starttime" ', () => {
+        cy.get('section[role="dialog"]').should('be.visible');
+      
+        cy.get('input[placeholder="Geben Sie den Titel des Ereignisses ein"]').type('Test normal Event');
+        cy.get('input[placeholder="Wählen Sie Startdatum und -uhrzeit"]').type('2025-01-22T10:00');
+        cy.get('input[placeholder="Wählen Sie Enddatum und -uhrzeit"]').type('2025-01-21T12:00');
+
+        cy.get('div[data-invalid="true"]').should('contain', 'Ungültige Endzeit');    
+        cy.get('button').contains('Ereignis speichern').click();
+        cy.get('#generalFormError').should('be.visible').should('contain', 'Überprüfen Sie Ihre Eingaben'); 
     });
 });

@@ -10,6 +10,7 @@ interface AddEventModalContentProps{
 
 
 const AddEventModalContent: React.FC<AddEventModalContentProps> = ({ onClose }) => {
+  //Input-Felder
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [startTime, setStartTime] = useState("");
@@ -17,34 +18,90 @@ const AddEventModalContent: React.FC<AddEventModalContentProps> = ({ onClose }) 
   const [location, setLocation] = useState("");
   const [isAllDay, setIsAllDay] = useState(false);
 
+  //Errors
+  const [unreachableEndTimeError, setUnreachableEndTimeError] = useState<boolean>(false);
+  const [invalidStartDate,setStartDateError] = useState<boolean>(false);
+  const [invalidEndDate,setEndDateError] = useState<boolean>(false);
+  const [showError, setShowError] = useState<boolean>(false);
+
   const { addEvent } = useEvents(); 
 
-  // Validierungsfunktion
   const isFormValid = () => {
+    if (isAllDay) {
+      return title.trim() !== "" && startTime.trim() !== "";
+    }
+
+    if (unreachableEndTimeError||invalidEndDate||invalidStartDate) {
+      return;
+    }
     return (
       title.trim() !== "" &&
-      description.trim() !== "" &&
-      (isAllDay || (startTime.trim() !== "" && endTime.trim() !== "")) &&
-      location.trim() !== ""
+      startTime.trim() !== "" &&
+      endTime.trim() !== ""
     );
+  };
+  
+  const handleStartTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setStartTime(value);
+    setStartDateError(!isDateValid(value));
+    checkTimeError(value, endTime);
+  };
+  
+  const handleEndTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setEndTime(value);
+    setEndDateError(!isDateValid(value))
+    checkTimeError(startTime, value);
+  };
+  
+  const checkTimeError = (start: string, end: string) => {
+    if (start && end) {
+      const startDate = new Date(start).getTime();
+      const endDate = new Date(end).getTime();
+      if (endDate <= startDate) {
+        setUnreachableEndTimeError(true);
+      } else {
+        setUnreachableEndTimeError(false);
+      }
+    }
+  };
+
+  const isDateValid = (date: string):boolean => {
+    const parsedDate = new Date(date);
+    const year = parsedDate.getFullYear();
+
+    // Ist das Datum 4 Stellig und Valide
+    var result = year >= 1000 && year <= 9999 && !isNaN(parsedDate.getTime());
+    return result
+  };
+  
+  const toggleAllDay = () => {
+    setIsAllDay(!isAllDay);
+
+    if (!isAllDay) {
+      setStartTime((prev) => prev.split("T")[0]); 
+      setEndTime("");
+    } else {
+      setStartTime((prev) => (prev ? `${prev}T00:00` : ""));
+    }
   };
 
   const getFormData =() => {
 
     if (!isFormValid()) {
-      return; // Verhindert das Absenden, wenn das Formular leer ist lol
+      setShowError(true);
+      return; 
     }
+    setShowError(false);
 
     const eventInput: EventInput = {
       title: title,
       description: description,
       start: startTime,
-      allDay: isAllDay, 
+      ...(isAllDay ? { allDay: true } : { end: endTime }),
       location: location,
     };
-    if (!isAllDay) {
-      eventInput.end = endTime; 
-    }
     if (isAllDay) {
       eventInput.backgroundColor="Blue";
     }
@@ -54,7 +111,11 @@ const AddEventModalContent: React.FC<AddEventModalContentProps> = ({ onClose }) 
 
   return (
     <div>
-      <Form id="addEventForm" className="p-4 space-y-4" validationBehavior="native">
+      <Form
+        id="addEventForm"
+        className="p-4 space-y-3"
+        validationBehavior="native"
+      >
         <Input
           label="Titel"
           isRequired
@@ -66,40 +127,53 @@ const AddEventModalContent: React.FC<AddEventModalContentProps> = ({ onClose }) 
 
         <Input
           label="Beschreibung"
-          isRequired
           placeholder="Geben Sie die Beschreibung des Ereignisses ein"
           variant="bordered"
           value={description}
           onChange={(e) => setDescription(e.target.value)}
         />
-
-        <Input
-          label="Startzeit"
-          isRequired
-          placeholder="Wählen Sie Startdatum und -uhrzeit"
-          variant="bordered"
-          type="datetime-local"
-          value={startTime}
-          onChange={(e) => setStartTime(e.target.value)}
-        />
-
-        {!isAllDay && (
+        {isAllDay ? (
+          <Input
+            label="Startdatum"
+            isRequired
+            isInvalid={invalidStartDate}
+            errorMessage="Ungültige Startzeit"
+            placeholder="Wählen Sie das Startdatum"
+            variant="bordered"
+            type="date"
+            value={startTime}
+            onChange={handleStartTimeChange}
+          />
+        ) : (
           <>
+            <Input
+              label="Startzeit"
+              isRequired
+              isInvalid={invalidStartDate}
+              errorMessage="Ungültige Startzeit"
+              placeholder="Wählen Sie Startdatum und -uhrzeit"
+              variant="bordered"
+              type="datetime-local"
+              value={startTime}
+              onChange={handleStartTimeChange}
+            />
+
             <Input
               label="Endzeit"
               isRequired
+              isInvalid={unreachableEndTimeError||invalidEndDate}
+              errorMessage="Ungültige Endzeit"
               placeholder="Wählen Sie Enddatum und -uhrzeit"
               variant="bordered"
               type="datetime-local"
               value={endTime}
-              onChange={(e) => setEndTime(e.target.value)}
+              onChange={handleEndTimeChange}
             />
           </>
         )}
 
         <Input
           label="Ort"
-          isRequired
           placeholder="Geben Sie den Ort ein"
           variant="bordered"
           value={location}
@@ -111,28 +185,29 @@ const AddEventModalContent: React.FC<AddEventModalContentProps> = ({ onClose }) 
             <Checkbox
               type="checkbox"
               checked={isAllDay}
-              onChange={() => setIsAllDay(!isAllDay)}
+              onChange={toggleAllDay}
             />
             Ganztägiges Ereignis
           </label>
         </div>
 
-        <div className="flex justify-end space-x-4 pt-4">
-          <Button color="danger" variant="light" onPress={onClose}>
-            Schließen
-          </Button>
-          <Button
-            color="primary"
-            onPress={getFormData}
-            isDisabled={!isFormValid()} // Button deaktivieren, wenn das Formular ungültig ist
-          >
-            Ereignis speichern
-          </Button>
-          {!isFormValid() && (
-            <div className="text-sm text-red-500 mt-2">
-              Bitte alle Felder ausfüllen!
+        <div className="pt-4 w-full">
+
+
+          <div className="flex justify-end gap-5">
+          {showError && (
+            <div id="generalFormError" className="text-sm text-danger mt-2">
+              Überprüfen Sie Ihre Eingaben
             </div>
           )}
+
+            <Button color="danger" variant="light" onPress={onClose}>
+              Schließen
+            </Button>
+            <Button color="primary" onPress={getFormData}>
+              Ereignis speichern
+            </Button>
+          </div>
         </div>
       </Form>
     </div>
