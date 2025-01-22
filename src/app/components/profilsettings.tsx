@@ -1,8 +1,9 @@
 "use client";
-
+import Navbar from "@/app/components/Navbar";
 export function ProfilSettings() {
   return (
-    <div className="min-h-screen bg-gray-100 flex items-center justify-center">
+    <div className="min-h-screen bg-gray-100 flex items-center justify-center pt-20">
+            <Navbar />
       <div className="bg-white w-full max-w-lg rounded-lg shadow-lg p-8">
         <h1 id="header-title" className="text-2xl font-bold mb-4 text-center">
           Profil verwalten
