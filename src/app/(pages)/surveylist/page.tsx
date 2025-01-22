@@ -1,8 +1,8 @@
 "use client";
 
-import Navbar from "@/app/components/Navbar";
+import Navbar from "@/components/Navbar";
 import React from "react";
-import MultipleChoiceSurvey from "@/app/components/MultipleChoiceSurvey";
+import MultipleChoiceSurvey from "@/components/MultipleChoiceSurvey";
 
 export default function About() {
 

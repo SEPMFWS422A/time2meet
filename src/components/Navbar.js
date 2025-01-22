@@ -1,5 +1,5 @@
 import React from 'react';
-import '@/app/components/navbar.css';
+import '../components/navbar.css';
 
 
 
@@ -26,7 +26,7 @@ const Navbar = () => {
                         <a href="/messages"> Benachrichtigungen</a>
                     </li>
                     <li>
-                        <a href="profilsetting"> Profil verwalten</a>
+                        <a href="/profilsetting"> Profil verwalten</a>
                     </li>
                 </ul>
             </div>

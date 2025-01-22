@@ -4,7 +4,7 @@ import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import listPlugin from "@fullcalendar/list";
-import { useEvents } from "../lib/data/events";
+import { useEvents } from "@/lib/data/events";
 import deLocale from "@fullcalendar/core/locales/de";
 
 interface CalendarProps {

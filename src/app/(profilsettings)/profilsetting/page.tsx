@@ -1,4 +1,4 @@
-import { ProfilSettings } from "@/app/components/profilsettings";
+import { ProfilSettings } from "@/components/profilsettings";
 
 export default function ProfilSettingsRoute(){
 

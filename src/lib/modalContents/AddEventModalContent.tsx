@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Input, Button, Checkbox, Form, } from "@heroui/react";
-import { useEvents } from "@/app/lib/data/events"; 
+import { useEvents } from "@/lib/data/events";
 import { EventInput } from "@fullcalendar/core";
 
 

@@ -27,6 +27,8 @@ export const events: EventInput[] = [
     },
 ];
 
+
+
 export async function GET() {
 
     const vevents = events.map((events) => {

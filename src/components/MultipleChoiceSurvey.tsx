@@ -1,5 +1,5 @@
 import {useState} from "react";
-import '@/app/components/multipleChoiceSurvey.css'
+import '@/components/multipleChoiceSurvey.css'
 
 interface SurveyValues {
     options: string[];

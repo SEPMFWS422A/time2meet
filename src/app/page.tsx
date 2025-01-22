@@ -1,12 +1,12 @@
 "use client";
 
-import Calendar from "@/app/components/Calendar";
-import {EventProvider, useEvents} from "@/app/lib/data/events";
-import Navbar from "@/app/components/Navbar";
+import Calendar from "@/components/Calendar";
+import {EventProvider, useEvents} from "@/lib/data/events";
+import Navbar from "@/components/Navbar";
 import React, { useState } from "react";
-import ModalWindow from "./components/ModalWindow";
-import  AddEventModalContent  from "./lib/modalContents/AddEventModalContent";
-import EventInfoModalContent from "@/app/lib/modalContents/EventInfoModalContent";
+import ModalWindow from "@/components/ModalWindow";
+import  AddEventModalContent  from "@/lib/modalContents/AddEventModalContent";
+import EventInfoModalContent from "@/lib/modalContents/EventInfoModalContent";
 
 export default function Home() {
 

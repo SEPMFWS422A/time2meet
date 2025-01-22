@@ -1,5 +1,5 @@
 "use client";
-import Navbar from "@/app/components/Navbar";
+import Navbar from "@/components/Navbar";
 export function ProfilSettings() {
   return (
     <div className="min-h-screen bg-gray-100 flex items-center justify-center pt-20">
