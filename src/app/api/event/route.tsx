@@ -3,6 +3,11 @@ import {EventInput} from "@fullcalendar/core";
 
 export const events: EventInput[] = [
     {
+        //von Kürsat, Bitte die Struktur wie beim Orangensaft-Verschüttung beachten; 
+        //Hinzugekommen ist id=Eindeutigkeit Creator=Wer ist der ersteller groupmember= wer soll das ganze sehen
+        id:"1",
+        Creator:"Username",
+        groupmember:"Username,Username",
         title: "Orangensaft-Verschüttung",
         start: "2025-01-17T10:00:00",
         end: "2025-01-17T12:00:00",
