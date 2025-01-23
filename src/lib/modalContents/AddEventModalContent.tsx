@@ -180,7 +180,7 @@ const AddEventModalContent: React.FC<AddEventModalContentProps> = ({ onClose }) 
           onChange={(e) => setLocation(e.target.value)}
         />
 
-        <div>
+        <div className="ml-1">
           <label>
             <Checkbox
               type="checkbox"
@@ -194,9 +194,9 @@ const AddEventModalContent: React.FC<AddEventModalContentProps> = ({ onClose }) 
         <div className="pt-4 w-full">
 
 
-          <div className="flex justify-end gap-5">
+          <div className="flex justify-end space-x-6 gap-2 items-center">
           {showError && (
-            <div id="generalFormError" className="text-sm text-danger mt-2">
+            <div id="generalFormError" className="text-sm text-danger">
               Überprüfen Sie Ihre Eingaben
             </div>
           )}
