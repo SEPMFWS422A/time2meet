@@ -1,7 +1,7 @@
 describe('ProfilSettings Page Tests', () => {
   beforeEach(() => {
     // Besuche die ProfilSettings-Seite
-    cy.visit('http://localhost:3000/profilsetting');
+    cy.visit('http://localhost:3000/manageprofile');
   });
 
   it('should load the ProfilSettings page', () => {
