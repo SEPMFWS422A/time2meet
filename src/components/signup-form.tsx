@@ -55,7 +55,7 @@ export function SignUpForm() {
   };
 
   return (
-    <div className="w-full max-w-md">
+    <div className="w-full max-w-md" id="signUpForm">
       <form onSubmit={handleSubmit}>
         <Card>
           <CardHeader className="space-y-1">
