@@ -11,7 +11,7 @@ function MultipleChoiceSurvey({ options, name, description }: SurveyValues ) {
     const [selectedOption, setSelectedOption] = useState(null);
 
 
-    const handleOptionChange = (event) => {
+    const handleOptionChange = (event : any) => {
         setSelectedOption(event.target.value);
     };
 
