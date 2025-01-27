@@ -1,8 +1,48 @@
 "use client";
 
+import { useState } from "react";
+
 export function ProfilSettings() {
+    const [birthDateError, setBirthDateError] = useState<string | null>(null);
+    const [fileError, setFileError] = useState<string | null>(null);
+    const [isFormValid, setIsFormValid] = useState(true);
+
+    const handleBirthDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const inputDate = new Date(event.target.value);
+        const currentDate = new Date();
+
+        inputDate.setHours(0, 0, 0, 0);
+        currentDate.setHours(0, 0, 0, 0);
+
+        if (inputDate > currentDate) {
+            setBirthDateError("Das Geburtsdatum darf nicht nach dem aktuellen Datum liegen.");
+            setIsFormValid(false);
+        } else {
+            setBirthDateError(null);
+            setIsFormValid(fileError === null);
+        }
+    };
+
+    const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0];
+
+        if (file && !file.type.startsWith("image/")) {
+            setFileError("Nur Bilddateien sind erlaubt.");
+            setIsFormValid(false);
+        } else {
+            setFileError(null);
+            setIsFormValid(birthDateError === null);
+        }
+    };
+
+    const handleSubmit = (event: React.FormEvent) => {
+        if (!isFormValid) {
+            event.preventDefault();
+        }
+    };
+
     return (
-        <div className="bg-white w-full max-w-lg rounded-lg shadow-lg">
+        <div className="bg-white w-full max-w-lg p-10 rounded-lg shadow-lg">
             <h1 id="header-title" className="text-2xl font-bold mb-4 text-center">
                 Profil verwalten
             </h1>
@@ -10,30 +50,34 @@ export function ProfilSettings() {
                 Hier können Sie Ihre Profilinformationen ändern und anpassen.
             </p>
 
-        <form id="profile-form" className="space-y-4">
-          <div>
-            <label id="profile-picture-label" className="block text-sm font-medium mb-1">
-              Profilbild
-            </label>
-            <input
-              id="profile-picture-input"
-              type="file"
-              className="block w-full border rounded-lg p-2 text-sm"
-            />
-          </div>
+            <form id="profile-form" className="space-y-4" onSubmit={handleSubmit}>
+                <div>
+                    <label id="profile-picture-label" className="block text-sm font-medium mb-1">
+                        Profilbild
+                    </label>
+                    <input
+                        id="profile-picture-input"
+                        type="file"
+                        className="block w-full border rounded-lg p-2 text-sm"
+                        onChange={handleFileChange}
+                    />
+                    {fileError && (
+                        <p className="text-red-500 text-sm mt-1">{fileError}</p>
+                    )}
+                </div>
 
-          <div>
-            <label id="first-name-label" className="block text-sm font-medium mb-1">
-              Vorname
-            </label>
-            <input
-              id="first-name-input"
-              type="text"
-              placeholder="Vorname"
-              className="block w-full border rounded-lg p-2 text-sm"
-              required
-            />
-          </div>
+                <div>
+                    <label id="first-name-label" className="block text-sm font-medium mb-1">
+                        Vorname
+                    </label>
+                    <input
+                        id="first-name-input"
+                        type="text"
+                        placeholder="Vorname"
+                        className="block w-full border rounded-lg p-2 text-sm"
+                        required
+                    />
+                </div>
 
                 <div>
                     <label id="last-name-label" className="block text-sm font-medium mb-1">
@@ -107,7 +151,11 @@ export function ProfilSettings() {
                         id="birth-date-input"
                         type="date"
                         className="block w-full border rounded-lg p-2 text-sm"
+                        onChange={handleBirthDateChange}
                     />
+                    {birthDateError && (
+                        <p className="text-red-500 text-sm mt-1">{birthDateError}</p>
+                    )}
                 </div>
 
                 <div>
@@ -167,7 +215,8 @@ export function ProfilSettings() {
                     <button
                         id="save-changes"
                         type="submit"
-                        className="w-full bg-blue-500 text-white rounded-lg py-2 font-semibold hover:bg-blue-600"
+                        className={`w-full bg-blue-500 text-white rounded-lg py-2 font-semibold hover:bg-blue-600 ${!isFormValid ? "opacity-50 cursor-not-allowed" : ""}`}
+                        disabled={!isFormValid}
                     >
                         Änderungen speichern
                     </button>
