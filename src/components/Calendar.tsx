@@ -6,13 +6,14 @@ import interactionPlugin from "@fullcalendar/interaction";
 import listPlugin from "@fullcalendar/list";
 import { useEvents } from "@/lib/data/events";
 import deLocale from "@fullcalendar/core/locales/de";
+import { info } from "console";
 
 interface CalendarProps {
   onOpenDate: () => void;
-  onOpenEvent: (info:any) => void;
+  onOpenEvent: (info: any) => void;
 }
 
-const Calendar: React.FC<CalendarProps> = ({onOpenDate, onOpenEvent }) => {
+const Calendar: React.FC<CalendarProps> = ({ onOpenDate, onOpenEvent }) => {
   const calendarRef = useRef<FullCalendar>(null);
 
   //events aus dem eventsContext rausziehen ~Chris
@@ -22,18 +23,18 @@ const Calendar: React.FC<CalendarProps> = ({onOpenDate, onOpenEvent }) => {
     onOpenDate();
   };
 
-    const handleEventClick = (info: any) => {
-        onOpenEvent({
-            title: info.event.title,
-            start: info.event.start?.toISOString(),
-            end: info.event.end?.toISOString(),
-            allDay: info.event.allDay,
-            extendedProps: {
-                description: info.event.extendedProps.description,
-                location: info.event.extendedProps.location,
-            },
-        });
-    };
+  const handleEventClick = (info: any) => {
+    onOpenEvent({
+      title: info.event.title,
+      start: info.event.start?.toISOString(),
+      end: info.event.end?.toISOString(),
+      allDay: info.event.allDay,
+      extendedProps: {
+        description: info.event.extendedProps.description,
+        location: info.event.extendedProps.location,
+      },
+    });
+  };
 
   return (
     <div>
@@ -53,8 +54,42 @@ const Calendar: React.FC<CalendarProps> = ({onOpenDate, onOpenEvent }) => {
         eventContent={renderEventContent}
         dateClick={handleDateClick}
         eventClick={handleEventClick}
-        eventColor="green"
+        //eventColor="green"
         locale={deLocale}
+        eventDidMount={(info) => {
+          const el = info.el;
+          if (info.event.allDay) {
+            el.style.backgroundColor = "blue";
+            el.style.borderColor = "blue";
+          } else {
+            el.style.backgroundColor = "green";
+            el.style.borderColor = "green";
+          }
+          el.style.color = "white";
+          el.style.fontWeight = "normal";
+
+          el.addEventListener("mouseover", () => {
+            if (info.event.allDay) {
+              el.style.backgroundColor = "darkblue";
+              el.style.borderColor = "darkblue";
+            } else {
+              el.style.backgroundColor = "darkgreen";
+              el.style.borderColor = "darkgreen";
+            }
+            el.style.fontWeight = "bold";
+          });
+
+          el.addEventListener("mouseout", () => {
+            if (info.event.allDay) {
+              el.style.backgroundColor = "blue";
+              el.style.borderColor = "blue";
+            } else {
+              el.style.backgroundColor = "green";
+              el.style.borderColor = "green";
+            }
+            el.style.fontWeight = "normal";
+          });
+        }}
       />
     </div>
   );

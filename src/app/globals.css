@@ -13,10 +13,34 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
-.fc-daygrid-event {
-  background-color: green ;
-  border-color: green ;
-  color: white ;
+/*.fc-daygrid-event {
+  background-color: blue !important;
+  border-color: blue !important;
+  color: white !important;
+}
+
+.fc-timegrid-event {
+  background-color: green !important;
+  border-color: green !important;
+  color: white !important;
+}
+
+.fc-event:hover {
+  background-color: inherit !important;
+  color: inherit !important;
+  cursor: pointer;
+}*/
+
+.fc-event {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.fc-list-event:hover {
+  background-color: inherit !important;
+  color: inherit !important;
+  font-weight: inherit !important;
+  cursor: pointer;
 }
 
 @layer base {
