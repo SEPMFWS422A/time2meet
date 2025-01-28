@@ -5,6 +5,7 @@ import { useState } from "react";
 export function ProfilSettings() {
     const [birthDateError, setBirthDateError] = useState<string | null>(null);
     const [fileError, setFileError] = useState<string | null>(null);
+    const [phoneError, setPhoneError] = useState<string | null>(null);
     const [isFormValid, setIsFormValid] = useState(true);
 
     const handleBirthDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -19,7 +20,7 @@ export function ProfilSettings() {
             setIsFormValid(false);
         } else {
             setBirthDateError(null);
-            setIsFormValid(fileError === null);
+            setIsFormValid(fileError === null && phoneError === null);
         }
     };
 
@@ -31,7 +32,20 @@ export function ProfilSettings() {
             setIsFormValid(false);
         } else {
             setFileError(null);
-            setIsFormValid(birthDateError === null);
+            setIsFormValid(birthDateError === null && phoneError === null);
+        }
+    };
+
+    const handlePhoneChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const phoneRegex = /^\+?[0-9\s-]*$/;
+        const phoneValue = event.target.value;
+
+        if (phoneValue && !phoneRegex.test(phoneValue)) {
+            setPhoneError("Bitte geben Sie eine gültige Telefonnummer ein.");
+            setIsFormValid(false);
+        } else {
+            setPhoneError(null);
+            setIsFormValid(birthDateError === null && fileError === null);
         }
     };
 
@@ -109,13 +123,9 @@ export function ProfilSettings() {
                     <label id="email-label" className="block text-sm font-medium mb-1">
                         E-Mail-Adresse
                     </label>
-                    <input
-                        id="email-input"
-                        type="email"
-                        placeholder="E-Mail-Adresse"
-                        className="block w-full border rounded-lg p-2 text-sm"
-                        required
-                    />
+                    <p id="email-display" className="block w-full border rounded-lg p-2 text-sm bg-gray-100">
+                        Test@gmail.com
+                    </p>
                 </div>
 
                 <div>
@@ -140,7 +150,11 @@ export function ProfilSettings() {
                         type="tel"
                         placeholder="Telefonnummer"
                         className="block w-full border rounded-lg p-2 text-sm"
+                        onChange={handlePhoneChange}
                     />
+                    {phoneError && (
+                        <p className="text-red-500 text-sm mt-1">{phoneError}</p>
+                    )}
                 </div>
 
                 <div>
