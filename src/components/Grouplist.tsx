@@ -1,13 +1,30 @@
 import {Button, Listbox, ListboxItem, ListboxSection, User} from "@heroui/react";
 import {StarIcon} from "lucide-react";
-import {useState} from "react";
+import React, {useState} from "react";
+import AddGroupModalContent from "@/lib/modalContents/AddGroupModalContent";
+import ModalWindow from "@/components/ModalWindow";
 
 // Definiere den Typ für eine Gruppe
-interface Group {
+export interface Group {
     groupName: string;
     description: string;
-    isFavourite?: boolean; // Optional
-    isRequired?: boolean;
+    members: Array<Member>;
+    isFavourite: boolean;
+}
+
+export interface Member {
+    firstName: string;
+    lastName: string;
+    username: string;
+    email: string;
+    phoneNumber: string;
+    bday: string;
+    profilePicture: string;
+    profilePrivacy: string;
+    calendarPrivacy: string;
+    theme: string;
+    role: string;
+    groups: Array<Group>;
 }
 
 function Grouplist() {
@@ -16,16 +33,19 @@ function Grouplist() {
         {
             groupName: "Fußball-Gruppe",
             description: "Beschreibung Fußball",
+            members: [],
             isFavourite: false,
         },
         {
             groupName: "Thailand-Gruppe",
             description: "Beschreibung Thailand",
+            members: [],
             isFavourite: false,
         },
         {
             groupName: "Schminken-Gruppe",
             description: "Beschreibung Schminken",
+            members: [],
             isFavourite: false,
         }
     ]);
@@ -44,10 +64,21 @@ function Grouplist() {
         });
     };
 
+
+    const [isAddGroupModalOpen, setAddGroupModalOpen] = useState(false);
+
+    const closeAddGroupModal = () => {
+        setAddGroupModalOpen(false);
+    };
+
+    const openAddGroupModal = () => {
+        setAddGroupModalOpen(true);
+    };
+
     return (
         <div className="flex flex-col pt-2 items-center w-1/6 rounded-large border">
             <div>
-                <Button variant="faded">
+                <Button variant="faded" onPress={openAddGroupModal}>
                     Neue Gruppe hinzufügen
                 </Button>
             </div>
@@ -57,7 +88,7 @@ function Grouplist() {
                 onAction={(key) => console.log(`Ausgewählte Gruppe: ${key}`)}
                 isVirtualized
                 virtualization={{
-                    maxListboxHeight: 880,
+                    maxListboxHeight: 872,
                     itemHeight: 5,
                 }}
             >
@@ -65,7 +96,7 @@ function Grouplist() {
                     {groups.map((item) => (
                         <ListboxItem key={item.groupName}>
                             <div className="flex gap-2 justify-between items-center">
-                                <User avatarProps={{size: "sm"}} name={item.groupName}/>
+                                <User avatarProps={{size: "sm"}} description={item.members.length + ' Mitglieder'} name={item.groupName}/>
                                 <Button
                                     variant="light"
                                     isIconOnly
@@ -81,6 +112,15 @@ function Grouplist() {
                     ))}
                 </ListboxSection>
             </Listbox>
+
+            {isAddGroupModalOpen && (
+                <ModalWindow
+                    isOpen={isAddGroupModalOpen}
+                    onOpenChange={setAddGroupModalOpen}
+                    title="Gruppe hinzufügen"
+                    content={<AddGroupModalContent onClose={closeAddGroupModal}/>}
+                />
+            )}
         </div>
     );
 }
