@@ -15,7 +15,7 @@ export default function App() {
 
 
     return (
-        <Navbar className="bg-sky-950 text-white text-xl" isBordered isMenuOpen={isMenuOpen} onMenuOpenChange={setIsMenuOpen} >
+        <Navbar className="bg-sky-950 text-white text-xl" isBordered isMenuOpen={isMenuOpen} onMenuOpenChange={setIsMenuOpen} id ="navbar" >
 
             <NavbarContent  justify="center" >
 
