@@ -14,7 +14,7 @@ interface AddGroupModalContentProps {
 
 const AddGroupModalContent: React.FC<AddGroupModalContentProps> = ({ onClose }) => {
     const [group, setGroup] = useState<Group>({
-        groupName: "",
+        firstName: "",
         description: "",
         members: [],
         isFavourite: false,

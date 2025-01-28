@@ -1,42 +1,65 @@
-import {useState} from "react";
-import '@/components/multipleChoiceSurvey.css'
+import React, {useState} from "react";
+import {Button, Card, CardBody, CardHeader, Radio, RadioGroup} from "@heroui/react";
+import {CardTitle} from "@/components/ui/card";
+import {LucideBadgeCheck} from "lucide-react";
 
-interface SurveyValues {
+interface SurveyProps {
+    title: string;
+    description: string;
     options: string[];
-    name: string
-    description: string
+    selectedOption: string;
+    handleOptionChange: (option: string) => void;
+    handleSubmit: (e: React.FormEvent) => void;
 }
 
-function MultipleChoiceSurvey({ options, name, description }: SurveyValues ) {
-    const [selectedOption, setSelectedOption] = useState(null);
+const MultipleChoiceSurvey: React.FC<SurveyProps> = ({
+                                                         title,
+                                                         description,
+                                                         options,
+                                                         selectedOption,
+                                                         handleOptionChange,
+                                                         handleSubmit,
+                                                     }) => {
+    const [internalSelectedOption, setInternalSelectedOption] = useState<string>(selectedOption);
 
-
-    const handleOptionChange = (event : any) => {
-        setSelectedOption(event.target.value);
+    const handleInternalOptionChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const value = event.target.value;
+        setInternalSelectedOption(value);
+        handleOptionChange(value);
     };
 
     return (
-        <div className="multipleChoiceSurvey">
-            <h2 className = "mcSurveyTitle">{ name}</h2>
-            <p className = "mcSurveyDescr">{description}</p>
-            <form className="mcSurveyOptions">
-                {options.map((option, index) => (
-                    < div className="mcSurveyOption" key={index}>
-                        <input
-                            type="radio"
-                            id={option}
-                            name="option"
-                            value={option}
-                            checked={selectedOption === option}
-                            onChange={handleOptionChange}
-                        />
-                        <label htmlFor={option}>{option}</label>
-                    </div>
-                ))}
-            </form>
-
+        <div className="flex flex-col items-center justify-center">
+            <Card className="w-full max-w-2xl shadow-xl">
+                <CardHeader className="text-center bg-blue-600 text-white py-4 rounded-t-lg">
+                    <CardTitle className="text-2xl font-bold">{title}</CardTitle>
+                </CardHeader>
+                <CardBody className="p-6 bg-white">
+                    <form onSubmit={handleSubmit}>
+                        <RadioGroup
+                            label={description}
+                            value={internalSelectedOption}
+                            onChange={handleInternalOptionChange}
+                            className="text-center text-xl"
+                        >
+                            {options.map((option, index) => (
+                                <Radio
+                                    key={index}
+                                    value={option}
+                                >
+                                    <span>{option}</span>
+                                </Radio>
+                            ))}
+                        </RadioGroup>
+                        <Button endContent={<LucideBadgeCheck/>} className="w-full mt-4 text-lg">
+                            Abschicken
+                        </Button>
+                    </form>
+                </CardBody>
+            </Card>
         </div>
     )
-}
-export default MultipleChoiceSurvey;
+        ;
+};
 
+export default MultipleChoiceSurvey;

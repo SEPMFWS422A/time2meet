@@ -24,6 +24,7 @@ export interface Member {
     calendarPrivacy: string;
     theme: string;
     role: string;
+    isFavourite: boolean,
     groups: Array<Group>;
 }
 
@@ -76,12 +77,10 @@ function Grouplist() {
     };
 
     return (
-        <div className="flex flex-col pt-2 items-center w-1/6 rounded-large border">
-            <div>
-                <Button variant="faded" onPress={openAddGroupModal}>
-                    Neue Gruppe hinzufügen
-                </Button>
-            </div>
+        <div className="flex flex-col items-center">
+            <Button color="primary" onPress={openAddGroupModal}>
+                Neue Gruppe hinzufügen
+            </Button>
             <Listbox
                 aria-label="Gruppen"
                 items={groups}
@@ -92,11 +91,12 @@ function Grouplist() {
                     itemHeight: 5,
                 }}
             >
-                <ListboxSection title="Gruppen">
+                <ListboxSection>
                     {groups.map((item) => (
                         <ListboxItem key={item.groupName}>
                             <div className="flex gap-2 justify-between items-center">
-                                <User avatarProps={{size: "sm"}} description={item.members.length + ' Mitglieder'} name={item.groupName}/>
+                                <User avatarProps={{size: "sm"}} description={item.members.length + ' Mitglieder'}
+                                      name={item.groupName}/>
                                 <Button
                                     variant="light"
                                     isIconOnly

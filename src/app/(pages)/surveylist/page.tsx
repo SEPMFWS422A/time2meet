@@ -11,7 +11,7 @@ export default function About() {
             <div>
                 <MultipleChoiceSurvey
                     options={['option1', 'option2', 'option45']}
-                    name="Meine Umfrage"
+                    title="Meine Umfrage"
                     description="Eine coole Umfrage"/>
 
             </div>

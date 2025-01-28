@@ -6,7 +6,7 @@ import React, {useState} from "react";
 import ModalWindow from "@/components/ModalWindow";
 import AddEventModalContent from "@/lib/modalContents/AddEventModalContent";
 import EventInfoModalContent from "@/lib/modalContents/EventInfoModalContent";
-import Grouplist from "@/components/Grouplist";
+import ListView from "@/components/ListView";
 
 export default function Home() {
 
@@ -39,13 +39,14 @@ export default function Home() {
         link.click();
     };
 
-    {/* Der EventProvider tag (<EventProvider>), muss immer ganz Außen vom HTML-Baum sein, wegen dem event Context aus @/app/lib/data/events" ~Chris lol */}
+    {/* Der EventProvider tag (<EventProvider>), muss immer ganz Außen vom HTML-Baum sein, wegen dem event Context aus @/app/lib/data/events" ~Chris lol */
+    }
     return (
         <EventProvider>
             <div>
                 <div id="HomePageLayout" className="min-h-screen w-full">
                     <div className="flex flex-row gap-3 ml-3 mr-3">
-                        <Grouplist/>
+                        <ListView/>
                         <Calendar onOpenDate={onOpenDate} onOpenEvent={onOpenEvent}/>
                     </div>
                     <div
