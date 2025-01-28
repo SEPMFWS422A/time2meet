@@ -6,6 +6,7 @@ import React, {useState} from "react";
 import ModalWindow from "@/components/ModalWindow";
 import AddEventModalContent from "@/lib/modalContents/AddEventModalContent";
 import EventInfoModalContent from "@/lib/modalContents/EventInfoModalContent";
+import Grouplist from "@/components/Grouplist";
 
 export default function Home() {
 
@@ -38,16 +39,15 @@ export default function Home() {
         link.click();
     };
 
-    {/* Der EventProvider tag (<EventProvider>), muss immer ganz Außen vom HTML-Baum sein, wegen dem event Context aus @/app/lib/data/events" ~Chris lol */
-    }
+    {/* Der EventProvider tag (<EventProvider>), muss immer ganz Außen vom HTML-Baum sein, wegen dem event Context aus @/app/lib/data/events" ~Chris lol */}
     return (
         <EventProvider>
             <div>
-                <div id="HomePageLayout" className="min-h-screen">
-                    <div className="ml-3 mr-3">
+                <div id="HomePageLayout" className="min-h-screen w-full">
+                    <div className="flex flex-row gap-3 ml-3 mr-3">
+                        <Grouplist/>
                         <Calendar onOpenDate={onOpenDate} onOpenEvent={onOpenEvent}/>
                     </div>
-
                     <div
                         id="DownloadDivCalendar"
                         className="mt-4 mb-4 flex items-center justify-center"

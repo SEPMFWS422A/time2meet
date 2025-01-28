@@ -4,9 +4,9 @@ import {
     Navbar,
     NavbarContent,
     NavbarItem,
-    Link,
     Button,
 } from "@heroui/react";
+import Link from "next/link";
 
 
 
@@ -27,11 +27,6 @@ export default function App() {
                 <NavbarItem isActive>
                     <Link aria-current="page" href="/friendlist" className= "text-white text-xl" >
                        Freundesliste
-                    </Link>
-                </NavbarItem>
-                <NavbarItem isActive>
-                    <Link aria-current="page" href="/grouplist"  className= "text-white text-xl" >
-                        Gruppen
                     </Link>
                 </NavbarItem>
                 <NavbarItem isActive>
