@@ -27,7 +27,7 @@ function Grouplist() {
                     showDivider
                     key={item.groupName}
                 >
-                    <div className="flex gap-2 items-center w-screen">
+                    <div className="flex gap-2 items-center">
                         <Avatar alt={item.groupName} size="sm"/>
                         <div className="">
                             <span>{item.groupName}</span>

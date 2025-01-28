@@ -43,8 +43,8 @@ export default function Home() {
     return (
         <EventProvider>
             <div>
-                <div id="HomePageLayout" className="min-h-screen w-screen">
-                    <div className="ml-8 mr-8">
+                <div id="HomePageLayout" className="min-h-screen">
+                    <div className="ml-3 mr-3">
                         <Calendar onOpenDate={onOpenDate} onOpenEvent={onOpenEvent}/>
                     </div>
 
