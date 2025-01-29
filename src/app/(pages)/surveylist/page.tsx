@@ -16,7 +16,6 @@ export default function About() {
                     options={['option1', 'option2', 'option45']}
                     title="Meine Umfrage"
                     description="Eine coole Umfrage"/>
-
             </div>
         </div>
     )

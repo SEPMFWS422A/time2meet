@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React from "react";
 import {Button, Card, CardBody, CardHeader, Radio, RadioGroup} from "@heroui/react";
 import {CardTitle} from "@/components/ui/card";
 import {LucideBadgeCheck} from "lucide-react";
@@ -7,26 +7,13 @@ interface SurveyProps {
     title: string;
     description: string;
     options: string[];
-    selectedOption: string;
-    handleOptionChange: (option: string) => void;
-    handleSubmit: (e: React.FormEvent) => void;
 }
 
 const MultipleChoiceSurvey: React.FC<SurveyProps> = ({
                                                          title,
                                                          description,
                                                          options,
-                                                         selectedOption,
-                                                         handleOptionChange,
-                                                         handleSubmit,
                                                      }) => {
-    const [internalSelectedOption, setInternalSelectedOption] = useState<string>(selectedOption);
-
-    const handleInternalOptionChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const value = event.target.value;
-        setInternalSelectedOption(value);
-        handleOptionChange(value);
-    };
 
     return (
         <div className="flex flex-col items-center justify-center">
@@ -35,11 +22,9 @@ const MultipleChoiceSurvey: React.FC<SurveyProps> = ({
                     <CardTitle className="text-2xl font-bold">{title}</CardTitle>
                 </CardHeader>
                 <CardBody className="p-6 bg-white">
-                    <form onSubmit={handleSubmit}>
+                    <form>
                         <RadioGroup
                             label={description}
-                            value={internalSelectedOption}
-                            onChange={handleInternalOptionChange}
                             className="text-center text-xl"
                         >
                             {options.map((option, index) => (

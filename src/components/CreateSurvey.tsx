@@ -1,31 +1,30 @@
-
 import React, {useState} from "react";
-import {Form, Input, Button} from "@heroui/react";
+import {Button, Form, Input} from "@heroui/react";
 import ModalWindow from "@/components/ModalWindow";
 import {DeleteIcon} from "@heroui/shared-icons";
 
 
 export default function CreateSurvey() {
-        const [inputs, setInputs] = useState([{ id: Date.now(), value: '' }]);
+    const [inputs, setInputs] = useState([{id: Date.now(), value: ''}]);
 
-        const handleInputChange = (e, id) => {
-            setInputs(
-                inputs.map((input) =>
-                    input.id === id ? { ...input, value: e.target.value } : input
-                )
-            );
-        };
+    const handleInputChange = (e, id) => {
+        setInputs(
+            inputs.map((input) =>
+                input.id === id ? {...input, value: e.target.value} : input
+            )
+        );
+    };
 
-        const handleAddInput = () => {
-            setInputs([...inputs, { id: Date.now(), value: '' }]);
-        };
+    const handleAddInput = () => {
+        setInputs([...inputs, {id: Date.now(), value: ''}]);
+    };
 
 
-        const handleSubmit = (e) => {
-            e.preventDefault();
-            const values = inputs.map((input) => input.value);
-            console.log(values); // Array mit allen eingegebenen Werten
-        }
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        const values = inputs.map((input) => input.value);
+        console.log(values); // Array mit allen eingegebenen Werten
+    }
     const [isModalOpen, setIsModalOpen] = useState(false);
 
     const handleOpenModal = () => {
@@ -41,62 +40,62 @@ export default function CreateSurvey() {
         }
     };
 
-        return (
+    return (
 
-            <div className="text-center text-white py-4 rounded-t-lg ">
-                <Button
-                    className="h-10 text-xl bg-blue-600 text-white"
-                    onClick={handleOpenModal}>Umfrage erstellen</Button>
-                <ModalWindow isOpen={isModalOpen} onOpenChange={handleCloseModal} content={
-                            <Form onSubmit={handleSubmit}>
+        <div className="text-center text-white py-4 rounded-t-lg ">
+            <Button
+                className="h-10 text-xl bg-blue-600 text-white"
+                onPress={handleOpenModal}>Umfrage erstellen</Button>
+            <ModalWindow isOpen={isModalOpen} onOpenChange={handleCloseModal} content={
+                <Form onSubmit={handleSubmit}>
+                    <Input
+                        isRequired
+                        label="Titel"
+                        labelPlacement="outside"
+                        name="Titel"
+                        placeholder="Titel der Umfrage angeben"
+                        type="title"
+                    />
+                    <Input
+                        label="Beschreibung"
+                        labelPlacement="outside"
+                        name="description"
+                        placeholder="Beschreibung angeben"
+                        type="descr"
+                    />
+                    <div>
+                        Optionen:
+                        {inputs.map((input, index) => (
+                            <div className="flex items-center">
                                 <Input
+                                    className="flex-1 mr-2"
                                     isRequired
-                                    label="Titel"
-                                    labelPlacement="outside"
-                                    name="Titel"
-                                    placeholder="Titel der Umfrage angeben"
-                                    type="title"
+                                    label="Option"
+                                    key={input.id}
+                                    value={input.value}
+                                    onChange={(e) => handleInputChange(e, input.id)}
+                                    placeholder="Gib deinen Text ein"
                                 />
-                                <Input
-                                    label="Beschreibung"
-                                    labelPlacement="outside"
-                                    name="description"
-                                    placeholder="Beschreibung angeben"
-                                    type="descr"
-                                />
-                                <div>
-                                    Optionen:
-                                    {inputs.map((input, index) => (
-                                        <div className="flex items-center">
-                                            <Input
-                                                className="flex-1 mr-2"
-                                                isRequired
-                                                label="Option"
-                                                key={input.id}
-                                                value={input.value}
-                                                onChange={(e) => handleInputChange(e, input.id)}
-                                                placeholder="Gib deinen Text ein"
-                                            />
-                                            <Button className="mr-2"
-                                                    onClick={() => handleDeleteInput(index)}><DeleteIcon/></Button>
-                                        </div>
+                                <Button className="mr-2"
+                                        onPress={() => handleDeleteInput(index)}><DeleteIcon/></Button>
+                            </div>
 
 
-                                    ))}
+                        ))}
 
-                                </div>
-                                <Button onClick={handleAddInput}>Option hinzufügen</Button>
+                    </div>
+                    <Button onPress={handleAddInput}>Option hinzufügen</Button>
 
-                                <Button className="bg-blue-600 text-white py-4"
-                                    type="submit">Absenden
-                                </Button>
-                            </Form>
+                    <Button className="bg-blue-600 text-white py-4"
+                            type="submit">Absenden
+                    </Button>
+                </Form>
 
-                } title={'Umfrage erstellen'}>
+            } title={'Umfrage erstellen'}>
 
-                </ModalWindow>
+            </ModalWindow>
 
-            </div>
+        </div>
 
-        );
-    }
+    );
+}
