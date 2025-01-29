@@ -25,11 +25,6 @@ export default function App() {
                     </Link>
                 </NavbarItem>
                 <NavbarItem isActive>
-                    <Link aria-current="page" href="/friendlist" className= "text-white text-xl" >
-                       Freundesliste
-                    </Link>
-                </NavbarItem>
-                <NavbarItem isActive>
                     <Link aria-current="page" href="/surveylist"  className= "text-white text-xl" >
                         Umfragen
                     </Link>
