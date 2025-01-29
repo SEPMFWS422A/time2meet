@@ -2,6 +2,7 @@
 
 import React from "react";
 import MultipleChoiceSurvey from "@/components/MultipleChoiceSurvey";
+import CreateSurvey from "@/components/CreateSurvey";
 
 export default function About() {
 
@@ -9,6 +10,8 @@ export default function About() {
 
         <div>
             <div>
+
+                <CreateSurvey/>
                 <MultipleChoiceSurvey
                     options={['option1', 'option2', 'option45']}
                     title="Meine Umfrage"
