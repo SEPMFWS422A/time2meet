@@ -16,6 +16,7 @@
     "@fullcalendar/list": "^6.1.15",
     "@fullcalendar/react": "^6.1.15",
     "@fullcalendar/timegrid": "^6.1.15",
+    "@heroui/form": "^2.1.9",
     "@heroui/modal": "^2.2.8",
     "@heroui/navbar": "^2.2.9",
     "@heroui/react": "^2.6.14",
