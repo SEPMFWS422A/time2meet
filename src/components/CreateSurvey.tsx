@@ -1,8 +1,9 @@
 
 import React, {useState} from "react";
-import {Form, Input, Button, Card, CardBody, CardHeader, Modal,} from "@heroui/react";
-import {CardTitle} from "@/components/ui/card";
+import {Form, Input, Button} from "@heroui/react";
 import ModalWindow from "@/components/ModalWindow";
+import {DeleteIcon} from "@heroui/shared-icons";
+
 
 export default function CreateSurvey() {
         const [inputs, setInputs] = useState([{ id: Date.now(), value: '' }]);
@@ -34,6 +35,11 @@ export default function CreateSurvey() {
     const handleCloseModal = () => {
         setIsModalOpen(false);
     };
+    const handleDeleteInput = (index) => {
+        if (inputs.length > 1) { // Prevent deleting the last input
+            setInputs(inputs.filter((_, i) => i !== index));
+        }
+    };
 
         return (
 
@@ -60,18 +66,30 @@ export default function CreateSurvey() {
                                 />
                                 <div>
                                     Optionen:
-                                    {inputs.map((input) => (
-                                        <Input
-                                            isRequired
-                                            key={input.id}
-                                            value={input.value}
-                                            onChange={(e) => handleInputChange(e, input.id)}
-                                            placeholder="Gib deinen Text ein"
-                                        />
+                                    {inputs.map((input, index) => (
+                                        <div className="flex items-center">
+                                            <Input
+                                                className="flex-1 mr-2"
+                                                isRequired
+                                                label="Option"
+                                                key={input.id}
+                                                value={input.value}
+                                                onChange={(e) => handleInputChange(e, input.id)}
+                                                placeholder="Gib deinen Text ein"
+                                            />
+                                            <Button className="mr-2"
+                                                    onClick={() => handleDeleteInput(index)}><DeleteIcon/></Button>
+                                        </div>
+
+
                                     ))}
-                                    <Button onClick={handleAddInput}>Option hinzufügen</Button>
+
                                 </div>
-                                <Button type="submit">Absenden</Button>
+                                <Button onClick={handleAddInput}>Option hinzufügen</Button>
+
+                                <Button className="bg-blue-600 text-white py-4"
+                                    type="submit">Absenden
+                                </Button>
                             </Form>
 
                 } title={'Umfrage erstellen'}>
