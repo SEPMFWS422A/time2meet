@@ -6,7 +6,11 @@ import React, {useState} from "react";
 import ModalWindow from "@/components/ModalWindow";
 import AddEventModalContent from "@/lib/modalContents/AddEventModalContent";
 import EventInfoModalContent from "@/lib/modalContents/EventInfoModalContent";
-import ListView from "@/components/ListView";
+import TabView from "@/components/TabView";
+import Grouplist from "@/components/Grouplist";
+import Friendlist from "@/components/Friendlist";
+import {LucideUsers, PersonStandingIcon} from "lucide-react";
+
 
 export default function Home() {
 
@@ -46,7 +50,11 @@ export default function Home() {
             <div>
                 <div id="HomePageLayout" className="min-h-screen w-full">
                     <div className="flex flex-row gap-3 ml-3 mr-3">
-                        <ListView/>
+                        <TabView selectedTab="Gruppen" tabs={[{
+                            title: "Gruppen",
+                            content: <Grouplist/>,
+                            icon: <LucideUsers/>
+                        }, {title: "Freunde", content: <Friendlist/>, icon: <PersonStandingIcon/>}]}/>
                         <Calendar onOpenDate={onOpenDate} onOpenEvent={onOpenEvent}/>
                     </div>
                     <div
