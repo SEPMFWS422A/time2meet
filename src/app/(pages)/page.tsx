@@ -14,25 +14,25 @@ import {LucideUsers, PersonStandingIcon} from "lucide-react";
 
 export default function Home() {
 
-    const [isAddEventModalOpen, setAddEventModalOpen] = useState(false);
-    const [isEventInfoModalOpen, setEventInfoModalOpen] = useState(false);
+    const [isAddEventModalOpen, setIsAddEventModalOpen] = useState(false);
+    const [isEventInfoModalOpen, setIsEventInfoModalOpen] = useState(false);
     const [modalData, setModalData] = useState(null);
 
     const onOpenDate = () => {
-        setAddEventModalOpen(true);
+        setIsAddEventModalOpen(true);
     };
 
     const onOpenEvent = (events: any) => {
         setModalData(events);
-        setEventInfoModalOpen(true);
+        setIsEventInfoModalOpen(true);
     };
 
     const closeAddEventModal = () => {
-        setAddEventModalOpen(false);
+        setIsAddEventModalOpen(false);
     };
 
     const closeEventInfoModal = () => {
-        setEventInfoModalOpen(false);
+        setIsEventInfoModalOpen(false);
         setModalData(null);
     };
 
@@ -50,11 +50,12 @@ export default function Home() {
             <div>
                 <div id="HomePageLayout" className="min-h-screen w-full">
                     <div className="flex flex-row gap-3 ml-3 mr-3">
-                        <TabView selectedTab="Gruppen" tabs={[{
-                            title: "Gruppen",
-                            content: <Grouplist/>,
-                            icon: <LucideUsers/>
-                        }, {title: "Freunde", content: <Friendlist/>, icon: <PersonStandingIcon/>}]}/>
+                        <div className="border-1 rounded-large">
+                            <TabView selectedTab="Gruppen" tabs={[
+                                {title: "Gruppen", content: <Grouplist/>, icon: <LucideUsers/>},
+                                {title: "Freunde", content: <Friendlist/>, icon: <PersonStandingIcon/>}
+                            ]}/>
+                        </div>
                         <Calendar onOpenDate={onOpenDate} onOpenEvent={onOpenEvent}/>
                     </div>
                     <div
@@ -72,7 +73,7 @@ export default function Home() {
                     {isAddEventModalOpen && (
                         <ModalWindow
                             isOpen={isAddEventModalOpen}
-                            onOpenChange={setAddEventModalOpen}
+                            onOpenChange={setIsAddEventModalOpen}
                             title="Event hinzufügen"
                             content={<AddEventModalContent onClose={closeAddEventModal}/>}
                         />
@@ -85,7 +86,7 @@ export default function Home() {
                         >
                             <ModalWindow
                                 isOpen={isEventInfoModalOpen}
-                                onOpenChange={setEventInfoModalOpen}
+                                onOpenChange={setIsEventInfoModalOpen}
                                 title="Event Informationen"
                                 content={<EventInfoModalContent modalData={modalData} onClose={closeEventInfoModal}/>}
                             />

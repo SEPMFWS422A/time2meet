@@ -15,7 +15,7 @@ const TabView: React.FC<TabViewProps> = ({tabs, selectedTab}) => {
     const [selected, setSelected] = useState(selectedTab);
 
     return (
-        <div className="border-2 rounded-lg">
+        <div className="rounded-lg">
             <Tabs className="flex justify-center items-center" aria-label="Options" placement="top" color="primary"
                   variant="light" selectedKey={selected}
                   onSelectionChange={(key) => setSelected(key as string)}>
