@@ -1,8 +1,16 @@
-export type Event={
-    title: string;
-    description: string;
-    date: Date;
-    startTime: string;
-    endTime:string;
+import mongoose from "mongoose";
 
-}
+const EventSchema = new mongoose.Schema({
+  creator: { type: mongoose.Schema.Types.ObjectId, ref: "users", required: true },
+  members: [{ type: mongoose.Schema.Types.ObjectId, ref: "users" }],
+  title: { type: String, required: true },
+  start: { type: Date, required: true },
+  end: { type: Date, required: true },
+  description: { type: String, default: "" },
+  location: { type: String, default: "" },
+  groups: [{ type: mongoose.Schema.Types.ObjectId, ref: "groups" }],
+  allday: { type: Boolean, default: false },
+  createdAt: { type: Date, default: Date.now }
+});
+
+export default mongoose.models.Event || mongoose.model("events", EventSchema);
