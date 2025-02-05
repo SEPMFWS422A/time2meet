@@ -194,11 +194,6 @@ function Friendlist() {
                 aria-label="Gruppen"
                 items={friends}
                 onAction={(key) => console.log(`Ausgewählter Freund: ${key}`)}
-                isVirtualized
-                virtualization={{
-                    maxListboxHeight: 872,
-                    itemHeight: 5,
-                }}
             >
                 <ListboxSection>
                     {friends.map((item) => (

@@ -8,7 +8,7 @@ export const metadata: Metadata = {
 
 export default function Layout({children}: Readonly<{ children: React.ReactNode }>) {
     return (
-        <div>
+        <div className="flex flex-col gap-5">
             <div>
                 <Navbar/>
             </div>

@@ -55,7 +55,7 @@ export function ProfilSettings() {
 
     return (
         <div className="flex justify-center">
-            <div className="bg-white w-full max-w-lg p-10 rounded-lg shadow-lg">
+            <div className="bg-white w-full max-w-lg">
                 <h1 id="header-title" className="text-2xl font-bold mb-4 text-center">
                     Profil verwalten
                 </h1>

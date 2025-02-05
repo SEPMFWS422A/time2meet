@@ -87,7 +87,7 @@ function Grouplist() {
                 onAction={(key) => console.log(`Ausgewählte Gruppe: ${key}`)}
                 isVirtualized
                 virtualization={{
-                    maxListboxHeight: 872,
+                    maxListboxHeight: 400,
                     itemHeight: 5,
                 }}
             >

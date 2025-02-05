@@ -48,28 +48,33 @@ export default function Home() {
     return (
         <EventProvider>
             <div>
-                <div id="HomePageLayout" className="min-h-screen w-full">
-                    <div className="flex flex-row gap-3 ml-3 mr-3">
-                        <div className="border-1 rounded-large">
-                            <TabView selectedTab="Gruppen" tabs={[
-                                {title: "Gruppen", content: <Grouplist/>, icon: <LucideUsers/>},
-                                {title: "Freunde", content: <Friendlist/>, icon: <PersonStandingIcon/>}
-                            ]}/>
+                <div id="HomePageLayout" className="flex flex-col w-full">
+                    <div className="ml-3 mr-3">
+                        <div className="flex gap-3">
+                            <div className="hidden md:flex border-1 rounded-large">
+                                <TabView selectedTab="Gruppen" tabs={[
+                                    {title: "Gruppen", content: <Grouplist/>, icon: <LucideUsers/>},
+                                    {title: "Freunde", content: <Friendlist/>, icon: <PersonStandingIcon/>}
+                                ]}/>
+                            </div>
+                            <Calendar onOpenDate={onOpenDate} onOpenEvent={onOpenEvent}/>
                         </div>
-                        <Calendar onOpenDate={onOpenDate} onOpenEvent={onOpenEvent}/>
-                    </div>
-                    <div
-                        id="DownloadDivCalendar"
-                        className="mt-4 mb-4 flex items-center justify-center"
-                    >
-                        <button
-                            id="Calendardownload"
-                            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full"
-                            onClick={downloadICS}
+
+                        <div
+                            id="DownloadDivCalendar"
+                            className="mt-4 mb-4 flex items-center justify-center"
                         >
-                            Alle Events als .ics herunterladen
-                        </button>
+                            <button
+                                id="Calendardownload"
+                                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full"
+                                onClick={downloadICS}
+                            >
+                                Alle Events als .ics herunterladen
+                            </button>
+                        </div>
+
                     </div>
+
                     {isAddEventModalOpen && (
                         <ModalWindow
                             isOpen={isAddEventModalOpen}

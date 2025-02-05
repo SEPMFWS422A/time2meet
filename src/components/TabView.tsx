@@ -16,14 +16,14 @@ const TabView: React.FC<TabViewProps> = ({tabs, selectedTab}) => {
 
     return (
         <div className="rounded-lg">
-            <Tabs className="flex justify-center items-center" aria-label="Options" placement="top" color="primary"
-                  variant="light" selectedKey={selected}
+            <Tabs className="flex justify-center items-center" aria-label="Options" color="primary"
+                  variant="solid" selectedKey={selected}
                   onSelectionChange={(key) => setSelected(key as string)}>
                 {(tabs.map((tab) => (
                     <Tab
                         key={tab.title}
                         title={
-                            <div className="flex items-center space-x-2">
+                            <div className="flex items-center gap-2">
                                 {tab.icon}
                                 <span>{tab.title}</span>
                             </div>

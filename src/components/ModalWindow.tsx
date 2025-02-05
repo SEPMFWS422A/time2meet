@@ -6,12 +6,13 @@ interface ModalWindowProps {
     onOpenChange: (isOpen: boolean) => void;
     content: React.ReactNode;
     title: string;
+    size?: "3xl" | "xs" | "sm" | "md" | "lg" | "xl" | "2xl" | "4xl" | "5xl" | "full" | undefined;
 }
 
-const ModalWindow: React.FC<ModalWindowProps> = ({isOpen, onOpenChange, content, title}) => {
+const ModalWindow: React.FC<ModalWindowProps> = ({isOpen, onOpenChange, content, title, size}) => {
 
     return (
-        <Modal isOpen={isOpen} size={"xl"} onOpenChange={onOpenChange}>
+        <Modal isOpen={isOpen} size={size ?? "xl"} onOpenChange={onOpenChange}>
             <ModalContent>
                 {() => (
                     <>
