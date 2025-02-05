@@ -1,27 +1,18 @@
 import React, {useState} from "react";
 import {DayPicker} from "react-day-picker";
 import "react-day-picker/dist/style.css";
-import {Button, Form, Input, TimeInput} from "@heroui/react";
+import {Form, TimeInput} from "@heroui/react";
 import {MappedTimeValue, TimeValue} from "@react-types/datepicker";
 import {CalendarDateTime, Time, ZonedDateTime} from "@internationalized/date";
-import {CheckIcon, CloseIcon} from "@heroui/shared-icons";
 
 export interface SchedulingSurvey {
-    title: string;
-    description: string;
     dates: Date[];
     timeStart: TimeValue | undefined;
     timeEnd: TimeValue | undefined;
 }
 
-interface CreateSchedulingProps {
-    onClose: () => void
-}
-
-const CreateScheduling: React.FC<CreateSchedulingProps> = ({onClose}) => {
+const CreateScheduling: React.FC = () => {
     const [schedulingSurvey, setSchedulingSurvey] = useState<SchedulingSurvey>({
-        title: "",
-        description: "",
         dates: [],
         timeStart: undefined,
         timeEnd: undefined,
@@ -39,13 +30,6 @@ const CreateScheduling: React.FC<CreateSchedulingProps> = ({onClose}) => {
         console.log(schedulingSurvey);
     };
 
-    const handleInputChange = (field: keyof SchedulingSurvey, value: string) => {
-        setSchedulingSurvey((prev) => ({
-            ...prev,
-            [field]: value,
-        }));
-    };
-
     const handleTimeChange = (
         field: "timeStart" | "timeEnd",
         value: MappedTimeValue<Time | CalendarDateTime | ZonedDateTime> | null
@@ -56,30 +40,9 @@ const CreateScheduling: React.FC<CreateSchedulingProps> = ({onClose}) => {
         }));
     };
 
-    const getFormData = () => {
-        onClose();
-    }
-
     return (
         <div>
             <Form onSubmit={handleSubmit}>
-                <Input
-                    isRequired
-                    label="Titel"
-                    labelPlacement="outside"
-                    name="Titel"
-                    placeholder="Titel der Umfrage angeben"
-                    type="text"
-                    onChange={(e) => handleInputChange("title", e.target.value)}
-                />
-                <Input
-                    label="Beschreibung"
-                    labelPlacement="outside"
-                    name="description"
-                    placeholder="Beschreibung angeben"
-                    type="text"
-                    onChange={(e) => handleInputChange("description", e.target.value)}
-                />
                 <div className="flex flex-col items-center">
                     <DayPicker
 
@@ -100,17 +63,6 @@ const CreateScheduling: React.FC<CreateSchedulingProps> = ({onClose}) => {
                         />
                     </div>
                 </div>
-                <div>
-                    <Button color="danger" variant="light" onPress={onClose}>
-                        <CloseIcon/>
-                        Schließen
-                    </Button>
-                    <Button color="primary" onPress={getFormData}>
-                        <CheckIcon/>
-                        Abschicken
-                    </Button>
-                </div>
-
             </Form>
         </div>
     );

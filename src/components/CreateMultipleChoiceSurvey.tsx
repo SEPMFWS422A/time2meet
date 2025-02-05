@@ -1,14 +1,8 @@
 import React, {useState} from "react";
 import {Button, Form, Input} from "@heroui/react";
 import {LucidePlus, Trash2} from "lucide-react";
-import {CheckIcon, CloseIcon} from "@heroui/shared-icons";
 
-
-interface CreateMultipleChoiceSurveyProps {
-    onClose: () => void;
-}
-
-const CreateMultipleChoiceSurvey: React.FC<CreateMultipleChoiceSurveyProps> = ({onClose}) => {
+const CreateMultipleChoiceSurvey: React.FC = () => {
 
     const [inputs, setInputs] = useState([{id: Date.now(), value: ''}]);
 
@@ -35,10 +29,6 @@ const CreateMultipleChoiceSurvey: React.FC<CreateMultipleChoiceSurveyProps> = ({
         if (inputs.length > 1) { // Prevent deleting the last input
             setInputs(inputs.filter((_, i) => i !== index));
         }
-    };
-
-    const getFormData = () => {
-        onClose();
     };
 
     return (
@@ -78,17 +68,6 @@ const CreateMultipleChoiceSurvey: React.FC<CreateMultipleChoiceSurveyProps> = ({
                 </div>
 
                 <Button isIconOnly variant="bordered" className="" onPress={handleAddInput}><LucidePlus/></Button>
-                <div>
-                    <Button color="danger" variant="light" onPress={onClose}>
-                        <CloseIcon/>
-                        Schließen
-                    </Button>
-                    <Button color="primary" onPress={getFormData}>
-                        <CheckIcon/>
-                        Abschicken
-                    </Button>
-                </div>
-
             </Form>
         </div>
     );

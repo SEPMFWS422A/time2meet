@@ -1,10 +1,9 @@
 import React, {useState} from "react";
 import {Button} from "@heroui/react";
 import ModalWindow from "@/components/ModalWindow";
-import TabView from "@/components/TabView";
 import CreateMultipleChoiceSurvey from "@/components/CreateMultipleChoiceSurvey";
 import CreateScheduling from "@/components/CreateScheduling";
-import {CalendarCheck, LucideNotepadText} from "lucide-react";
+import {CheckIcon, CloseIcon} from "@heroui/shared-icons";
 
 const CreateSurvey: React.FC = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -21,26 +20,31 @@ const CreateSurvey: React.FC = () => {
         setIsModalOpen(false);
     };
 
+    const getFormData = () => {
+        closeModal();
+    }
+
     return (
         <div className="text-center text-white py-4 rounded-t-lg ">
             <Button
                 className="h-10 text-xl bg-blue-600 text-white"
                 onPress={handleOpenModal}>Umfrage erstellen</Button>
-            <ModalWindow isOpen={isModalOpen} onOpenChange={handleCloseModal} content={
-                <div className="flex justify-center items-center">
-                    <TabView tabs={[
-                        {
-                            title: "Umfrage",
-                            content: <CreateMultipleChoiceSurvey onClose={closeModal}/>,
-                            icon: <LucideNotepadText/>
-                        },
-                        {
-                            title: "Terminfindung",
-                            content: <CreateScheduling onClose={closeModal}/>,
-                            icon: <CalendarCheck/>
-                        }
-                    ]} selectedTab={"Umfrage"}>
-                    </TabView>
+            <ModalWindow size="3xl" isOpen={isModalOpen} onOpenChange={handleCloseModal} content={
+                <div className="flex flex-col gap-5">
+                    <div className="flex flex-col md:flex-row justify-around items-center">
+                        <CreateMultipleChoiceSurvey/>
+                        <CreateScheduling/>
+                    </div>
+                    <div className="flex flex-row justify-center">
+                        <Button color="danger" variant="light" onPress={closeModal}>
+                            <CloseIcon/>
+                            Schließen
+                        </Button>
+                        <Button color="primary" onPress={getFormData}>
+                            <CheckIcon/>
+                            Abschicken
+                        </Button>
+                    </div>
                 </div>
 
             } title={'Umfrage erstellen'}>
