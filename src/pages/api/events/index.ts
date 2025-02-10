@@ -1,9 +1,9 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { connectToDatabase } from "@/lib/database/mongodb";
 import Event from "../../../lib/models/event";
+import dbConnect from "@/lib/database/dbConnect";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-    await connectToDatabase();
+    await dbConnect();
 
     if (req.method === "GET") {
         try {
