@@ -27,6 +27,7 @@
     "@nextui-org/theme": "^2.4.5",
     "@radix-ui/react-label": "^2.1.1",
     "@types/mongoose": "^5.11.96",
+    "axios": "^1.7.9",
     "bcrypt": "^5.1.1",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",

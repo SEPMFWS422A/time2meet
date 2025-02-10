@@ -1,10 +1,45 @@
-import { useState } from "react";
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+
+interface UserData {
+    vorname: string;
+    name: string;
+    benutzername: string;
+    email: string;
+    telefonnummer?: string;
+    geburtsdatum?: string;
+    profilsichtbarkeit: string;
+    kalendersichtbarkeit: string;
+    theme: string;
+    password?: string;
+}
 
 export function ProfilSettings() {
+    const [userData, setUserData] = useState<UserData | null>(null);
     const [birthDateError, setBirthDateError] = useState<string | null>(null);
     const [fileError, setFileError] = useState<string | null>(null);
     const [phoneError, setPhoneError] = useState<string | null>(null);
     const [isFormValid, setIsFormValid] = useState(true);
+    const [showPassword, setShowPassword] = useState(false);
+    const [updateError, setUpdateError] = useState<string | null>(null);
+
+    const userId = '67aa06aadd93bd193b1f6e2d'; 
+
+// API-Aufruf, um Benutzerdaten zu bekommen
+    useEffect(() => {
+                axios.get<{ data: UserData }>(`/api/user/${userId}`)
+            .then(response => {
+                setUserData(response.data.data);
+            })
+            .catch(error => {
+                console.error('Es gab einen Fehler beim Abrufen der Benutzerdaten:', error);
+            });
+    }, [userId]);
+
+    const handleInputChange = (event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+        const { name, value } = event.target;
+        setUserData(prevState => prevState ? { ...prevState, [name]: value } : null);
+    };
 
     const handleBirthDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const inputDate = new Date(event.target.value);
@@ -20,6 +55,8 @@ export function ProfilSettings() {
             setBirthDateError(null);
             setIsFormValid(fileError === null && phoneError === null);
         }
+
+        handleInputChange(event);
     };
 
     const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -45,13 +82,29 @@ export function ProfilSettings() {
             setPhoneError(null);
             setIsFormValid(birthDateError === null && fileError === null);
         }
+
+        handleInputChange(event);
     };
 
-    const handleSubmit = (event: React.FormEvent) => {
-        if (!isFormValid) {
-            event.preventDefault();
+    const handleSubmit = async (event: React.FormEvent) => {
+        event.preventDefault();
+        if (!isFormValid || !userData) {
+            return;
+        }
+
+        try {
+            const response = await axios.put(`/api/user/${userId}`, userData);
+            console.log('Benutzerdaten erfolgreich aktualisiert:', response.data);
+            setUpdateError(null);
+        } catch (error: any) {
+            console.error('Es gab einen Fehler beim Aktualisieren der Benutzerdaten:', error);
+            setUpdateError(error.response?.data?.error || 'Es gab einen Fehler beim Aktualisieren der Benutzerdaten.');
         }
     };
+
+    if (!userData) {
+        return <div>Lade Benutzerdaten...</div>;
+    }
 
     return (
         <div className="flex justify-center">
@@ -86,8 +139,11 @@ export function ProfilSettings() {
                         <input
                             id="first-name-input"
                             type="text"
+                            name="vorname"
                             placeholder="Vorname"
                             className="block w-full border rounded-lg p-2 text-sm"
+                            value={userData.vorname}
+                            onChange={handleInputChange}
                             required
                         />
                     </div>
@@ -99,8 +155,11 @@ export function ProfilSettings() {
                         <input
                             id="last-name-input"
                             type="text"
+                            name="name"
                             placeholder="Nachname"
                             className="block w-full border rounded-lg p-2 text-sm"
+                            value={userData.name}
+                            onChange={handleInputChange}
                             required
                         />
                     </div>
@@ -112,8 +171,11 @@ export function ProfilSettings() {
                         <input
                             id="username-input"
                             type="text"
+                            name="benutzername"
                             placeholder="Benutzername"
                             className="block w-full border rounded-lg p-2 text-sm"
+                            value={userData.benutzername}
+                            onChange={handleInputChange}
                             required
                         />
                     </div>
@@ -123,7 +185,7 @@ export function ProfilSettings() {
                             E-Mail-Adresse
                         </label>
                         <p id="email-display" className="block w-full border rounded-lg p-2 text-sm bg-gray-100">
-                            Test@gmail.com
+                            {userData.email}
                         </p>
                     </div>
 
@@ -133,11 +195,25 @@ export function ProfilSettings() {
                         </label>
                         <input
                             id="password-input"
-                            type="password"
+                            type={showPassword ? "text" : "password"}
+                            name="password"
                             placeholder="Passwort"
                             className="block w-full border rounded-lg p-2 text-sm"
+                            value={userData.password || ""}
+                            onChange={handleInputChange}
                             required
                         />
+                        <div className="mt-2">
+                            <input
+                                id="show-password-checkbox"
+                                type="checkbox"
+                                checked={showPassword}
+                                onChange={() => setShowPassword(!showPassword)}
+                            />
+                            <label htmlFor="show-password-checkbox" className="ml-2 text-sm">
+                                Passwort anzeigen
+                            </label>
+                        </div>
                     </div>
 
                     <div>
@@ -147,8 +223,10 @@ export function ProfilSettings() {
                         <input
                             id="phone-input"
                             type="tel"
+                            name="telefonnummer"
                             placeholder="Telefonnummer"
                             className="block w-full border rounded-lg p-2 text-sm"
+                            value={userData.telefonnummer || ""}
                             onChange={handlePhoneChange}
                         />
                         {phoneError && (
@@ -163,7 +241,9 @@ export function ProfilSettings() {
                         <input
                             id="birth-date-input"
                             type="date"
+                            name="geburtsdatum"
                             className="block w-full border rounded-lg p-2 text-sm"
+                            value={userData.geburtsdatum ? new Date(userData.geburtsdatum).toISOString().split('T')[0] : ''}
                             onChange={handleBirthDateChange}
                         />
                         {birthDateError && (
@@ -177,7 +257,10 @@ export function ProfilSettings() {
                         </label>
                         <select
                             id="profile-visibility-input"
+                            name="profilsichtbarkeit"
                             className="block w-full border rounded-lg p-2 text-sm"
+                            value={userData.profilsichtbarkeit}
+                            onChange={handleInputChange}
                         >
                             <option>Öffentlich</option>
                             <option>Nur Freunde</option>
@@ -191,7 +274,10 @@ export function ProfilSettings() {
                         </label>
                         <select
                             id="calendar-visibility-input"
+                            name="kalendersichtbarkeit"
                             className="block w-full border rounded-lg p-2 text-sm"
+                            value={userData.kalendersichtbarkeit}
+                            onChange={handleInputChange}
                         >
                             <option>Öffentlich</option>
                             <option>Nur Freunde</option>
@@ -203,7 +289,13 @@ export function ProfilSettings() {
                         <label id="theme-label" className="block text-sm font-medium mb-1">
                             Theme
                         </label>
-                        <select id="theme-input" className="block w-full border rounded-lg p-2 text-sm">
+                        <select
+                            id="theme-input"
+                            name="theme"
+                            className="block w-full border rounded-lg p-2 text-sm"
+                            value={userData.theme}
+                            onChange={handleInputChange}
+                        >
                             <option>Hell</option>
                             <option>Dunkel</option>
                         </select>
@@ -224,6 +316,10 @@ export function ProfilSettings() {
                         </p>
                     </div>
 
+                    {updateError && (
+                        <p className="text-red-500 text-sm mt-1 text-center">{updateError}</p>
+                    )}
+
                     <div id="Submitdiv">
                         <button
                             id="save-changes"
@@ -237,6 +333,5 @@ export function ProfilSettings() {
                 </form>
             </div>
         </div>
-
     );
 }
