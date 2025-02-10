@@ -1,10 +1,49 @@
 import { NextApiRequest, NextApiResponse } from "next";
+import dbConnect from "@/lib/database/dbConnect";
+import User from "@/lib/models/user";
+import bcrypt from "bcrypt";
 import fs from "fs";
 import path from "path";
 
-const usersFilePath = path.join(process.cwd(), "src/lib/data/users.json");
+// const usersFilePath = path.join(process.cwd(), "src/lib/data/users.json");
 
-export default function handler(req: NextApiRequest, res: NextApiResponse) {
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+
+  await dbConnect();
+
+  if (req.method === "POST") {
+    const { username, email, password, password2 } = req.body;
+
+    if (!username || !email || !password || !password2) {
+      return res.status(400).json({ message: "Alle Felder sind erforderlich" });
+    }
+
+    if (password !== password2) {
+      return res
+        .status(400)
+        .json({ message: "Passwort stimmt nicht mit dem wiederholten Passwort überein" });
+    }
+
+    const userExists = await User.findOne({ email });
+    if(userExists) {
+      return res.status(400).json({ message: "Benutzer oder E-Mail existiert bereits." });
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const newUser = await User.create({ 
+      email, 
+      benutzername: username,
+      password: hashedPassword,
+    });
+
+    return res.status(201).json({ message: "Benutzer erfolgreich registriert.", user: newUser });
+  } else {
+    return res.status(405).json({ message: "Methode nicht erlaubt." });
+  }
+
+
+  /*
   if (req.method === "POST") {
     const { username, email, password, password2 } = req.body;
 
@@ -44,4 +83,5 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
   } else {
     return res.status(405).json({ message: "Methode nicht erlaubt." });
   }
+  */
 }
