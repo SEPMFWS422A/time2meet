@@ -1,3 +1,4 @@
+"use client"
 import React from "react";
 import {Button, Card, CardBody, CardHeader, Radio, RadioGroup} from "@heroui/react";
 import {CardTitle} from "@/components/ui/card";
