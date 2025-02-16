@@ -12,7 +12,9 @@ interface ModalWindowProps {
 const ModalWindow: React.FC<ModalWindowProps> = ({isOpen, onOpenChange, content, title, size}) => {
 
     return (
-        <Modal isOpen={isOpen} size={size ?? "xl"} onOpenChange={onOpenChange}>
+        <Modal isOpen={isOpen} size={size ?? "xl"} onOpenChange={onOpenChange}
+        placement={"center"} 
+        >
             <ModalContent>
                 {() => (
                     <>

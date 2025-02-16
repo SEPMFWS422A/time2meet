@@ -32,7 +32,7 @@ const CreateMultipleChoiceSurvey: React.FC = () => {
     };
 
     return (
-        <div>
+        <div className="w-full md:w-6/12">
             <Form onSubmit={handleSubmit}>
                 <Input
                     isRequired
