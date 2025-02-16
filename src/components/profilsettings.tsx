@@ -99,18 +99,18 @@ export function ProfilSettings() {
   };
 
   return (
-    <div className="flex justify-center">
+    <div className="flex justify-center mx-3 md:mx-0 mb-14 md:mb-4">
       <div className="bg-white w-full max-w-lg">
         <h1 id="header-title" className="text-2xl font-bold mb-4 text-center">
           Profil verwalten
         </h1>
-        <p id="header-description" className="text-sm text-gray-600 text-center mb-6">
+        <p id="header-description" className="text-base text-gray-600 text-center mb-6">
           Hier können Sie Ihre Profilinformationen ändern und anpassen.
         </p>
 
         <form id="profile-form" className="space-y-4" onSubmit={handleSubmit}>
           <div>
-            <label id="profile-picture-label" className="block text-sm font-medium mb-1">
+            <label id="profile-picture-label" className="block text-base md:text-sm font-medium mb-1">
               Profilbild
             </label>
             <input
@@ -125,7 +125,7 @@ export function ProfilSettings() {
           </div>
 
           <div>
-            <label id="first-name-label" className="block text-sm font-medium mb-1">
+            <label id="first-name-label" className="block text-base md:text-sm font-medium mb-1">
               Vorname
             </label>
             <input
@@ -141,7 +141,7 @@ export function ProfilSettings() {
           </div>
 
           <div>
-            <label id="last-name-label" className="block text-sm font-medium mb-1">
+            <label id="last-name-label" className="block text-base md:text-sm font-medium mb-1">
               Nachname
             </label>
             <input
@@ -157,7 +157,7 @@ export function ProfilSettings() {
           </div>
 
           <div>
-            <label id="username-label" className="block text-sm font-medium mb-1">
+            <label id="username-label" className="block text-base md:text-sm font-medium mb-1">
               Benutzername
             </label>
             <input
@@ -173,7 +173,7 @@ export function ProfilSettings() {
           </div>
 
           <div>
-            <label id="email-label" className="block text-sm font-medium mb-1">
+            <label id="email-label" className="block text-base md:text-sm font-medium mb-1">
               E-Mail-Adresse
             </label>
             <p id="email-display" className="block w-full border rounded-lg p-2 text-sm bg-gray-100">
@@ -182,7 +182,7 @@ export function ProfilSettings() {
           </div>
 
           <div>
-            <label id="password-label" className="block text-sm font-medium mb-1">
+            <label id="password-label" className="block text-base md:text-sm font-medium mb-1">
               Passwort
             </label>
             <input
@@ -195,7 +195,7 @@ export function ProfilSettings() {
               onChange={handleInputChange}
               required
             />
-            <div className="mt-2">
+            <div className="flex flex-row mt-2">
               <input
                 id="show-password-checkbox"
                 type="checkbox"
@@ -209,7 +209,7 @@ export function ProfilSettings() {
           </div>
 
           <div>
-            <label id="phone-label" className="block text-sm font-medium mb-1">
+            <label id="phone-label" className="block text-base md:text-sm font-medium mb-1">
               Telefonnummer (optional)
             </label>
             <input
@@ -227,7 +227,7 @@ export function ProfilSettings() {
           </div>
 
           <div>
-            <label id="birth-date-label" className="block text-sm font-medium mb-1">
+            <label id="birth-date-label" className="block text-base md:text-sm font-medium mb-1">
               Geburtsdatum (optional)
             </label>
             <input
@@ -244,7 +244,7 @@ export function ProfilSettings() {
           </div>
 
           <div>
-            <label id="profile-visibility-label" className="block text-sm font-medium mb-1">
+            <label id="profile-visibility-label" className="block text-base md:text-sm font-medium mb-1">
               Profil-Sichtbarkeit
             </label>
             <select
@@ -261,7 +261,7 @@ export function ProfilSettings() {
           </div>
 
           <div>
-            <label id="calendar-visibility-label" className="block text-sm font-medium mb-1">
+            <label id="calendar-visibility-label" className="block text-base md:text-sm font-medium mb-1">
               Kalender-Sichtbarkeit
             </label>
             <select
@@ -278,7 +278,7 @@ export function ProfilSettings() {
           </div>
 
           <div>
-            <label id="theme-label" className="block text-sm font-medium mb-1">
+            <label id="theme-label" className="block text-base md:text-sm font-medium mb-1">
               Theme
             </label>
             <select
@@ -294,7 +294,7 @@ export function ProfilSettings() {
           </div>
 
           <div className="text-center">
-            <label id="privacy-policy-label" className="block text-sm font-medium mb-1">
+            <label id="privacy-policy-label" className="block text-base md:text-sm font-medium mb-1">
               Datenschutz
             </label>
             <p id="privacy-policy-p">
