@@ -62,19 +62,19 @@ export function SignInForm() {
   };
 
   return (
-    <div className="w-full max-w-md" id="signInForm">
+    <div className="mx-1 md:mx-0 w-full max-w-md" id="signInForm">
       <form onSubmit={handleSubmit}>
         <Card>
           <CardHeader className="space-y-1">
             <CardTitle className="text-3xl font-bold">Anmelden</CardTitle>
-            <CardDescription>
+            <CardDescription className="text-base">
               Geben Sie Ihre daten ein, um sich in Ihrem time2meet Konto
               anzumelden
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+              <Label className="text-base" htmlFor="email">Email</Label>
               <Input
                 id="email"
                 name="email"
@@ -85,7 +85,7 @@ export function SignInForm() {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="password">Passwort</Label>
+              <Label className="text-base" htmlFor="password">Passwort</Label>
               <Input
                 id="password"
                 name="password"
