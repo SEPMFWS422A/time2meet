@@ -11,7 +11,6 @@ export default async function handler(
   res: NextApiResponse<Data>
 ) {
   await dbConnect();
-
   const { id } = req.query;
 
   switch (req.method) {
@@ -40,6 +39,19 @@ export default async function handler(
         return res.status(400).json({ success: false, error: error.message });
       }
 
+    case "PATCH":
+      try {
+        const user = await User.findByIdAndUpdate(id, req.body, {
+          new: true,
+        });
+        if (!user) {
+          return res.status(404).json({ success: false, error: "Benutzer nicht gefunden." });
+        }
+        return res.status(200).json({ success: true, data: user });
+      } catch (error: any) {
+        return res.status(400).json({ success: false, error: error.message });
+      }
+
     case "DELETE":
       try {
         const deletedUser = await User.findByIdAndDelete(id);
@@ -52,7 +64,7 @@ export default async function handler(
       }
 
     default:
-      res.setHeader("Allow", ["GET", "PUT", "DELETE"]);
+      res.setHeader("Allow", ["GET", "PUT", "PATCH", "DELETE"]);
       return res
         .status(405)
         .json({ success: false, error: `Methode ${req.method} nicht erlaubt.` });
