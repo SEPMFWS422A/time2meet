@@ -16,9 +16,4 @@ const UserSchema = new mongoose.Schema({
   createdAt: { type: Date, default: Date.now }
 });
 
-if (mongoose.models.User) {
-  delete mongoose.models.User;
-}
-
-
 export default mongoose.models.User || mongoose.model("User", UserSchema);
