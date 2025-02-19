@@ -1,6 +1,4 @@
 import { NextRequest, NextResponse } from "next/server";
-import dbConnect from "@/lib/database/dbConnect";
-import Group from "@/lib/models/Group";
 import { getUserID, getGroup } from "@/lib/helper";
 
 export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
