@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import dbConnect from "@/lib/database/dbConnect";
 import Group from "@/lib/models/Group";
-import User from "@/lib/models/User";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import mongoose from "mongoose";
 

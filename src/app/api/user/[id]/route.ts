@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import dbConnect from "@/lib/database/dbConnect";
-import User from "@/lib/models/user";
+import User from "@/lib/models/User";
 
 // GET /api/user/[id]
 export async function GET(

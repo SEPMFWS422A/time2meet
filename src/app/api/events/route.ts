@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import dbConnect from "@/lib/database/dbConnect";
-import Event from "@/lib/models/event";
+import Event from "@/lib/models/Event";
 
 
 type Data =
