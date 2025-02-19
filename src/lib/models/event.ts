@@ -1,31 +1,21 @@
-import mongoose, { Schema, Document, Model } from "mongoose";
+import mongoose from "mongoose";
 
-export interface IEvent extends Document {
-  creator: mongoose.Types.ObjectId;
-  members: mongoose.Types.ObjectId[];
-  title: string;
-  start: Date;
-  end: Date;
-  description?: string;
-  location?: string;
-  groups: mongoose.Types.ObjectId[];
-  allday: boolean;
-  createdAt: Date;
-}
-
-const EventSchema = new Schema<IEvent>({
-  creator: { type: mongoose.Schema.Types.ObjectId, ref: "users", required: true },
-  members: [{ type: mongoose.Schema.Types.ObjectId, ref: "users" }],
+const EventSchema = new mongoose.Schema({
+  creator: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+  members: { type: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }], default: [] },
   title: { type: String, required: true },
   start: { type: Date, required: true },
   end: { type: Date, required: true },
   description: { type: String, default: "" },
   location: { type: String, default: "" },
-  groups: [{ type: mongoose.Schema.Types.ObjectId, ref: "groups" }],
+  groups: { type: [{ type: mongoose.Schema.Types.ObjectId, ref: "Group" }], default: [] },
   allday: { type: Boolean, default: false },
-  createdAt: { type: Date, default: Date.now },
+  createdAt: { type: Date, default: Date.now }
 });
 
-// **Verhindert Mehrfachregistrierung des Modells**
-const Event = mongoose.models.Event || mongoose.model<IEvent>("Event", EventSchema);
-export default Event;
+// Falls das Modell bereits existiert, wird es gelöscht, um eine Mehrfachregistrierung zu verhindern.
+if (mongoose.models.Event) {
+  delete mongoose.models.Event;
+}
+
+export default mongoose.models.Event || mongoose.model("Event", EventSchema);
