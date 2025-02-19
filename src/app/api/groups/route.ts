@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import dbConnect from "@/lib/database/dbConnect";
-import Group from "@/lib/models/Group";
-import User from "@/lib/models/User";
+import Group from "@/lib/models/group";
+import User from "@/lib/models/user";
 import jwt, { JwtPayload } from "jsonwebtoken";
 
 interface DecodedToken extends JwtPayload {
