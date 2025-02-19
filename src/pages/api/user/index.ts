@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import dbConnect from "@/lib/database/dbConnect";
-import User from "@/lib/models/user";
+import User from "@/lib/models/User";
 import jwt from "jsonwebtoken";
 
 type Data =
