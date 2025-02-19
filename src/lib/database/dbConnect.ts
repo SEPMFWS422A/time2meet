@@ -1,8 +1,4 @@
 import mongoose from "mongoose";
-import User from "@/lib/models/user";
-import Group from "@/lib/models/group";
-import Event from "@/lib/models/event";
-
 
 const MONGODB_URI = process.env.MONGODB_URI!;
 

@@ -1,6 +1,4 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import User from "@/lib/models/user";
-import Group from "@/lib/models/group";
 import dbConnect from "@/lib/database/dbConnect";
 import Event from "@/lib/models/event";
 
