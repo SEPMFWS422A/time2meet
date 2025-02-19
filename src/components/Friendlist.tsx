@@ -1,232 +1,131 @@
-import {Button, Listbox, ListboxItem, ListboxSection, User} from "@heroui/react";
-import {StarIcon} from "lucide-react";
-import React, {useState} from "react";
+import { Button, Listbox, ListboxItem, ListboxSection, User as UserAvatar } from "@heroui/react";
+import { StarIcon } from "lucide-react";
+import React, { useEffect, useState } from "react";
 import AddGroupModalContent from "@/lib/modalContents/AddGroupModalContent";
 import ModalWindow from "@/components/ModalWindow";
-import {Member} from "@/components/Grouplist";
+import axios from "axios";
+
+// Typdefinition für den Freund (gemäß der API)
+export interface Friend {
+  _id: string;
+  vorname: string;
+  name: string;
+  benutzername: string;
+  profilbild?: string;
+  isFavourite?: boolean;
+}
 
 function Friendlist() {
-    // Zustand für die Gruppen
-    const [friends, setFriends] = useState<Member[]>([
-        {
-            firstName: "John",
-            lastName: "Doe",
-            username: "johndoe123",
-            email: "johndoe123@example.com",
-            phoneNumber: "+1-234-567-8901",
-            bday: "1990-05-15",
-            profilePicture: "https://randomuser.me/api/portraits/men/1.jpg",
-            profilePrivacy: "Public",
-            calendarPrivacy: "Private",
-            theme: "light",
-            role: "Admin",
-            isFavourite: false,
-            groups: []
-        },
-        {
-            firstName: "Jane",
-            lastName: "Smith",
-            username: "janesmith45",
-            email: "janesmith45@example.com",
-            phoneNumber: "+1-234-567-8902",
-            bday: "1992-08-22",
-            profilePicture: "https://randomuser.me/api/portraits/women/2.jpg",
-            profilePrivacy: "Private",
-            calendarPrivacy: "Public",
-            theme: "dark",
-            role: "Member",
-            isFavourite: false,
-            groups: []
-        },
-        {
-            firstName: "Michael",
-            lastName: "Johnson",
-            username: "mikejohnson78",
-            email: "mikejohnson78@example.com",
-            phoneNumber: "+1-234-567-8903",
-            bday: "1985-12-30",
-            profilePicture: "https://randomuser.me/api/portraits/men/3.jpg",
-            profilePrivacy: "Public",
-            calendarPrivacy: "Private",
-            theme: "light",
-            role: "Member",
-            isFavourite: false,
-            groups: []
-        },
-        {
-            firstName: "Emma",
-            lastName: "Davis",
-            username: "emmadavis90",
-            email: "emmadavis90@example.com",
-            phoneNumber: "+1-234-567-8904",
-            bday: "1994-03-11",
-            profilePicture: "https://randomuser.me/api/portraits/women/4.jpg",
-            profilePrivacy: "Private",
-            calendarPrivacy: "Private",
-            theme: "dark",
-            role: "Admin",
-            isFavourite: false,
-            groups: []
-        },
-        {
-            firstName: "Oliver",
-            lastName: "Martinez",
-            username: "olivermartinez56",
-            email: "olivermartinez56@example.com",
-            phoneNumber: "+1-234-567-8905",
-            bday: "1991-07-07",
-            profilePicture: "https://randomuser.me/api/portraits/men/4.jpg",
-            profilePrivacy: "Public",
-            calendarPrivacy: "Public",
-            theme: "light",
-            role: "Member",
-            isFavourite: false,
-            groups: []
-        },
-        {
-            firstName: "Sophia",
-            lastName: "Lopez",
-            username: "sophialopez27",
-            email: "sophialopez27@example.com",
-            phoneNumber: "+1-234-567-8906",
-            bday: "1993-01-20",
-            profilePicture: "https://randomuser.me/api/portraits/women/5.jpg",
-            profilePrivacy: "Private",
-            calendarPrivacy: "Private",
-            theme: "dark",
-            role: "Admin",
-            isFavourite: false,
-            groups: []
-        },
-        {
-            firstName: "Liam",
-            lastName: "García",
-            username: "liamgarcia33",
-            email: "liamgarcia33@example.com",
-            phoneNumber: "+1-234-567-8907",
-            bday: "1995-04-17",
-            profilePicture: "https://randomuser.me/api/portraits/men/5.jpg",
-            profilePrivacy: "Public",
-            calendarPrivacy: "Private",
-            theme: "light",
-            role: "Member",
-            isFavourite: false,
-            groups: []
-        },
-        {
-            firstName: "Ava",
-            lastName: "Wilson",
-            username: "avawilson61",
-            email: "avawilson61@example.com",
-            phoneNumber: "+1-234-567-8908",
-            bday: "1990-09-12",
-            profilePicture: "https://randomuser.me/api/portraits/women/6.jpg",
-            profilePrivacy: "Private",
-            calendarPrivacy: "Public",
-            theme: "dark",
-            role: "Member",
-            isFavourite: false,
-            groups: []
-        },
-        {
-            firstName: "Ethan",
-            lastName: "Brown",
-            username: "ethanbrown82",
-            email: "ethanbrown82@example.com",
-            phoneNumber: "+1-234-567-8909",
-            bday: "1992-11-25",
-            profilePicture: "https://randomuser.me/api/portraits/men/6.jpg",
-            profilePrivacy: "Public",
-            calendarPrivacy: "Private",
-            theme: "light",
-            role: "Admin",
-            isFavourite: false,
-            groups: []
-        },
-        {
-            firstName: "Mia",
-            lastName: "Taylor",
-            username: "miataylor77",
-            email: "miataylor77@example.com",
-            phoneNumber: "+1-234-567-8910",
-            bday: "1996-02-02",
-            profilePicture: "https://randomuser.me/api/portraits/women/7.jpg",
-            profilePrivacy: "Private",
-            calendarPrivacy: "Public",
-            theme: "dark",
-            role: "Member",
-            isFavourite: false,
-            groups: []
+  const [friends, setFriends] = useState<Friend[]>([]);
+  const [isAddGroupModalOpen, setAddGroupModalOpen] = useState(false);
+  const [userId, setUserId] = useState<string>("");
+
+  useEffect(() => {
+    const decodeToken = async () => {
+      try {
+        const res = await axios.get("/api/userauth/decode", { withCredentials: true });
+        if (res.data.id) {
+          setUserId(res.data.id);
+        } else {
+          console.error("Token not found on server:", res.data);
         }
-    ]);
+      } catch (error) {
+        console.error("Error decoding token:", error);
+      }
+    };
+    decodeToken();
+  }, []);
 
-    // Funktion zum Umschalten von "isFavourite"
-    const toggleFavourite = (username: string) => {
-        setFriends((prevFriends) => {
-            const updatedFriends = prevFriends.map((friend) =>
-                friend.username === username
-                    ? {...friend, isFavourite: !friend.isFavourite} // Zustand ändern
-                    : friend
-            );
-
-            // Sortiere das Array so, dass die favorisierten Freunde oben stehen
-            return updatedFriends.sort((a, b) => (b.isFavourite ? 1 : 0) - (a.isFavourite ? 1 : 0));
-        });
+  useEffect(() => {
+    const fetchFriends = async () => {
+      try {
+        const res = await axios.get(`/api/friends/${userId}`);
+        if (res.data.success) {
+          const friendsWithFav = res.data.data.map((friend: Friend) => ({
+            ...friend,
+            isFavourite: friend.isFavourite || false,
+          }));
+          friendsWithFav.sort((a: Friend, b: Friend) => Number(b.isFavourite) - Number(a.isFavourite));
+          setFriends(friendsWithFav);
+        }
+      } catch (error) {
+        console.error("Fehler beim Abrufen der Freunde:", error);
+      }
     };
 
+    if (userId) {
+      fetchFriends();
+    }
+  }, [userId]);
 
-    const [isAddGroupModalOpen, setAddGroupModalOpen] = useState(false);
+  const toggleFavourite = async (friend: Friend) => {
+    const updatedFriend = { ...friend, isFavourite: !friend.isFavourite };
+    setFriends((prev) => {
+      const updatedFriends = prev.map((f) => (f._id === friend._id ? updatedFriend : f));
+      updatedFriends.sort((a, b) => Number(b.isFavourite) - Number(a.isFavourite));
+      return updatedFriends;
+    });
 
-    const closeAddGroupModal = () => {
-        setAddGroupModalOpen(false);
-    };
+    try {
+      await axios.patch(
+        `/api/friends/${userId}`,
+        { friendId: friend._id, favourite: updatedFriend.isFavourite },
+        { withCredentials: true }
+      );
+    } catch (error) {
+      console.error("Fehler beim Aktualisieren des Favoritenstatus:", error);
+    }
+  };
 
-    const openAddGroupModal = () => {
-        setAddGroupModalOpen(true);
-    };
+  const closeAddGroupModal = () => setAddGroupModalOpen(false);
+  const openAddGroupModal = () => setAddGroupModalOpen(true);
 
-    return (
-        <div className="flex flex-col items-center">
-            <Button color="primary" onPress={openAddGroupModal}>
-                Neuen Freund adden
-            </Button>
-            <Listbox
-                aria-label="Gruppen"
-                items={friends}
-                onAction={(key) => console.log(`Ausgewählter Freund: ${key}`)}
-            >
-                <ListboxSection>
-                    {friends.map((item) => (
-                        <ListboxItem key={item.firstName}>
-                            <div className="flex gap-2 justify-between items-center">
-                                <User avatarProps={{size: "sm", src: item.profilePicture}} description={item.username}
-                                      name={item.firstName}/>
-                                <Button
-                                    variant="light"
-                                    isIconOnly
-                                    aria-label="star"
-                                    onPress={() => toggleFavourite(item.username)} // Zustand ändern
-                                >
-                                    <StarIcon
-                                        fill={item.isFavourite ? "currentColor" : "none"} // Dynamisches Füllen
-                                    />
-                                </Button>
-                            </div>
-                        </ListboxItem>
-                    ))}
-                </ListboxSection>
-            </Listbox>
-
-            {isAddGroupModalOpen && (
-                <ModalWindow
-                    isOpen={isAddGroupModalOpen}
-                    onOpenChange={setAddGroupModalOpen}
-                    title="Gruppe hinzufügen"
-                    content={<AddGroupModalContent onClose={closeAddGroupModal}/>}
+  return (
+    <div className="flex flex-col items-center">
+      <Button color="primary" onPress={openAddGroupModal}>
+        Neuen Freund adden
+      </Button>
+      <Listbox
+        aria-label="Freunde"
+        items={friends}
+        onAction={(key) => console.log(`Ausgewählter Freund: ${key}`)}
+      >
+        <ListboxSection>
+          {friends.map((friend) => (
+            <ListboxItem key={friend._id}>
+              <div className="flex gap-2 justify-between items-center">
+                <UserAvatar
+                  avatarProps={{
+                    size: "sm",
+                    src: friend.profilbild || "https://via.placeholder.com/150",
+                  }}
+                  description={friend.benutzername}
+                  name={friend.vorname}
                 />
-            )}
-        </div>
-    );
+                <Button
+                  variant="light"
+                  isIconOnly
+                  aria-label="star"
+                  onPress={() => toggleFavourite(friend)}
+                >
+                  <StarIcon fill={friend.isFavourite ? "currentColor" : "none"} />
+                </Button>
+              </div>
+            </ListboxItem>
+          ))}
+        </ListboxSection>
+      </Listbox>
+
+      {isAddGroupModalOpen && (
+        <ModalWindow
+          isOpen={isAddGroupModalOpen}
+          onOpenChange={setAddGroupModalOpen}
+          title="Freunde hinzufügen"
+          content={<AddGroupModalContent onClose={closeAddGroupModal} />}
+        />
+      )}
+    </div>
+  );
 }
 
 export default Friendlist;
