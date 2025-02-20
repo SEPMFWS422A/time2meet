@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
@@ -6,6 +6,7 @@ import interactionPlugin from "@fullcalendar/interaction";
 import listPlugin from "@fullcalendar/list";
 import { useEvents } from "@/lib/data/events";
 import deLocale from "@fullcalendar/core/locales/de";
+import { Button, Dropdown, DropdownItem, DropdownMenu, DropdownTrigger } from "@heroui/react";
 
 interface CalendarProps {
     onOpenDate: () => void;
@@ -17,6 +18,27 @@ const Calendar: React.FC<CalendarProps> = ({ onOpenDate, onOpenEvent }) => {
 
   //events aus dem eventsContext rausziehen ~Chris
   const { events } = useEvents();
+
+  const [currentView, setCurrentView] = useState("dayGridMonth");
+
+  const changeView = (view: string) => {
+    setCurrentView(view);
+    if (calendarRef.current) {
+      calendarRef.current.getApi().changeView(view);
+    }
+  };
+
+  const [isMobile, setIsMobile] = useState(false);
+
+  // Funktion, um die Fenstergröße zu überwachen
+  useEffect(() => {
+    const checkScreenSize = () => {
+      setIsMobile(window.innerWidth < 640); // 640px = Tailwind `sm`
+    };
+    checkScreenSize();
+    window.addEventListener("resize", checkScreenSize);
+    return () => window.removeEventListener("resize", checkScreenSize);
+  }, []);
 
     const handleDateClick = () => {
         onOpenDate();
@@ -37,17 +59,49 @@ const Calendar: React.FC<CalendarProps> = ({ onOpenDate, onOpenEvent }) => {
 
 
     return (
-        <div className="w-full h-[80vh] overflow-auto">
+    <div className="w-full h-[80vh] overflow-auto">
+      {/* Custom Dropdown */}
+       {/* Mobile Ansicht: Dropdown wird nur angezeigt, wenn `isMobile` true ist */}
+       {isMobile && (
+        <div className="flex justify-end">
+          <Dropdown>
+            <DropdownTrigger>
+              <Button variant="bordered">Ansicht wählen</Button>
+            </DropdownTrigger>
+            <DropdownMenu aria-label="Ansicht wählen">
+              {[
+                { key: "dayGridMonth", label: "Monat" },
+                { key: "timeGridThreeDay", label: "3 Tage" },
+                { key: "timeGridWeek", label: "Woche" },
+                { key: "timeGridDay", label: "Tag" },
+                { key: "listWeek", label: "Liste" },
+              ].map(({ key, label }) => (
+                <DropdownItem key={key} onPress={() => changeView(key)}>
+                  {label}
+                </DropdownItem>
+              ))}
+            </DropdownMenu>
+          </Dropdown>
+        </div>
+      )}
+
             <FullCalendar
                 ref={calendarRef}
                 plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin, listPlugin]}
                 headerToolbar={{
                     left: "prev,next today",
                     center: "title",
-                    right: "dayGridMonth,timeGridWeek,timeGridDay,listWeek"
+                    right: isMobile ? "" : "dayGridMonth,timeGridThreeDay,timeGridWeek,timeGridDay,listWeek" 
                 }}
                 height="100%"
                 initialView="dayGridMonth"
+                views={{
+                    timeGridThreeDay: {
+                        type: "timeGrid",
+                        duration: {days: 3},
+                        buttonText: "3 Tage"
+                    }
+                }}
                 selectable={true}
                 editable={true}
                 events={events} //Hier habe ich die Events aus dem EventsContext gezogen und eingefügt ~Chris
@@ -91,7 +145,7 @@ const Calendar: React.FC<CalendarProps> = ({ onOpenDate, onOpenEvent }) => {
                     });
                 }}
             />
-        </div>
+    </div>      
     );
 };
 
