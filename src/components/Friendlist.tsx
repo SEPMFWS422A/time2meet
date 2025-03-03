@@ -1,7 +1,7 @@
 import { Button, Listbox, ListboxItem, ListboxSection, User as UserAvatar } from "@heroui/react";
-import { StarIcon } from "lucide-react";
+import { StarIcon, XIcon } from "lucide-react";
 import React, { useEffect, useState } from "react";
-import AddGroupModalContent from "@/lib/modalContents/AddGroupModalContent";
+import AddFriendModalContent from "@/lib/modalContents/AddFriendModalContent";
 import ModalWindow from "@/components/ModalWindow";
 import axios from "axios";
 
@@ -15,10 +15,16 @@ export interface Friend {
   isFavourite?: boolean;
 }
 
+interface Notification {
+  message: string;
+  type: "success" | "error";
+}
+
 function Friendlist() {
   const [friends, setFriends] = useState<Friend[]>([]);
-  const [isAddGroupModalOpen, setAddGroupModalOpen] = useState(false);
+  const [isAddFriendModalOpen, setAddFriendModalOpen] = useState(false);
   const [userId, setUserId] = useState<string>("");
+  const [notification, setNotification] = useState<Notification | null>(null);
 
   useEffect(() => {
     const decodeToken = async () => {
@@ -36,23 +42,23 @@ function Friendlist() {
     decodeToken();
   }, []);
 
-  useEffect(() => {
-    const fetchFriends = async () => {
-      try {
-        const res = await axios.get(`/api/friends/${userId}`);
-        if (res.data.success) {
-          const friendsWithFav = res.data.data.map((friend: Friend) => ({
-            ...friend,
-            isFavourite: friend.isFavourite || false,
-          }));
-          friendsWithFav.sort((a: Friend, b: Friend) => Number(b.isFavourite) - Number(a.isFavourite));
-          setFriends(friendsWithFav);
-        }
-      } catch (error) {
-        console.error("Fehler beim Abrufen der Freunde:", error);
+  const fetchFriends = async () => {
+    try {
+      const res = await axios.get(`/api/friends/${userId}`);
+      if (res.data.success) {
+        const friendsWithFav = res.data.data.map((friend: Friend) => ({
+          ...friend,
+          isFavourite: friend.isFavourite || false,
+        }));
+        friendsWithFav.sort((a: Friend, b: Friend) => Number(b.isFavourite) - Number(a.isFavourite));
+        setFriends(friendsWithFav);
       }
-    };
+    } catch (error) {
+      console.error("Fehler beim Abrufen der Freunde:", error);
+    }
+  };
 
+  useEffect(() => {
     if (userId) {
       fetchFriends();
     }
@@ -77,12 +83,57 @@ function Friendlist() {
     }
   };
 
-  const closeAddGroupModal = () => setAddGroupModalOpen(false);
-  const openAddGroupModal = () => setAddGroupModalOpen(true);
+  const removeFriend = async (friend: Friend) => {
+    if (confirm(`Möchtest du "${friend.vorname} ${friend.name}" wirklich aus deiner Freundesliste entfernen?`)) {
+      try {
+        const response = await axios.delete(`/api/friends/remove`, {
+          data: { friendId: friend._id },
+          withCredentials: true,
+        });
+
+        if (response.data.success) {
+          // Entferne den Freund aus dem lokalen State
+          setFriends((prev) => prev.filter((f) => f._id !== friend._id));
+          // Setze eine benutzerdefinierte Notification
+          setNotification({
+            message: "Freund erfolgreich entfernt!",
+            type: "success",
+          });
+        }
+      } catch (error) {
+        console.error("Fehler beim Entfernen des Freundes:", error);
+        setNotification({
+          message: "Fehler beim Entfernen des Freundes",
+          type: "error",
+        });
+      }
+    }
+  };
+
+  // Notification automatisch nach 3 Sekunden ausblenden
+  useEffect(() => {
+    if (notification) {
+      const timer = setTimeout(() => setNotification(null), 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [notification]);
+
+  const closeAddFriendModal = () => setAddFriendModalOpen(false);
+  const openAddFriendModal = () => setAddFriendModalOpen(true);
+
+  // Wird aufgerufen, wenn ein Freund erfolgreich hinzugefügt wurde
+  const handleAddFriendSuccess = () => {
+    fetchFriends(); // Aktualisiere die Freundesliste
+  };
 
   return (
     <div className="flex flex-col items-center">
-      <Button color="primary" onPress={openAddGroupModal}>
+      {notification && (
+        <div className="fixed top-4 right-4 bg-green-100 border border-green-400 text-green-700 px-4 py-2 rounded shadow z-50">
+          {notification.message}
+        </div>
+      )}
+      <Button color="primary" onPress={openAddFriendModal}>
         Neuen Freund adden
       </Button>
       <Listbox
@@ -102,26 +153,42 @@ function Friendlist() {
                   description={friend.benutzername}
                   name={friend.vorname}
                 />
-                <Button
-                  variant="light"
-                  isIconOnly
-                  aria-label="star"
-                  onPress={() => toggleFavourite(friend)}
-                >
-                  <StarIcon fill={friend.isFavourite ? "currentColor" : "none"} />
-                </Button>
+                <div className="flex gap-1">
+                  <Button
+                    variant="light"
+                    isIconOnly
+                    aria-label="star"
+                    onPress={() => toggleFavourite(friend)}
+                  >
+                    <StarIcon fill={friend.isFavourite ? "currentColor" : "none"} />
+                  </Button>
+                  <Button
+                    variant="light"
+                    isIconOnly
+                    aria-label="remove friend"
+                    onPress={() => removeFriend(friend)}
+                    className="text-red-500"
+                  >
+                    <XIcon size={16} />
+                  </Button>
+                </div>
               </div>
             </ListboxItem>
           ))}
         </ListboxSection>
       </Listbox>
 
-      {isAddGroupModalOpen && (
+      {isAddFriendModalOpen && (
         <ModalWindow
-          isOpen={isAddGroupModalOpen}
-          onOpenChange={setAddGroupModalOpen}
+          isOpen={isAddFriendModalOpen}
+          onOpenChange={setAddFriendModalOpen}
           title="Freunde hinzufügen"
-          content={<AddGroupModalContent onClose={closeAddGroupModal} />}
+          content={
+            <AddFriendModalContent 
+              onClose={closeAddFriendModal} 
+              onAddSuccess={handleAddFriendSuccess} 
+            />
+          }
         />
       )}
     </div>
