@@ -14,25 +14,9 @@ import ModalWindow from "@/components/ModalWindow";
 export interface Group {
   _id: string;
   groupname: string;
-  description: string;
+  beschreibung: string;
   members: string[];
   isFavourite: boolean;
-}
-
-export interface Member {
-  firstName: string;
-  lastName: string;
-  username: string;
-  email: string;
-  phoneNumber: string;
-  bday: string;
-  profilePicture: string;
-  profilePrivacy: string;
-  calendarPrivacy: string;
-  theme: string;
-  role: string;
-  isFavourite: boolean;
-  groups: Array<Group>;
 }
 
 function Grouplist() {
@@ -68,6 +52,7 @@ function Grouplist() {
 
   // Favoriten Status umschalten und an API senden
   const toggleFavourite = async (groupId: string) => {
+    console.log("got here");
     try {
       const response = await fetch("/api/groups/favourite", {
         method: "POST",
@@ -80,35 +65,34 @@ function Grouplist() {
       if (!data.success) {
         throw new Error(data.error);
       }
+      setGroups((prevGroups) =>
+        prevGroups
+          .map((group) =>
+            group._id === groupId
+              ? { ...group, isFavourite: data.isFavourite }
+              : group
+          )
+          .sort((a, b) => (b.isFavourite ? 1 : 0) - (a.isFavourite ? 1 : 0))
+      );
 
+      /*
       setGroups((prevGroups) => {
         const updatedGroups = prevGroups.map((group) =>
           group._id === groupId
             ? { ...group, isFavourite: group.isFavourite }
             : group
         );
+
+        console.log(updatedGroups);
         return [
           ...updatedGroups.filter((g) => g.isFavourite),
           ...updatedGroups.filter((g) => !g.isFavourite),
         ];
       });
+      */
     } catch (error: any) {
       console.error("Fehler beim Umschalten des Favoriten-Status:", error);
     }
-    /*
-    setGroups((prevGroups) => {
-      const updatedGroups = prevGroups.map((group) =>
-        group.groupName === groupName
-          ? { ...group, isFavourite: !group.isFavourite } // Zustand ändern
-          : group
-      );
-
-      // Sortiere das Array so, dass die favorisierten Gruppen oben stehen
-      return updatedGroups.sort(
-        (a, b) => (b.isFavourite ? 1 : 0) - (a.isFavourite ? 1 : 0)
-      );
-    });
-    */
   };
 
   const closeAddGroupModal = () => {
@@ -137,6 +121,7 @@ function Grouplist() {
           aria-label="Gruppen"
           items={groups}
           isVirtualized
+          onAction={(key) => console.log(`Selected group: ${key}`)}
           virtualization={{ maxListboxHeight: 400, itemHeight: 5 }}
         >
           <ListboxSection>
@@ -151,8 +136,11 @@ function Grouplist() {
                   <Button
                     variant="light"
                     isIconOnly
-                    aria-label="Favorit"
-                    onPress={() => toggleFavourite(group._id)}
+                    aria-label="star"
+                    onPress={(e) => {
+                      //e.preventDefault();
+                      toggleFavourite(group._id);
+                    }}
                   >
                     <StarIcon
                       fill={group.isFavourite ? "currentColor" : "none"}
@@ -180,59 +168,6 @@ function Grouplist() {
       )}
     </div>
   );
-
-  /*
-  return (
-    <div className="flex flex-col items-center">
-      <Button color="primary" onPress={openAddGroupModal}>
-        Neue Gruppe hinzufügen
-      </Button>
-      <Listbox
-        aria-label="Gruppen"
-        items={groups}
-        onAction={(key) => console.log(`Ausgewählte Gruppe: ${key}`)}
-        isVirtualized
-        virtualization={{
-          maxListboxHeight: 400,
-          itemHeight: 5,
-        }}
-      >
-        <ListboxSection>
-          {groups.map((item) => (
-            <ListboxItem key={item.groupName}>
-              <div className="flex gap-2 justify-between items-center">
-                <User
-                  avatarProps={{ size: "sm" }}
-                  description={item.members.length + " Mitglieder"}
-                  name={item.groupName}
-                />
-                <Button
-                  variant="light"
-                  isIconOnly
-                  aria-label="star"
-                  onPress={() => toggleFavourite(item.groupName)} // Zustand ändern
-                >
-                  <StarIcon
-                    fill={item.isFavourite ? "currentColor" : "none"} // Dynamisches Füllen
-                  />
-                </Button>
-              </div>
-            </ListboxItem>
-          ))}
-        </ListboxSection>
-      </Listbox>
-
-      {isAddGroupModalOpen && (
-        <ModalWindow
-          isOpen={isAddGroupModalOpen}
-          onOpenChange={setAddGroupModalOpen}
-          title="Gruppe hinzufügen"
-          content={<AddGroupModalContent onClose={closeAddGroupModal} />}
-        />
-      )}
-    </div>
-  );
-  */
 }
 
 export default Grouplist;

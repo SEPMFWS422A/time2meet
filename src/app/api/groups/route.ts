@@ -4,6 +4,7 @@ import Group from "@/lib/models/Group";
 import User from "@/lib/models/User";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import { getUserID, getGroup } from "@/lib/helper";
+import { Anybody } from "next/font/google";
 
 interface DecodedToken extends JwtPayload {
     id: string;
@@ -20,7 +21,7 @@ export async function GET(req: NextRequest) {
 
     try {
         const userData = await User.findById(user.id).select("favouriteGroups");
-        const favouriteGroups = userData?.favouriteGroups || [];
+        const favouriteGroups = userData?.favouriteGroups.map((id: any) => id.toString()) || [];
 
 
         const groups = await Group.find({
@@ -29,7 +30,7 @@ export async function GET(req: NextRequest) {
 
         const groupsWithFavStatus = groups.map((group: any) => ({
             ...group,
-            isFavourite: favouriteGroups.some((favId: any) => favId.toString() === group._id.toString()),
+            isFavourite: favouriteGroups.includes(group._id.toString()),
         }));
         return NextResponse.json({ success: true, data: groupsWithFavStatus }, { status: 200 });
     } catch (error: any) {
