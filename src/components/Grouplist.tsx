@@ -35,7 +35,13 @@ function Grouplist() {
         if (!data.success) {
           throw new Error(data.error);
         }
-        setGroups(data.data);
+
+        const sortedGroups = data.data.sort(
+          (a: Group, b: Group) =>
+            (b.isFavourite ? 1 : 0) - (a.isFavourite ? 1 : 0)
+        );
+
+        setGroups(sortedGroups);
       } catch (error: any) {
         setError("Fehler beim Abrufen der Gruppen: " + error.message);
       } finally {
