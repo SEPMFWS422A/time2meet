@@ -3,6 +3,7 @@ import dbConnect from "@/lib/database/dbConnect";
 import Group from "@/lib/models/Group";
 import User from "@/lib/models/User";
 import jwt, { JwtPayload } from "jsonwebtoken";
+import { getUserID, getGroup } from "@/lib/helper";
 
 interface DecodedToken extends JwtPayload {
     id: string;
@@ -10,52 +11,59 @@ interface DecodedToken extends JwtPayload {
     username: string;
 }
 
-async function getUserID(req: NextRequest) {
-    await dbConnect();
-
-    const token = req.cookies.get("token")?.value;
-
-    if(!token) {
-        return { error: "Nicht authentifiziert", status: 401};
-    }
-
-    let decodedToken: DecodedToken;
-    try {
-        decodedToken = jwt.verify(token, process.env.TOKEN_SECRET!) as DecodedToken;
-    } catch (error) {
-        return { error: "Ungültiges Token", status: 403 };
-    }
-
-    const id = decodedToken.id;
-    return { id };
-}
-
 export async function GET(req: NextRequest) {
+    await dbConnect();
+    const user = await getUserID(req);
+    if(user.error){
+        return NextResponse.json({ success: false, error: user.error}, { status: user.status });
+    }
+
     try {
-        
-        const user = await getUserID(req);
-        if(user.error){
-            return NextResponse.json({ success: false, error: user.error}, { status: user.status });
-        }
+        const userData = await User.findById(user.id).select("favouriteGroups");
+        const favouriteGroups = userData?.favouriteGroups || [];
+
 
         const groups = await Group.find({
-            $or: [{members: user.id}, { admins: user.id}]
-        })
-        .populate({
-            path: "members",
-            model: User,
-            select: "vorname name benutzername _id"
-        })
-        .select("groupname beschreibung members") ;
+            $or: [{members: user.id}, { admins: user.id}],
+        }).select("_id groupname beschreibung members").lean();
 
-        return NextResponse.json({ success: true, data: groups }, { status: 200 });
-
+        const groupsWithFavStatus = groups.map((group: any) => ({
+            ...group,
+            isFavourite: favouriteGroups.some((favId: any) => favId.toString() === group._id.toString()),
+        }));
+        return NextResponse.json({ success: true, data: groupsWithFavStatus }, { status: 200 });
     } catch (error: any) {
         return NextResponse.json({ success: false, error: error.message }, { status: 500 });
     }
 }
 
 export async function POST(req: NextRequest) {
+    await dbConnect();
+    const user = await getUserID(req);
+    if(user.error){
+        return NextResponse.json({ success: false, error: user.error}, { status: user.status });
+    }
+    try {
+        const { groupname, beschreibung } = await req.json();
+        if(!groupname) {
+            return NextResponse.json({ success: false, error: "Groupname ist erforderlich."}, { status: 400 });
+        }
+
+        const newGroup = new Group({
+            groupname,
+            beschreibung: beschreibung || "",
+            creator: user.id,
+            admins: [user.id],
+            members: [user.id],
+        });
+
+        await newGroup.save();
+        return NextResponse.json({ success: true, data: newGroup }, { status: 201 });
+    } catch (error: any) {
+        return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+        
+    }
+    /*
     try {
         const user = await getUserID(req);
         if(user.error){
@@ -80,4 +88,5 @@ export async function POST(req: NextRequest) {
     } catch (error: any) {
         return NextResponse.json({ success: false, error: error.message }, { status: 500 });
     }
+        */
 }

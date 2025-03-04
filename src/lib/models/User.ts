@@ -18,6 +18,7 @@ const UserSchema = new mongoose.Schema({
   kalendersichtbarkeit: { type: String, enum: ["öffentlich", "Privat", "Nur freunde"], default: "öffentlich" },
   theme: { type: String, enum: ["Hell", "dunkel"], default: "Hell" },
   profilbild: { type: String, default: null },
+  favouriteGroups: [{ type: mongoose.Schema.Types.ObjectId, ref: "Group" }],
   createdAt: { type: Date, default: Date.now }
 });
 

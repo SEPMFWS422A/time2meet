@@ -1,6 +1,77 @@
 import React, { useState } from "react";
 import { Button, Form, Input } from "@heroui/react";
 
+interface AddGroupModalContentProps {
+  onClose: () => void;
+  onGroupCreated: (newgroup: any) => void;
+}
+
+const AddGroupModalContent: React.FC<AddGroupModalContentProps> = ({
+  onClose,
+  onGroupCreated,
+}) => {
+  const [groupname, setGroupname] = useState("");
+  const [beschreibung, setBeschreibung] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleCreateGroup = async () => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      const response = await fetch("/api/groups", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ groupname, beschreibung }),
+      });
+
+      const data = await response.json();
+      if (!data.success) {
+        throw new Error(data.error);
+      }
+
+      onGroupCreated(data.data);
+      onClose();
+    } catch (error: any) {
+      setError("Fehler beim Erstellen der Gruppe: " + error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="flex flex-col gap-4">
+      <Input
+        label="Gruppenname"
+        variant="bordered"
+        value={groupname}
+        onChange={(e) => setGroupname(e.target.value)}
+        placeholder="Gib den Namen der Gruppe ein"
+        isRequired
+      />
+      <Input
+        label="Beschreibung"
+        variant="bordered"
+        value={beschreibung}
+        onChange={(e) => setBeschreibung(e.target.value)}
+        placeholder="Gib eine Beschreibung ein"
+      />
+      {error && <p className="text-red-500">{error}</p>}
+      <div className="flex justify-end gap-3">
+        <Button color="danger" variant="light" onPress={onClose}>
+          Schließen
+        </Button>
+        <Button color="primary" onPress={handleCreateGroup} disabled={loading}>
+          Gruppe erstellen
+        </Button>
+      </div>
+    </div>
+  );
+
+  /*
 interface Group {
     groupName: string;
     description: string;
@@ -36,7 +107,9 @@ const AddGroupModalContent: React.FC<AddGroupModalContentProps> = ({ onClose }) 
     //         alert("Bitte füllen Sie alle erforderlichen Felder aus.");
     //     }
     // };
+    */
 
+  /*
     return (
         <div>
             <Form id="addEventForm" className="p-4 space-y-3" validationBehavior="native">
@@ -66,6 +139,7 @@ const AddGroupModalContent: React.FC<AddGroupModalContentProps> = ({ onClose }) 
             </Form>
         </div>
     );
+    */
 };
 
 export default AddGroupModalContent;
