@@ -53,7 +53,17 @@ export default function App() {
     try {
       await axios.get("/api/userauth/logout");
       toast.success("Erfolgreich abgemeldet.");
-      router.push("/login");
+      if (typeof window !== "undefined") {
+        sessionStorage.clear();
+        localStorage.clear();
+      }
+      window.location.href= "/login";
+
+      setTimeout(() => {
+        window.history.pushState(null, "", "/login");
+      }, 100);
+
+      //router.push("/login");
     } catch (error: any) {
       console.log(error.message);
       toast.error(error.message);
@@ -90,9 +100,7 @@ export default function App() {
               Logout
             </Link>
           </NavbarItem>
-          <NavbarItem>
-
-          </NavbarItem>
+          <NavbarItem></NavbarItem>
         </NavbarContent>
       </Navbar>
 
