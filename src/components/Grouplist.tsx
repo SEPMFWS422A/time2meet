@@ -132,7 +132,10 @@ function Grouplist() {
         >
           <ListboxSection>
             {groups.map((group) => (
-              <ListboxItem key={group._id}>
+              <ListboxItem 
+                key={group._id} 
+                textValue={group.groupname}
+              >
                 <div className="flex gap-2 justify-between items-center">
                   <User
                     avatarProps={{ size: "sm" }}

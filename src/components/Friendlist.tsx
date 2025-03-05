@@ -1,4 +1,4 @@
-import { Button, Listbox, ListboxItem, ListboxSection, User as UserAvatar } from "@heroui/react";
+import { Button, Listbox, ListboxItem, ListboxSection, User as UserAvatar} from "@heroui/react";
 import { StarIcon, XIcon } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import AddFriendModalContent from "@/lib/modalContents/AddFriendModalContent";
@@ -25,6 +25,7 @@ function Friendlist() {
   const [isAddFriendModalOpen, setAddFriendModalOpen] = useState(false);
   const [userId, setUserId] = useState<string>("");
   const [notification, setNotification] = useState<Notification | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     const decodeToken = async () => {
@@ -43,6 +44,7 @@ function Friendlist() {
   }, []);
 
   const fetchFriends = async () => {
+    setIsLoading(true);
     try {
       const res = await axios.get(`/api/friends/${userId}`);
       if (res.data.success) {
@@ -55,6 +57,8 @@ function Friendlist() {
       }
     } catch (error) {
       console.error("Fehler beim Abrufen der Freunde:", error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -136,47 +140,57 @@ function Friendlist() {
       <Button color="primary" onPress={openAddFriendModal}>
         Neuen Freund adden
       </Button>
-      <Listbox
-        aria-label="Freunde"
-        items={friends}
-        onAction={(key) => console.log(`Ausgewählter Freund: ${key}`)}
-      >
-        <ListboxSection>
-          {friends.map((friend) => (
-            <ListboxItem key={friend._id}>
-              <div className="flex gap-2 justify-between items-center">
-                <UserAvatar
-                  avatarProps={{
-                    size: "sm",
-                    src: friend.profilbild,
-                  }}
-                  description={friend.benutzername}
-                  name={friend.vorname}
-                />
-                <div className="flex gap-1">
-                  <Button
-                    variant="light"
-                    isIconOnly
-                    aria-label="star"
-                    onPress={() => toggleFavourite(friend)}
-                  >
-                    <StarIcon fill={friend.isFavourite ? "currentColor" : "none"} />
-                  </Button>
-                  <Button
-                    variant="light"
-                    isIconOnly
-                    aria-label="remove friend"
-                    onPress={() => removeFriend(friend)}
-                    className="text-red-500"
-                  >
-                    <XIcon size={16} />
-                  </Button>
+      
+      {isLoading ? (
+        <div className="flex flex-col items-center justify-center p-4">
+          <p>Lade Freunde...</p>
+        </div>
+      ) : (
+        <Listbox
+          aria-label="Freunde"
+          items={friends}
+          onAction={(key) => console.log(`Ausgewählter Freund: ${key}`)}
+        >
+          <ListboxSection>
+            {friends.map((friend) => (
+              <ListboxItem 
+                key={friend._id} 
+                textValue={`${friend.vorname} ${friend.name}`}
+              >
+                <div className="flex gap-2 justify-between items-center">
+                  <UserAvatar
+                    avatarProps={{
+                      size: "sm",
+                      src: friend.profilbild,
+                    }}
+                    description={friend.benutzername}
+                    name={friend.vorname}
+                  />
+                  <div className="flex gap-1">
+                    <Button
+                      variant="light"
+                      isIconOnly
+                      aria-label="star"
+                      onPress={() => toggleFavourite(friend)}
+                    >
+                      <StarIcon fill={friend.isFavourite ? "currentColor" : "none"} />
+                    </Button>
+                    <Button
+                      variant="light"
+                      isIconOnly
+                      aria-label="remove friend"
+                      onPress={() => removeFriend(friend)}
+                      className="text-red-500"
+                    >
+                      <XIcon size={16} />
+                    </Button>
+                  </div>
                 </div>
-              </div>
-            </ListboxItem>
-          ))}
-        </ListboxSection>
-      </Listbox>
+              </ListboxItem>
+            ))}
+          </ListboxSection>
+        </Listbox>
+      )}
 
       {isAddFriendModalOpen && (
         <ModalWindow
