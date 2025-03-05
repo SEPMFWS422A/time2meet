@@ -31,11 +31,13 @@ const CreateSurvey: React.FC = () => {
                 className="h-10 text-xl bg-blue-600 text-white"
                 onPress={handleOpenModal}>Umfrage erstellen</Button>
             <ModalWindow size="3xl" isOpen={isModalOpen} onOpenChange={handleCloseModal} content={
-                <div className="flex flex-col gap-5">
-                    <ParticipantSelector/>
-                    <div className="flex flex-col md:flex-row justify-around items-center">
-                        <CreateMultipleChoiceSurvey/>
+                <div className="top-0 relative max-h-screen gap-5 flex flex-col justify-start h-90 ">
+                    <div className="top-0 relative h-90 flex flex-col md:flex-row justify-around items-center">
+                        <CreateMultipleChoiceSurvey />
                         <CreateScheduling/>
+                    </div>
+                    <div>
+
                     </div>
                     <div className="flex flex-row justify-center">
                         <Button color="danger" variant="light" onPress={closeModal}>
