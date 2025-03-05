@@ -13,7 +13,7 @@ const ModalWindow: React.FC<ModalWindowProps> = ({isOpen, onOpenChange, content,
 
     return (
         <Modal isOpen={isOpen} size={size ?? "xl"} onOpenChange={onOpenChange}
-        placement={"center"} 
+        placement={"center" } className = "top-0 relative max-h-screen overflow-y-auto "
         >
             <ModalContent>
                 {() => (
