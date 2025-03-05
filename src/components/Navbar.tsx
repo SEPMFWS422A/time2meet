@@ -91,9 +91,7 @@ export default function App() {
             </Link>
           </NavbarItem>
           <NavbarItem>
-            <Button as={Link} href="/signup" variant="flat">
-              Sign Up
-            </Button>
+
           </NavbarItem>
         </NavbarContent>
       </Navbar>
