@@ -148,7 +148,7 @@ function Friendlist() {
                 <UserAvatar
                   avatarProps={{
                     size: "sm",
-                    src: friend.profilbild || "https://via.placeholder.com/150",
+                    src: friend.profilbild,
                   }}
                   description={friend.benutzername}
                   name={friend.vorname}
