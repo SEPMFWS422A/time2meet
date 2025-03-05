@@ -2,8 +2,9 @@ import React, { useState } from 'react';
 import ModalWindow from "@/components/ModalWindow";
 import {Button, Card, CardBody, CardHeader, Radio, RadioGroup} from "@heroui/react";
 import {CardTitle} from "@/components/ui/card";
+import {LucideBadgeCheck} from "lucide-react";
 
-export default function Survey({ title, description, timeSlots }) {
+export default function Survey({ title , description, timeSlots }) {
     const [responses, setResponses] = useState({});
     const [isModalOpen, setIsModalOpen] = useState(false); // Modal-Zustand
     const [modalContent, setModalContent] = useState(null); // Modal-Inhalt
@@ -112,7 +113,9 @@ export default function Survey({ title, description, timeSlots }) {
                             </ul>
                         </div>
                     ))}
-
+                    <Button endContent={<LucideBadgeCheck/>} className="w-full mt-4 text-lg">
+                        Abschicken
+                    </Button>
 
                 </CardBody>
             </Card>

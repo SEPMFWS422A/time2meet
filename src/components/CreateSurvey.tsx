@@ -4,6 +4,7 @@ import ModalWindow from "@/components/ModalWindow";
 import CreateMultipleChoiceSurvey from "@/components/CreateMultipleChoiceSurvey";
 import CreateScheduling from "@/components/CreateScheduling";
 import {CheckIcon, CloseIcon} from "@heroui/shared-icons";
+import ParticipantSelector from "@/components/ChooseParticipants";
 
 const CreateSurvey: React.FC = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -31,6 +32,7 @@ const CreateSurvey: React.FC = () => {
                 onPress={handleOpenModal}>Umfrage erstellen</Button>
             <ModalWindow size="3xl" isOpen={isModalOpen} onOpenChange={handleCloseModal} content={
                 <div className="flex flex-col gap-5">
+                    <ParticipantSelector/>
                     <div className="flex flex-col md:flex-row justify-around items-center">
                         <CreateMultipleChoiceSurvey/>
                         <CreateScheduling/>
