@@ -62,15 +62,15 @@ export default function App() {
 
   return (
     <>
-      <Navbar className="hidden md:flex bg-sky-950 w-screen text-white text-xl">
+      <Navbar className="hidden md:flex bg-sky-950 w-screen text-black text-xl">
         <NavbarContent justify="center">
           {desktopNavlinks.map((link, i) => (
             <NavbarItem key={`${link.label}-${i}`}>
               <Link
                 href={link.href}
                 className={clsx(
-                  "text-white hover:text-gray-300 px-3 py-3 rounded-xl transition-all",
-                  pathname === link.href && "bg-gray-300 font-bold shadow-lg"
+                  "text-white hover:bg-sky-800 px-3 py-3 rounded-xl transition-all",
+                  pathname === link.href && "bg-sky-800 font-bold shadow-lg"
                 )}
               >
                 {link.label}
@@ -79,12 +79,12 @@ export default function App() {
           ))}
         </NavbarContent>
 
-        {/* Login & Signup (nur Desktop) */}
+        {/* Login (nur Desktop) */}
         <NavbarContent justify="end">
           <NavbarItem>
             <Link
               href="/login"
-              className="text-white hover:text-gray-300"
+              className="text-white hover:bg-sky-800 px-3 py-3 rounded-xl transition-all"
               onClick={logout}
             >
               Logout
@@ -135,45 +135,6 @@ export default function App() {
           })}
         </div>
       </div>
-
-      {/* Sidebar Menü für Mobile */}
-      {/*<NavbarMenu className="bg-sky-950 w-64 h-full text-white text-xl">*/}
-      {/*    <div className="flex flex-col p-6">*/}
-      {/*        {mobileNavlinks.map((link, i) => (*/}
-      {/*            <NavbarMenuItem key={`${link.label}-${i}`}>*/}
-      {/*                <Link*/}
-      {/*                    href={link.href}*/}
-      {/*                    className={clsx(*/}
-      {/*                        "flex flex-row hover:text-gray-300 items-center px-2 py-2 rounded-xl transition-all gap-2",*/}
-      {/*                        pathname === link.href && "bg-gray-300 font-bold shadow-lg"*/}
-      {/*                    )}*/}
-      {/*                    onClick={() => setIsMenuOpen(false)}*/}
-      {/*                >*/}
-      {/*                    {link.icon} {link.label}*/}
-      {/*                </Link>*/}
-      {/*            </NavbarMenuItem>*/}
-      {/*        ))}*/}
-      {/*        <Divider className="bg-gray-500 my-4"/>*/}
-      {/*        <NavbarMenuItem>*/}
-      {/*            <Link*/}
-      {/*                href="/login"*/}
-      {/*                className="flex flex-row hover:text-gray-300 items-center px-2 py-2 rounded-xl transition-all gap-2"*/}
-      {/*                onClick={() => setIsMenuOpen(false)}*/}
-      {/*            >*/}
-      {/*                <LucideLogIn/> Login*/}
-      {/*            </Link>*/}
-      {/*        </NavbarMenuItem>*/}
-      {/*        <NavbarMenuItem>*/}
-      {/*            <Link*/}
-      {/*                href="/signup"*/}
-      {/*                className="flex flex-row hover:text-gray-300 items-center px-2 py-2 rounded-xl transition-all gap-2"*/}
-      {/*                onClick={() => setIsMenuOpen(false)}*/}
-      {/*            >*/}
-      {/*                <LucideUserPlus/> Sign Up*/}
-      {/*            </Link>*/}
-      {/*        </NavbarMenuItem>*/}
-      {/*    </div>*/}
-      {/*</NavbarMenu>*/}
     </>
   );
 }
