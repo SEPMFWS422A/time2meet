@@ -36,13 +36,6 @@ export default function Home() {
         setModalData(null);
     };
 
-    const downloadICS = () => {
-        const link = document.createElement("a");
-        link.href = "/api/event";
-        link.download = "events.ics";
-        link.click();
-    };
-
     {/* Der EventProvider tag (<EventProvider>), muss immer ganz Außen vom HTML-Baum sein, wegen dem event Context aus @/app/lib/data/events" ~Chris lol */
     }
     return (
@@ -59,20 +52,6 @@ export default function Home() {
                             </div>
                             <Calendar onOpenDate={onOpenDate} onOpenEvent={onOpenEvent}/>
                         </div>
-
-                        <div
-                            id="DownloadDivCalendar"
-                            className="mt-4 mb-4 flex items-center justify-center"
-                        >
-                            <button
-                                id="Calendardownload"
-                                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full"
-                                onClick={downloadICS}
-                            >
-                                Alle Events als .ics herunterladen
-                            </button>
-                        </div>
-
                     </div>
 
                     {isAddEventModalOpen && (
