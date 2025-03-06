@@ -34,7 +34,12 @@ body {
 .fc-event {
   overflow: hidden;
   text-overflow: ellipsis;
+  background-color: #007bff !important; /* Blaue Hintergrundfarbe */
+  border-color: #0056b3 !important; /* Dunkelblaue Umrandung */
+  color: white !important; /* Textfarbe */
+  opacity: 1 !important; /* Entfernt Durchsichtigkeit */
 }
+
 
 .fc-list-event:hover {
   background-color: inherit !important;

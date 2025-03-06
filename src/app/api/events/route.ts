@@ -48,11 +48,15 @@ export async function GET() {
 export async function POST(request: Request) {
     await dbConnect();
     try {
-        const { creator, title, start, end, description, location, groups, members, allday } = await request.json();
+        const body = await request.json();
+        console.log("📥 API erhält folgende Daten:", body); // DEBUGGING
 
-        if (!creator || !title || !start || !end) {
+        const { creator, title, start, end, description, location, groups, members, allday } = body;
+
+        if (!creator || !title || !start) {
+            console.log("❌ Fehlende Pflichtfelder in API:", { creator, title, start });
             return NextResponse.json(
-                { error: "creator, title, start und end sind erforderlich." },
+                { error: "creator, title und start sind erforderlich." },
                 { status: 400 }
             );
         }
@@ -62,18 +66,19 @@ export async function POST(request: Request) {
             members,
             title,
             start,
-            end,
+            end: allday ? undefined : end, // Falls `allDay`, kein `end`
             description,
             location,
             groups,
             allday,
         });
 
+        console.log("✅ Event erfolgreich gespeichert:", newEvent);
         return NextResponse.json(newEvent, { status: 201 });
     } catch (error: any) {
-        console.error("❌ Fehler beim Erstellen des Events:", error);
+        console.error("❌ API ERROR:", error);
         return NextResponse.json(
-            { error: "Fehler beim Erstellen des Events." },
+            { error: `Fehler beim Erstellen des Events: ${error.message}` },
             { status: 500 }
         );
     }

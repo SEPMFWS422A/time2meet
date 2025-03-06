@@ -1,83 +1,110 @@
 "use client";
 
 import Calendar from "@/components/Calendar";
-import {EventProvider} from "@/lib/data/events";
-import React, {useState} from "react";
+import { useState } from "react";
 import ModalWindow from "@/components/ModalWindow";
 import AddEventModalContent from "@/lib/modalContents/AddEventModalContent";
 import EventInfoModalContent from "@/lib/modalContents/EventInfoModalContent";
-import TabView from "@/components/TabView";
-import Grouplist from "@/components/Grouplist";
-import Friendlist from "@/components/Friendlist";
-import {LucideUsers, PersonStandingIcon} from "lucide-react";
-
 
 export default function Home() {
-
     const [isAddEventModalOpen, setIsAddEventModalOpen] = useState(false);
     const [isEventInfoModalOpen, setIsEventInfoModalOpen] = useState(false);
+    const [isEditEventModalOpen, setIsEditEventModalOpen] = useState(false); // Neu: Bearbeitungsmodal
     const [modalData, setModalData] = useState(null);
+    const [editModalData, setEditModalData] = useState(null); // Neu: Bearbeitungsdaten
+    const [refreshKey, setRefreshKey] = useState(0);
 
-    const onOpenDate = () => {
-        setIsAddEventModalOpen(true);
+    const refreshEvents = () => {
+        setRefreshKey((prev) => prev + 1);
     };
 
-    const onOpenEvent = (events: any) => {
-        setModalData(events);
-        setIsEventInfoModalOpen(true);
+    const deleteEvent = async (id: string) => {
+        try {
+            const response = await fetch(`/api/events/${id}`, { method: "DELETE" });
+            if (!response.ok) {
+                throw new Error("Fehler beim Löschen des Events.");
+            }
+            refreshEvents(); // Nach dem Löschen Events neu laden
+            setIsEventInfoModalOpen(false); // Modal schließen
+        } catch (error) {
+            console.error("❌ Fehler beim Löschen des Events:", error);
+        }
     };
 
-    const closeAddEventModal = () => {
-        setIsAddEventModalOpen(false);
+    const updateEvent = async (updatedEvent: any) => {
+        try {
+            const response = await fetch(`/api/events/${updatedEvent.id}`, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(updatedEvent),
+            });
+            if (!response.ok) {
+                throw new Error("Fehler beim Aktualisieren des Events.");
+            }
+            refreshEvents();
+            setIsEditEventModalOpen(false); // Bearbeitungsmodal schließen
+            setIsEventInfoModalOpen(false);
+        } catch (error) {
+            console.error("❌ Fehler beim Aktualisieren des Events:", error);
+        }
     };
 
-    const closeEventInfoModal = () => {
-        setIsEventInfoModalOpen(false);
-        setModalData(null);
+    const openEditModal = (eventData: any) => {
+        console.log("✏️ Bearbeiten gestartet für:", eventData);
+        setEditModalData(eventData);
+        setIsEditEventModalOpen(true);
     };
 
-    {/* Der EventProvider tag (<EventProvider>), muss immer ganz Außen vom HTML-Baum sein, wegen dem event Context aus @/app/lib/data/events" ~Chris lol */
-    }
     return (
-        <EventProvider>
-            <div>
-                <div id="HomePageLayout" className="flex flex-col w-full">
-                    <div className="ml-3 mr-3">
-                        <div className="flex gap-3">
-                            <div className="hidden md:flex border-1 rounded-large">
-                                <TabView selectedTab="Gruppen" tabs={[
-                                    {title: "Gruppen", content: <Grouplist/>, icon: <LucideUsers/>},
-                                    {title: "Freunde", content: <Friendlist/>, icon: <PersonStandingIcon/>}
-                                ]}/>
-                            </div>
-                            <Calendar onOpenDate={onOpenDate} onOpenEvent={onOpenEvent}/>
-                        </div>
-                    </div>
+        <div>
+            <Calendar
+                key={refreshKey}
+                onOpenDate={() => setIsAddEventModalOpen(true)}
+                onOpenEvent={(events) => {
+                    setModalData(events);
+                    setIsEventInfoModalOpen(true);
+                }}
+            />
 
-                    {isAddEventModalOpen && (
-                        <ModalWindow
-                            isOpen={isAddEventModalOpen}
-                            onOpenChange={setIsAddEventModalOpen}
-                            title="Event hinzufügen"
-                            content={<AddEventModalContent onClose={closeAddEventModal}/>}
+            {isAddEventModalOpen && (
+                <ModalWindow
+                    isOpen={isAddEventModalOpen}
+                    onOpenChange={setIsAddEventModalOpen}
+                    title="Event hinzufügen"
+                    content={<AddEventModalContent onClose={() => setIsAddEventModalOpen(false)} refreshEvents={refreshEvents} />}
+                />
+            )}
+
+            {isEventInfoModalOpen && modalData && (
+                <ModalWindow
+                    isOpen={isEventInfoModalOpen}
+                    onOpenChange={setIsEventInfoModalOpen}
+                    title="Event Informationen"
+                    content={
+                        <EventInfoModalContent
+                            modalData={modalData}
+                            onClose={() => setIsEventInfoModalOpen(false)}
+                            onDelete={deleteEvent}
+                            onEdit={openEditModal} // 👈 Öffnet das Bearbeitungsmodal statt direkt zu aktualisieren
                         />
-                    )}
+                    }
+                />
+            )}
 
-                    {isEventInfoModalOpen && modalData && (
-                        <div
-                            id="eventInfoModal"
-                            data-is-open={isEventInfoModalOpen}
-                        >
-                            <ModalWindow
-                                isOpen={isEventInfoModalOpen}
-                                onOpenChange={setIsEventInfoModalOpen}
-                                title="Event Informationen"
-                                content={<EventInfoModalContent modalData={modalData} onClose={closeEventInfoModal}/>}
-                            />
-                        </div>
-                    )}
-                </div>
-            </div>
-        </EventProvider>
+            {isEditEventModalOpen && editModalData && (
+                <ModalWindow
+                    isOpen={isEditEventModalOpen}
+                    onOpenChange={setIsEditEventModalOpen}
+                    title="Event bearbeiten"
+                    content={
+                        <AddEventModalContent
+                            onClose={() => setIsEditEventModalOpen(false)}
+                            refreshEvents={refreshEvents}
+                            existingEvent={editModalData} // 👈 Event-Daten übergeben
+                        />
+                    }
+                />
+            )}
+        </div>
     );
 }

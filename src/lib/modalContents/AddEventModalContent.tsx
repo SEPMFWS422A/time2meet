@@ -1,216 +1,196 @@
-import React, { useState } from "react";
-import { Input, Button, Checkbox, Form, } from "@heroui/react";
-import { useEvents } from "@/lib/data/events";
-import { EventInput } from "@fullcalendar/core";
+import React, { useEffect, useState } from "react";
+import { Input, Button, Checkbox, Form } from "@heroui/react";
 
-
-interface AddEventModalContentProps{
-  onClose:() => void;
+interface AddEventModalContentProps {
+  onClose: () => void;
+  refreshEvents: () => void;
+  existingEvent?: any; // Falls vorhanden, bedeutet das, dass wir bearbeiten
 }
 
-
-const AddEventModalContent: React.FC<AddEventModalContentProps> = ({ onClose }) => {
-  //Input-Felder
+const AddEventModalContent: React.FC<AddEventModalContentProps> = ({ onClose, refreshEvents, existingEvent }) => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [startTime, setStartTime] = useState("");
   const [endTime, setEndTime] = useState("");
   const [location, setLocation] = useState("");
   const [isAllDay, setIsAllDay] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  //Errors
-  const [unreachableEndTimeError, setUnreachableEndTimeError] = useState<boolean>(false);
-  const [invalidStartDate,setStartDateError] = useState<boolean>(false);
-  const [invalidEndDate,setEndDateError] = useState<boolean>(false);
-  const [showError, setShowError] = useState<boolean>(false);
+  // Validierungen
+  const [invalidStartDate, setInvalidStartDate] = useState(false);
+  const [invalidEndDate, setInvalidEndDate] = useState(false);
+  const [unreachableEndTimeError, setUnreachableEndTimeError] = useState(false);
 
-  const { addEvent } = useEvents(); 
+  useEffect(() => {
+    if (existingEvent) {
+      setTitle(existingEvent.title);
+      setDescription(existingEvent.extendedProps?.description || "");
+      setStartTime(existingEvent.start);
+      setEndTime(existingEvent.end || "");
+      setLocation(existingEvent.extendedProps?.location || "");
+      setIsAllDay(existingEvent.allDay);
+    }
+  }, [existingEvent]);
 
   const isFormValid = () => {
     if (isAllDay) {
       return title.trim() !== "" && startTime.trim() !== "";
     }
-
-    if (unreachableEndTimeError||invalidEndDate||invalidStartDate) {
-      return;
-    }
-    return (
-      title.trim() !== "" &&
-      startTime.trim() !== "" &&
-      endTime.trim() !== ""
-    );
+    return title.trim() !== "" && startTime.trim() !== "" && endTime.trim() !== "";
   };
-  
+
   const handleStartTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setStartTime(value);
-    setStartDateError(!isDateValid(value));
+    setInvalidStartDate(!isDateValid(value));
     checkTimeError(value, endTime);
   };
-  
+
   const handleEndTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setEndTime(value);
-    setEndDateError(!isDateValid(value))
+    setInvalidEndDate(!isDateValid(value));
     checkTimeError(startTime, value);
   };
-  
+
   const checkTimeError = (start: string, end: string) => {
     if (start && end) {
       const startDate = new Date(start).getTime();
       const endDate = new Date(end).getTime();
-      if (endDate <= startDate) {
-        setUnreachableEndTimeError(true);
-      } else {
-        setUnreachableEndTimeError(false);
-      }
+      setUnreachableEndTimeError(endDate <= startDate);
     }
   };
 
-  const isDateValid = (date: string):boolean => {
+  const isDateValid = (date: string): boolean => {
     const parsedDate = new Date(date);
-    const year = parsedDate.getFullYear();
-
-    // Ist das Datum 4 Stellig und Valide
-    var result = year >= 1000 && year <= 9999 && !isNaN(parsedDate.getTime());
-    return result
-  };
-  
-  const toggleAllDay = () => {
-    setIsAllDay(!isAllDay);
-
-    if (!isAllDay) {
-      setStartTime((prev) => prev.split("T")[0]); 
-      setEndTime("");
-    } else {
-      setStartTime((prev) => (prev ? `${prev}T00:00` : ""));
-    }
+    return parsedDate.getFullYear() >= 1000 && parsedDate.getFullYear() <= 9999 && !isNaN(parsedDate.getTime());
   };
 
-  const getFormData =() => {
-
+  const handleSubmit = async () => {
     if (!isFormValid()) {
-      setShowError(true);
-      return; 
+      setErrorMessage("Bitte alle erforderlichen Felder ausfüllen.");
+      return;
     }
-    setShowError(false);
 
-    const eventInput: EventInput = {
-      title: title,
-      description: description,
-      start: startTime,
-      ...(isAllDay ? { allDay: true } : { end: endTime }),
-      location: location,
+    setLoading(true);
+    setErrorMessage(null);
+
+    const eventData = {
+      id: existingEvent?.id, // Falls Bearbeitung, ID mitgeben
+      creator: "65efab12cd3456789ef01234", // 👈 Hier statisch setzen, bis User-Auth existiert
+      title,
+      description,
+      start: isAllDay ? `${startTime}T00:00:00.000Z` : startTime,
+      end: isAllDay ? undefined : endTime,
+      location,
+      allday: isAllDay,
+      members: [], // 👈 Standardwert für Mitglieder setzen
+      groups: [], // 👈 Standardwert für Gruppen setzen
     };
-    if (isAllDay) {
-      eventInput.backgroundColor="Blue";
+
+    console.log("📩 Event-Daten, die an die API gesendet werden:", eventData);
+
+    try {
+      let response;
+      if (existingEvent) {
+        response = await fetch(`/api/events/${existingEvent.id}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(eventData),
+        });
+      } else {
+        response = await fetch("/api/events", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(eventData),
+        });
+      }
+
+      if (!response.ok) {
+        const errorResponse = await response.json();
+        throw new Error(errorResponse.error || "Fehler beim Speichern.");
+      }
+
+      console.log("✅ Event erfolgreich gespeichert!");
+      refreshEvents();
+      onClose();
+    } catch (error) {
+      console.error("❌ Fehler beim Speichern:", error);
+      setErrorMessage("Fehler beim Speichern.");
+    } finally {
+      setLoading(false);
     }
-   addEvent(eventInput); 
-   onClose();
   };
 
   return (
-    <div>
-      <Form
-        id="addEventForm"
-        className="p-4 space-y-3"
-        validationBehavior="native"
-      >
-        <Input
-          label="Titel"
-          isRequired
-          placeholder="Geben Sie den Titel des Ereignisses ein"
-          variant="bordered"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-        />
+      <div>
+        <Form className="p-4 space-y-3">
+          <Input label="Titel" isRequired value={title} onChange={(e) => setTitle(e.target.value)} />
 
-        <Input
-          label="Beschreibung"
-          placeholder="Geben Sie die Beschreibung des Ereignisses ein"
-          variant="bordered"
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-        />
-        {isAllDay ? (
-          <Input
-            label="Startdatum"
-            isRequired
-            isInvalid={invalidStartDate}
-            errorMessage="Ungültige Startzeit"
-            placeholder="Wählen Sie das Startdatum"
-            variant="bordered"
-            type="date"
-            value={startTime}
-            onChange={handleStartTimeChange}
-          />
-        ) : (
-          <>
-            <Input
-              label="Startzeit"
-              isRequired
-              isInvalid={invalidStartDate}
-              errorMessage="Ungültige Startzeit"
-              placeholder="Wählen Sie Startdatum und -uhrzeit"
-              variant="bordered"
-              type="datetime-local"
-              value={startTime}
-              onChange={handleStartTimeChange}
-            />
+          <Input label="Beschreibung" value={description} onChange={(e) => setDescription(e.target.value)} />
 
-            <Input
-              label="Endzeit"
-              isRequired
-              isInvalid={unreachableEndTimeError||invalidEndDate}
-              errorMessage="Ungültige Endzeit"
-              placeholder="Wählen Sie Enddatum und -uhrzeit"
-              variant="bordered"
-              type="datetime-local"
-              value={endTime}
-              onChange={handleEndTimeChange}
-            />
-          </>
-        )}
+          {isAllDay ? (
+              <Input
+                  label="Startdatum"
+                  isRequired
+                  isInvalid={invalidStartDate}
+                  errorMessage="Ungültiges Startdatum"
+                  placeholder="Wählen Sie das Startdatum"
+                  variant="bordered"
+                  type="date"
+                  value={startTime}
+                  onChange={handleStartTimeChange}
+              />
+          ) : (
+              <>
+                <Input
+                    label="Startzeit"
+                    isRequired
+                    isInvalid={invalidStartDate}
+                    errorMessage="Ungültige Startzeit"
+                    placeholder="Wählen Sie Startdatum und -uhrzeit"
+                    variant="bordered"
+                    type="datetime-local"
+                    value={startTime}
+                    onChange={handleStartTimeChange}
+                />
 
-        <Input
-          label="Ort"
-          placeholder="Geben Sie den Ort ein"
-          variant="bordered"
-          value={location}
-          onChange={(e) => setLocation(e.target.value)}
-        />
-
-        <div className="ml-1">
-          <label>
-            <Checkbox
-              type="checkbox"
-              checked={isAllDay}
-              onChange={toggleAllDay}
-            />
-            Ganztägiges Ereignis
-          </label>
-        </div>
-
-        <div className="pt-4 w-full">
-
-
-          <div className="flex justify-end space-x-6 gap-2 items-center">
-          {showError && (
-            <div id="generalFormError" className="text-sm text-danger">
-              Überprüfen Sie Ihre Eingaben
-            </div>
+                <Input
+                    label="Endzeit"
+                    isRequired
+                    isInvalid={unreachableEndTimeError || invalidEndDate}
+                    errorMessage="Ungültige Endzeit"
+                    placeholder="Wählen Sie Enddatum und -uhrzeit"
+                    variant="bordered"
+                    type="datetime-local"
+                    value={endTime}
+                    onChange={handleEndTimeChange}
+                />
+              </>
           )}
 
-            <Button color="danger" variant="light" onPress={onClose}>
+          <Input label="Ort" placeholder="Geben Sie den Ort ein" variant="bordered" value={location} onChange={(e) => setLocation(e.target.value)} />
+
+          <div className="ml-1">
+            <label>
+              <Checkbox checked={isAllDay} onChange={() => setIsAllDay(!isAllDay)} />
+              Ganztägiges Ereignis
+            </label>
+          </div>
+
+          {errorMessage && <div className="text-red-500 text-sm">{errorMessage}</div>}
+
+          <div className="pt-4 w-full flex justify-end space-x-4">
+            <Button color="danger" variant="light" onPress={onClose} disabled={loading}>
               Schließen
             </Button>
-            <Button color="primary" onPress={getFormData}>
-              Ereignis speichern
+            <Button color="primary" onPress={handleSubmit} isLoading={loading}>
+              {existingEvent ? "Änderungen speichern" : "Ereignis speichern"}
             </Button>
           </div>
-        </div>
-      </Form>
-    </div>
+        </Form>
+      </div>
   );
 };
 

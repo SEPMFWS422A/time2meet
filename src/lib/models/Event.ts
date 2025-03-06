@@ -5,7 +5,7 @@ const EventSchema = new mongoose.Schema({
   members: { type: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }], default: [] },
   title: { type: String, required: true },
   start: { type: Date, required: true },
-  end: { type: Date, required: true },
+  end: { type: Date, required: false }, // Hier `required: false` setzen
   description: { type: String, default: "" },
   location: { type: String, default: "" },
   groups: { type: [{ type: mongoose.Schema.Types.ObjectId, ref: "Group" }], default: [] },
