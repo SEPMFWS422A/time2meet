@@ -31,24 +31,6 @@ export default function Home() {
         }
     };
 
-    const updateEvent = async (updatedEvent: any) => {
-        console.log("🚀 updateEvent() wurde aufgerufen mit:", updatedEvent);
-        try {
-            const response = await fetch(`/api/events/${updatedEvent.id}`, {
-                method: "PUT",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(updatedEvent),
-            });
-            if (!response.ok) {
-                throw new Error("Fehler beim Aktualisieren des Events.");
-            }
-            refreshEvents();
-            setIsEditEventModalOpen(false); // Bearbeitungsmodal schließen
-            setIsEventInfoModalOpen(false);
-        } catch (error) {
-            console.error("❌ Fehler beim Aktualisieren des Events:", error);
-        }
-    };
 
     const openEditModal = (eventData: any) => {
         console.log("✏️ Bearbeiten gestartet für:", eventData);
