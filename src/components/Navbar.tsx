@@ -34,6 +34,7 @@ export default function App() {
       href: "/manageprofile",
       label: "Profil verwalten",
       icon: <UserIcon size={25} />,
+      id: "profil-verwalten",
     },
   ];
 
@@ -78,6 +79,7 @@ export default function App() {
             <NavbarItem key={`${link.label}-${i}`}>
               <Link
                 href={link.href}
+                id={link.id}
                 className={clsx(
                   "text-white hover:bg-sky-800 px-3 py-3 rounded-xl transition-all",
                   pathname === link.href && "bg-sky-800 font-bold shadow-lg"

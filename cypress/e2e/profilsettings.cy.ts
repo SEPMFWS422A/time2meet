@@ -1,8 +1,13 @@
 describe('Profile Settings Page Tests', () => {
   beforeEach(() => {
-    // Visit the Profile Settings page
-    cy.visit('http://localhost:3000/manageprofile');
+    cy.visit('http://localhost:3000/login');
+    cy.get('#email').type('K2@K2.com');
+    cy.get('#password').type('123');
+    cy.contains('button', 'Anmelden').click();
+    cy.get('#profil-verwalten').click();
+    cy.url().should('include', '/manageprofile');
   });
+ 
 
   it('should load Information about Profilsettings', () => {
     cy.get('#header-title').should('be.visible').and('contain', 'Profil verwalten');
@@ -39,11 +44,10 @@ describe('Profile Settings Page Tests', () => {
   });
 
   it('should allow the user to correctly fill out the profile form', () => {
-    cy.get('#first-name-input').type('Max');
-    cy.get('#last-name-input').type('Mustermann');
-    cy.get('#username-input').type('maxmustermann');
-    cy.get('#email-display').should('contain', 'Test@gmail.com');
-    cy.get('#password-input').type('Password123!');
+    cy.get('#first-name-input').type('K1');
+    cy.get('#last-name-input').type('K1');
+    cy.get('#username-input').type('K2');
+    cy.get('#email-display').should('contain', 'K2@K2.com');
     cy.get('#phone-input').type('0123456789');
     cy.get('#birth-date-input').type('2000-01-01');
     cy.get('#profile-visibility-input').select('Nur Freunde');
