@@ -5,7 +5,7 @@ interface ModalWindowProps {
     isOpen: boolean;
     onOpenChange: (isOpen: boolean) => void;
     content: React.ReactNode;
-    title: string;
+    title?: string;
     size?: "3xl" | "xs" | "sm" | "md" | "lg" | "xl" | "2xl" | "4xl" | "5xl" | "full" | undefined;
 }
 
