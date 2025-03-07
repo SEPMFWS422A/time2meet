@@ -34,6 +34,7 @@ export async function GET(req: NextRequest) {
         }));
         return NextResponse.json({ success: true, data: groupsWithFavStatus }, { status: 200 });
     } catch (error: any) {
+        console.error("🔥 API ERROR:", error);
         return NextResponse.json({ success: false, error: error.message }, { status: 500 });
     }
 }
