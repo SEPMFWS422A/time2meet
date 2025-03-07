@@ -191,7 +191,7 @@ export function ProfilSettings() {
         </p>
         <form id="profile-form" className="space-y-4" onSubmit={handleSubmit}>
           <div>
-            <label htmlFor="profile-picture-input" className="block text-base md:text-sm font-medium mb-1">
+            <label htmlFor="profile-picture-input" className="block text-base font-medium mb-1">
               Profilbild
             </label>
             <input
@@ -210,7 +210,7 @@ export function ProfilSettings() {
             )}
           </div>
           <div>
-            <label htmlFor="first-name-input" className="block text-base md:text-sm font-medium mb-1">
+            <label htmlFor="first-name-input" className="block text-base font-medium mb-1">
               Vorname
             </label>
             <input
@@ -225,7 +225,7 @@ export function ProfilSettings() {
             />
           </div>
           <div>
-            <label htmlFor="last-name-input" className="block text-base md:text-sm font-medium mb-1">
+            <label htmlFor="last-name-input" className="block text-base font-medium mb-1">
               Nachname
             </label>
             <input
@@ -240,7 +240,7 @@ export function ProfilSettings() {
             />
           </div>
           <div>
-            <label htmlFor="username-input" className="block text-base md:text-sm font-medium mb-1">
+            <label htmlFor="username-input" className="block text-base font-medium mb-1">
               Benutzername
             </label>
             <input
@@ -255,7 +255,7 @@ export function ProfilSettings() {
             />
           </div>
           <div>
-            <label htmlFor="email-label" className="block text-base md:text-sm font-medium mb-1">
+            <label htmlFor="email-label" className="block text-base font-medium mb-1">
               E-Mail-Adresse
             </label>
             <p id="email-display" className="block w-full border rounded-lg p-2 text-sm bg-gray-100">
@@ -263,7 +263,7 @@ export function ProfilSettings() {
             </p>
           </div>
           <div>
-            <label htmlFor="phone-input" className="block text-base md:text-sm font-medium mb-1">
+            <label htmlFor="phone-input" className="block text-base font-medium mb-1">
               Telefonnummer (optional)
             </label>
             <input
@@ -278,7 +278,7 @@ export function ProfilSettings() {
             {phoneError && <p className="text-red-500 text-sm mt-1">{phoneError}</p>}
           </div>
           <div>
-            <label htmlFor="birth-date-input" className="block text-base md:text-sm font-medium mb-1">
+            <label htmlFor="birth-date-input" className="block text-base font-medium mb-1">
               Geburtsdatum (optional)
             </label>
             <input
@@ -292,7 +292,7 @@ export function ProfilSettings() {
             {birthDateError && <p className="text-red-500 text-sm mt-1">{birthDateError}</p>}
           </div>
           <div>
-            <label htmlFor="profile-visibility-input" className="block text-base md:text-sm font-medium mb-1">
+            <label htmlFor="profile-visibility-input" className="block text-base font-medium mb-1">
               Profil-Sichtbarkeit
             </label>
             <select
@@ -308,7 +308,7 @@ export function ProfilSettings() {
             </select>
           </div>
           <div>
-            <label htmlFor="calendar-visibility-input" className="block text-base md:text-sm font-medium mb-1">
+            <label htmlFor="calendar-visibility-input" className="block text-base font-medium mb-1">
               Kalender-Sichtbarkeit
             </label>
             <select
@@ -324,7 +324,7 @@ export function ProfilSettings() {
             </select>
           </div>
           <div>
-            <label htmlFor="theme-input" className="block text-base md:text-sm font-medium mb-1">
+            <label htmlFor="theme-input" className="block text-base font-medium mb-1">
               Theme
             </label>
             <select
@@ -348,7 +348,7 @@ export function ProfilSettings() {
             </button>
           </div>
           <div className="text-center">
-            <label htmlFor="privacy-policy-label" className="block text-base md:text-sm font-medium mb-1">
+            <label htmlFor="privacy-policy-label" className="block text-base font-medium mb-1">
               Datenschutz
             </label>
             <p id="privacy-policy-p">
@@ -386,7 +386,7 @@ export function ProfilSettings() {
             <h2 className="text-xl font-bold mb-4 text-center">Passwort ändern</h2>
             <form id="password-form" onSubmit={handlePasswordUpdate} className="space-y-4">
               <div>
-                <label htmlFor="current-password-input" className="block text-base md:text-sm font-medium mb-1">
+                <label htmlFor="current-password-input" className="block text-base font-medium mb-1">
                   Aktuelles Passwort
                 </label>
                 <input
@@ -401,7 +401,7 @@ export function ProfilSettings() {
                 />
               </div>
               <div>
-                <label htmlFor="new-password-input" className="block text-base md:text-sm font-medium mb-1">
+                <label htmlFor="new-password-input" className="block text-base font-medium mb-1">
                   Neues Passwort
                 </label>
                 <input
@@ -416,7 +416,7 @@ export function ProfilSettings() {
                 />
               </div>
               <div>
-                <label htmlFor="confirm-new-password-input" className="block text-base md:text-sm font-medium mb-1">
+                <label htmlFor="confirm-new-password-input" className="block text-base font-medium mb-1">
                   Neues Passwort bestätigen
                 </label>
                 <input
