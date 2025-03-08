@@ -43,7 +43,7 @@ describe("API /api/user/[id]", () => {
   });
 
   describe("GET", () => {
-    it("should return a user if found", async () => {
+    test("should return a user if found", async () => {
       (User.findById as jest.Mock).mockResolvedValue({ _id: testUserId, name: "Max" });
       
       const request = new MockHttpRequest();
@@ -55,7 +55,7 @@ describe("API /api/user/[id]", () => {
       expect(data).toEqual({ success: true, data: { _id: testUserId, name: "Max" } });
     });
 
-    it("should return 404 if the user is not found", async () => {
+    test("should return 404 if the user is not found", async () => {
       (User.findById as jest.Mock).mockResolvedValue(null);
       
       const request = new MockHttpRequest();
@@ -72,7 +72,7 @@ describe("API /api/user/[id]", () => {
         });
     });
 
-    it("should return an error if the query fails", async () => {
+    test("should return an error if the query fails", async () => {
       (User.findById as jest.Mock).mockRejectedValue(new Error("DB error"));
       
       const request = new MockHttpRequest();
@@ -89,7 +89,7 @@ describe("API /api/user/[id]", () => {
   });
 
   describe("PUT", () => {
-    it("should update and return user data", async () => {
+    test("should update and return user data", async () => {
       (User.findByIdAndUpdate as jest.Mock).mockResolvedValue({ _id: testUserId, name: "MaxUpdated" });
       
       const requestBody = { name: "MaxUpdated" };
@@ -102,7 +102,7 @@ describe("API /api/user/[id]", () => {
       expect(data).toEqual({ success: true, data: { _id: testUserId, name: "MaxUpdated" } });
     });
 
-    it("should return 404 if the user is not found", async () => {
+    test("should return 404 if the user is not found", async () => {
       (User.findByIdAndUpdate as jest.Mock).mockResolvedValue(null);
       
       const requestBody = { name: "MaxUpdated" };
@@ -115,7 +115,7 @@ describe("API /api/user/[id]", () => {
   });
 
   describe("PATCH", () => {
-    it("should partially update user data", async () => {
+    test("should partially update user data", async () => {
       (User.findByIdAndUpdate as jest.Mock).mockResolvedValue({ _id: testUserId, name: "MaxPatch" });
       
       const requestBody = { name: "MaxPatch" };
@@ -129,7 +129,7 @@ describe("API /api/user/[id]", () => {
   });
 
   describe("DELETE", () => {
-    it("should delete a user and return it", async () => {
+    test("should delete a user and return it", async () => {
       (User.findByIdAndDelete as jest.Mock).mockResolvedValue({ _id: testUserId });
       
       const request = new MockHttpRequest();
