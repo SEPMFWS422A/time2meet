@@ -1,12 +1,6 @@
-import {
-  Button,
-  Listbox,
-  ListboxItem,
-  ListboxSection,
-  User,
-} from "@heroui/react";
-import { StarIcon } from "lucide-react";
-import React, { useState, useEffect } from "react";
+import {Button, Listbox, ListboxItem, ListboxSection, User,} from "@heroui/react";
+import {StarIcon} from "lucide-react";
+import React, {useEffect, useState} from "react";
 import AddGroupModalContent from "@/lib/modalContents/AddGroupModalContent";
 import ModalWindow from "@/components/ModalWindow";
 
@@ -109,58 +103,59 @@ function Grouplist() {
     setAddGroupModalOpen(true);
   };
 
-  return (
-    <div className="flex flex-col items-center">
-      <Button color="primary" onPress={openAddGroupModal}>
-        Neue Gruppe hinzufügen
-      </Button>
+    return (
+        <div className="flex flex-col items-center">
+            <Button id="addGroup" color="primary" onPress={openAddGroupModal}>
+                Neue Gruppe hinzufügen
+            </Button>
 
-      {loading && <p>Lade Gruppen...</p>}
-      {error && <p className="text-red-500">Fehler: {error}</p>}
+            {loading && <p id="groupLoading">Lade Gruppen...</p>}
+            {error && <p id="groupError" className="text-red-500">Fehler: {error}</p>}
 
-      {!loading && !error && groups.length === 0 && (
-        <p className="text-gray-500 mt-4">Du bist noch in keiner Gruppe</p>
-      )}
+            {!loading && !error && groups.length === 0 && (
+                <p id="noGroups" className="text-gray-500 mt-4">Du bist noch in keiner Gruppe</p>
+            )}
 
-      {!loading && !error && groups.length > 0 && (
-        <Listbox
-          aria-label="Gruppen"
-          items={groups}
-          isVirtualized
-          onAction={(key) => console.log(`Selected group: ${key}`)}
-          virtualization={{ maxListboxHeight: 400, itemHeight: 5 }}
-        >
-          <ListboxSection>
-            {groups.map((group) => (
-              <ListboxItem 
-                key={group._id} 
-                textValue={group.groupname}
-              >
-                <div className="flex gap-2 justify-between items-center">
-                  <User
-                    avatarProps={{ size: "sm" }}
-                    description={`${group.members.length} Mitglieder`}
-                    name={group.groupname}
-                  />
-                  <Button
-                    variant="light"
-                    isIconOnly
-                    aria-label="star"
-                    onPress={(e) => {
-                      //e.preventDefault();
-                      toggleFavourite(group._id);
-                    }}
-                  >
-                    <StarIcon
-                      fill={group.isFavourite ? "currentColor" : "none"}
-                    />
-                  </Button>
-                </div>
-              </ListboxItem>
-            ))}
-          </ListboxSection>
-        </Listbox>
-      )}
+            {!loading && !error && groups.length > 0 && (
+                <Listbox
+                    id="groupList"
+                    aria-label="Gruppen"
+                    items={groups}
+                    isVirtualized
+                    onAction={(key) => console.log(`Selected group: ${key}`)}
+                    virtualization={{maxListboxHeight: 400, itemHeight: 5}}
+                >
+                    <ListboxSection>
+                        {groups.map((group) => (
+                            <ListboxItem
+                                key={group._id}
+                                textValue={group.groupname}
+                            >
+                                <div id="groupListItem" className="flex gap-2 justify-between items-center">
+                                    <User
+                                        avatarProps={{size: "sm"}}
+                                        description={`${group.members.length} Mitglieder`}
+                                        name={group.groupname}
+                                    />
+                                    <Button
+                                        variant="light"
+                                        isIconOnly
+                                        aria-label={"star_" + group.groupname}
+                                        onPress={() => {
+                                            toggleFavourite(group._id);
+                                        }}
+                                    >
+                                        <StarIcon
+                                            id="starIcon"
+                                            fill={group.isFavourite ? "currentColor" : "none"}
+                                        />
+                                    </Button>
+                                </div>
+                            </ListboxItem>
+                        ))}
+                    </ListboxSection>
+                </Listbox>
+            )}
 
       {isAddGroupModalOpen && (
         <ModalWindow

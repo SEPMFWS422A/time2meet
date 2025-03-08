@@ -18,7 +18,7 @@ const ModalWindow: React.FC<ModalWindowProps> = ({isOpen, onOpenChange, content,
             <ModalContent>
                 {() => (
                     <>
-                        <ModalHeader className="flex flex-col gap-1">{title}</ModalHeader>
+                        <ModalHeader className="flex flex-col items-center gap-1" id="modalHeader">{title}</ModalHeader>
                         <ModalBody>
                             {content}
                         </ModalBody>

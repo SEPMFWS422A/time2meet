@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Button, Form, Input } from "@heroui/react";
+import { Button, Input } from "@heroui/react";
 
 interface AddGroupModalContentProps {
   onClose: () => void;
@@ -61,10 +61,10 @@ const AddGroupModalContent: React.FC<AddGroupModalContentProps> = ({
       />
       {error && <p className="text-red-500">{error}</p>}
       <div className="flex justify-end gap-3">
-        <Button color="danger" variant="light" onPress={onClose}>
+        <Button id="closeButtonAddGroupModal" color="danger" variant="light" onPress={onClose}>
           Schließen
         </Button>
-        <Button color="primary" onPress={handleCreateGroup} disabled={loading}>
+        <Button id="createGroupButtonAddGroupModal" color="primary" onPress={handleCreateGroup} disabled={loading}>
           Gruppe erstellen
         </Button>
       </div>
