@@ -1,7 +1,7 @@
 import mongoose, { Schema, Document } from 'mongoose';
 
 export interface ISurvey extends Document {
-  titel: string;
+  title: string;
   description?: string;
   creator: mongoose.Types.ObjectId; // Referenz auf den Ersteller
   groupId?: mongoose.Types.ObjectId; // Referenz auf eine Gruppe
@@ -28,7 +28,7 @@ export interface ISurvey extends Document {
 }
 
 const SurveySchema: Schema = new Schema({
-  titel: { type: String, required: true },
+  title: { type: String, required: true },
   description: { type: String },
   creator: { type: Schema.Types.ObjectId, ref: 'User', required: true },
   groupId: { type: Schema.Types.ObjectId, ref: 'Group' },
