@@ -1,6 +1,6 @@
 import mongoose, { Schema, Document } from 'mongoose';
 
-export interface IUmfrage extends Document {
+export interface ISurvey extends Document {
   titel: string;
   beschreibung?: string;
   ersteller: mongoose.Types.ObjectId; // Referenz auf den Ersteller
@@ -22,7 +22,7 @@ export interface IUmfrage extends Document {
   ort?: string;
 }
 
-const UmfrageSchema: Schema = new Schema({
+const SurveySchema: Schema = new Schema({
   titel: { type: String, required: true },
   beschreibung: { type: String },
   ersteller: { type: Schema.Types.ObjectId, ref: 'User', required: true },
@@ -48,4 +48,4 @@ const UmfrageSchema: Schema = new Schema({
   ort: { type: String }
 }, { timestamps: true });
 
-export default mongoose.models.Umfrage || mongoose.model<IUmfrage>('Umfrage', UmfrageSchema);
+export default mongoose.models.Survey || mongoose.model<ISurvey>('Survey', SurveySchema);
