@@ -1,7 +1,9 @@
 import React, {useState} from "react";
-import {Card, CardBody} from "@heroui/react";
+import {Button, Card, CardBody} from "@heroui/react";
 import ModalWindow from "@/components/ModalWindow";
-import MultipleChoiceSurvey from "@/components/MultipleChoiceSurvey";
+import SurveyParticipationModal from "@/components/SurveyParticipationModal";
+import {EditIcon, FileQuestionIcon, TrashIcon} from "lucide-react";
+import Survey from "@/lib/models/Survey";
 
 interface DaySchedule {
     date: string;
@@ -9,15 +11,19 @@ interface DaySchedule {
 }
 
 interface Survey {
+    _id: string;
     title: string;
     description: string;
-    options?: string[]; // Optional für Aktivitätsumfrage
-    schedule?: DaySchedule[]; // Optional für Termin-/Zeitumfrage
+    creator: string;
+    options?: string[];
+    schedule?: DaySchedule[];
     status: "aktiv" | "entwurf" | "geschlossen";
 }
 
 interface SurveyListProps {
     surveyList: Survey[];
+    onDeleteSurvey?: (surveyId: string) => void;
+    isCreatedByCurrentUser: boolean;
 }
 
 const StatusBadge = ({status}: { status: string }) => {
@@ -41,13 +47,38 @@ const StatusBadge = ({status}: { status: string }) => {
     );
 };
 
-const SurveyList: React.FC<SurveyListProps> = ({surveyList = []}) => {
+const SurveyList: React.FC<SurveyListProps> = ({surveyList, onDeleteSurvey, isCreatedByCurrentUser}) => {
     const [selectedSurvey, setSelectedSurvey] = useState<Survey | null>(null);
-    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isSurveyModalOpen, setIsSurveyModalOpen] = useState(false);
+    const [isDeleteConfirmationModalOpen, setIsDeleteConfirmationModalOpen] = useState(false);
+    const [surveyToDelete, setSurveyToDelete] = useState<Survey | null>(null);
 
-    const handleSurveyClick = (survey: Survey) => {
-        setSelectedSurvey(survey);
-        setIsModalOpen(true);
+    const openDeleteConfirmationModal = (survey: Survey) => {
+        setSurveyToDelete(survey);
+        setIsDeleteConfirmationModalOpen(true);
+    };
+
+    const closeDeleteConfirmationModal = () => {
+        setIsDeleteConfirmationModalOpen(false);
+        setSurveyToDelete(null);
+    };
+
+    const openSurveyModal = (survey: Survey) => {
+        setSelectedSurvey(survey)
+        setIsSurveyModalOpen(true);
+    }
+
+    const closeSurveyModal = () => {
+        setIsSurveyModalOpen(false);
+    }
+
+    const handleDeleteSurvey = () => {
+        if (surveyToDelete) {
+            if (onDeleteSurvey) {
+                onDeleteSurvey(surveyToDelete._id);
+            } // Löscht die Umfrage über den Callback
+        }
+        closeDeleteConfirmationModal();
     };
 
     return (
@@ -59,17 +90,37 @@ const SurveyList: React.FC<SurveyListProps> = ({surveyList = []}) => {
                     {surveyList.map((survey, index) => (
                         <Card
                             isPressable
+                            onPress={() => openSurveyModal(survey)}
                             key={index}
                             className="w-full mb-3 hover:bg-gray-50 "
-                            onPress={() => handleSurveyClick(survey)}
                         >
                             <CardBody>
-                                <div className="flex justify-between items-start">
+                                <div className="flex justify-between items-center">
                                     <div>
                                         <h3 className="font-semibold text-lg">{survey.title}</h3>
                                         <p className="text-gray-600 text-sm">{survey.description}</p>
                                     </div>
-                                    <StatusBadge status={survey.status}/>
+                                    <div className="flex flex-col items-end gap-2">
+                                        <StatusBadge status={survey.status}/>
+                                        <div className="flex flex-row items-end gap-1">
+                                            <Button variant="bordered" isIconOnly>
+                                                <FileQuestionIcon size="20"/>
+                                            </Button>
+                                            {isCreatedByCurrentUser && (
+                                                <>
+                                                    <Button variant="bordered" isIconOnly>
+                                                        <EditIcon size="20"/>
+                                                    </Button>
+                                                    <Button onPress={() => openDeleteConfirmationModal(survey)}
+                                                            variant="bordered" isIconOnly>
+                                                        <TrashIcon size="20"/>
+                                                    </Button>
+                                                </>
+
+                                            )}
+
+                                        </div>
+                                    </div>
                                 </div>
                             </CardBody>
                         </Card>
@@ -77,13 +128,29 @@ const SurveyList: React.FC<SurveyListProps> = ({surveyList = []}) => {
                 </div>
             )}
 
-            {isModalOpen && selectedSurvey && (
+            {isDeleteConfirmationModalOpen && (
                 <ModalWindow
-                    isOpen={isModalOpen}
-                    onOpenChange={setIsModalOpen}
+                    isOpen={isDeleteConfirmationModalOpen}
+                    onOpenChange={setIsDeleteConfirmationModalOpen}
+                    title="Möchtest du diese Umfrage wirklich löschen?"
+                    content={
+                        <div className="flex justify-center gap-5">
+                            <Button color="danger" onPress={handleDeleteSurvey}>
+                                Löschen
+                            </Button>
+                            <Button onPress={closeDeleteConfirmationModal}>Abbrechen</Button>
+                        </div>
+                    }
+                />
+            )}
+
+            {isSurveyModalOpen && selectedSurvey && (
+                <ModalWindow
+                    isOpen={isSurveyModalOpen}
+                    onOpenChange={setIsSurveyModalOpen}
                     size="lg"
                     content={
-                        <MultipleChoiceSurvey
+                        <SurveyParticipationModal
                             title={selectedSurvey.title}
                             description={selectedSurvey.description}
                             options={selectedSurvey.options || []}

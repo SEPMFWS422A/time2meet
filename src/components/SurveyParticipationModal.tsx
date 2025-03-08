@@ -46,7 +46,7 @@ const SortableItem = ({id}: { id: string }) => {
     );
 };
 
-const MultipleChoiceSurvey: React.FC<SurveyProps> = ({title, description, options = [], schedule = []}) => {
+const SurveyParticipationModal: React.FC<SurveyProps> = ({title, description, options = [], schedule = []}) => {
     const [answers, setAnswers] = useState<ScheduleAnswer[]>([]);
     const [activityOptions, setActivityOptions] = useState(options);
 
@@ -122,4 +122,4 @@ const MultipleChoiceSurvey: React.FC<SurveyProps> = ({title, description, option
     );
 };
 
-export default MultipleChoiceSurvey;
+export default SurveyParticipationModal;
