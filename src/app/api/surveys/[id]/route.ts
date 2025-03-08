@@ -25,7 +25,7 @@ export async function DELETE(req: NextRequest, {params}: { params: Promise<{ id:
         });
 
         if (!deletedSurvey) {
-            return NextResponse.json({message: "Umfrage nicht gefunden oder du bist nicht der Ersteller."}, {status: 403});
+            return NextResponse.json({message: "Umfrage nicht gefunden oder du bist nicht der Ersteller."}, {status: 404});
         }
 
         return NextResponse.json({message: `Die Umfrage wurde erfolgreich gelöscht.`}, {status: 200});
