@@ -1,7 +1,7 @@
 import React, {useState} from "react";
 import {Button, Card, CardBody} from "@heroui/react";
 import ModalWindow from "@/components/ModalWindow";
-import SurveyParticipationModal from "@/components/SurveyParticipationModal";
+import SurveyParticipationModal from "@/lib/modalContents/SurveyParticipationModal";
 import {EditIcon, FileQuestionIcon, TrashIcon} from "lucide-react";
 import Survey from "@/lib/models/Survey";
 

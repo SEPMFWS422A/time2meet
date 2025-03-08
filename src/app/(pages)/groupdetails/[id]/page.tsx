@@ -1,4 +1,4 @@
-import MultipleChoiceSurvey from "@/components/MultipleChoiceSurvey";
+import SurveyParticipationModal from "@/lib/modalContents/SurveyParticipationModal";
 
 const groups = {
     '1': {
@@ -51,7 +51,7 @@ export default function GroupPage({ params }) {
                 <h2 className="text-xl font-semibold mb-2">Umfragen</h2>
                 <div className="space-y-6">
                     {group.surveys.map((survey, index) => (
-                        <MultipleChoiceSurvey
+                        <SurveyParticipationModal
                             key={index}
                             title={survey.title}
                             description={survey.description}

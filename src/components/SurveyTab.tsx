@@ -100,7 +100,7 @@ export default function SurveyTab() {
                 {date: "2024-06-17", timeSlots: ["18:00-19:00", "19:00-20:00"]},
             ]
         }
-    ];
+    ]);
 
     // Funktion zum Löschen der Umfrage
     const deleteSurvey = (surveyId: string) => {
@@ -110,6 +110,23 @@ export default function SurveyTab() {
         setSurveys((prevSurveys) => prevSurveys.filter((survey) => survey._id !== surveyId));
         setNotification({message: "Umfrage erfolgreich gelöscht!", type: "success"});
     };
+
+    // const deleteSurvey = async (surveyId: string) => {
+    //     try {
+    //         const response = await axios.delete(`/api/surveys/${surveyId}`, {
+    //             data: {_id: surveyId},
+    //             withCredentials: true
+    //         });
+    //
+    //         if (response.data.success) {
+    //             setSurveys((prevSurveys) => prevSurveys.filter((survey) => survey._id !== surveyId));
+    //
+    //             setNotification({message: "Umfrage erfolgreich gelöscht!", type: "success"});
+    //         }
+    //     } catch {
+    //         setNotification({message: "Fehler beim Löschen der Umfrage!", type: "error"});
+    //     }
+    // }
 
     const createdSurveys = surveys.filter((survey) => survey.creator === loggedInUserId);
     const receivedSurveys = surveys.filter((survey) => survey.creator !== loggedInUserId);
