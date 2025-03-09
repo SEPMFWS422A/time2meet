@@ -52,7 +52,7 @@ describe("API /api/user/[id]", () => {
       const data = await response.json();
 
       expect(User.findById).toHaveBeenCalledWith(testUserId);
-      expect(data).toEqual({ success: true, data: { _id: testUserId, name: "Max" } });
+      expect(data).toEqual({ success: true, data: { _id: testUserId, name: "Max" }, status: 200 });
     });
 
     test("should return 404 if the user is not found", async () => {
@@ -79,7 +79,7 @@ describe("API /api/user/[id]", () => {
       const params = { id: testUserId };
       const response = await GET(request as unknown as Request, { params: Promise.resolve(params) });
       
-      expect(response.status).toBe(400);
+      expect(response.status).toBe(500);
       const data = await response.json();
       expect(data).toEqual({ 
         success: false, 
@@ -99,7 +99,7 @@ describe("API /api/user/[id]", () => {
       const data = await response.json();
 
       expect(User.findByIdAndUpdate).toHaveBeenCalledWith(testUserId, requestBody, expect.any(Object));
-      expect(data).toEqual({ success: true, data: { _id: testUserId, name: "MaxUpdated" } });
+      expect(data).toEqual({ success: true, data: { _id: testUserId, name: "MaxUpdated" }, status: 200  });
     });
 
     test("should return 404 if the user is not found", async () => {
@@ -124,7 +124,7 @@ describe("API /api/user/[id]", () => {
       const response = await PATCH(request as unknown as Request, { params: Promise.resolve(params) });
       const data = await response.json();
       
-      expect(data).toEqual({ success: true, data: { _id: testUserId, name: "MaxPatch" } });
+      expect(data).toEqual({ success: true, data: { _id: testUserId, name: "MaxPatch" }, status: 200  });
     });
   });
 
@@ -138,7 +138,7 @@ describe("API /api/user/[id]", () => {
       const data = await response.json();
 
       expect(User.findByIdAndDelete).toHaveBeenCalledWith(testUserId);
-      expect(data).toEqual({ success: true, data: { _id: testUserId } });
+      expect(data).toEqual({ success: true, data: { _id: testUserId } , status: 200 });
     });
   });
 });
