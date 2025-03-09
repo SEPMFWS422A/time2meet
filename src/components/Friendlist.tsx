@@ -149,7 +149,7 @@ function Friendlist() {
         <Listbox
           aria-label="Freunde"
           items={friends}
-          onAction={(key) => console.log(`Ausgewählter Freund: ${key}`)}
+          
         >
           <ListboxSection>
             {friends.map((friend) => (
