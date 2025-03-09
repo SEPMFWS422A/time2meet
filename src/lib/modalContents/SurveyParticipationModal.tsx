@@ -1,4 +1,3 @@
-"use client";
 import React, { useState } from "react";
 import { Button, Card, CardBody, CardHeader, Radio, RadioGroup } from "@heroui/react";
 import { LucideBadgeCheck } from "lucide-react";

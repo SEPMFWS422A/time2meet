@@ -1,5 +1,5 @@
 import React from "react";
-import { Radio, RadioGroup } from "@heroui/react";
+import {Radio, RadioGroup} from "@heroui/react";
 
 interface ScheduleSurveyProps {
     dateTimeSelections: {
@@ -15,7 +15,7 @@ interface ScheduleSurveyProps {
     onTimeSlotChange: (date: Date, startTime: string, endTime: string, response: "ja" | "nein" | "vielleicht") => void;
 }
 
-const DateSurvey: React.FC<ScheduleSurveyProps> = ({ dateTimeSelections, onTimeSlotChange }) => {
+const DateSurvey: React.FC<ScheduleSurveyProps> = ({dateTimeSelections, onTimeSlotChange}) => {
     return (
         <>
             {dateTimeSelections.map((day, index) => (
@@ -36,7 +36,7 @@ const DateSurvey: React.FC<ScheduleSurveyProps> = ({ dateTimeSelections, onTimeS
                                 <RadioGroup
                                     orientation="horizontal"
                                     name={`${day.date}-${time.startTime}-${time.endTime}`}
-                                    onValueChange={(value) =>onTimeSlotChange(day.date, time.startTime, time.endTime, value as "ja" | "nein" | "vielleicht")                                    }
+                                    onValueChange={(value) => onTimeSlotChange(day.date, time.startTime, time.endTime, value as "ja" | "nein" | "vielleicht")}
                                     className="mt-2"
                                 >
                                     <Radio value="ja" color="success">Ja</Radio>

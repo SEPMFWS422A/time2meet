@@ -1,5 +1,3 @@
-"use client";
-
 import React from "react";
 import TabView from "@/components/TabView";
 import Grouplist from "@/components/Grouplist";

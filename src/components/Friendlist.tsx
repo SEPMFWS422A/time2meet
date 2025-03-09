@@ -1,3 +1,5 @@
+'use client';
+
 import { Button, Listbox, ListboxItem, ListboxSection, User as UserAvatar} from "@heroui/react";
 import { StarIcon, XIcon } from "lucide-react";
 import React, { useEffect, useState } from "react";

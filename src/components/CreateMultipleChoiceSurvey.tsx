@@ -1,3 +1,5 @@
+'use client';
+
 import React, {useState} from "react";
 import {Button, Form, Input} from "@heroui/react";
 import {LucidePlus, Trash2} from "lucide-react";

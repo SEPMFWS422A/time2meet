@@ -1,3 +1,5 @@
+'use client';
+
 import React, {useState} from "react";
 import {Button, Card, CardBody} from "@heroui/react";
 import ModalWindow from "@/components/ModalWindow";
@@ -95,7 +97,7 @@ const SurveyList: React.FC<SurveyListProps> = ({
                                         <StatusBadge status={survey.status}/>
                                         <div className="flex flex-row items-end gap-1">
                                             <Button variant="bordered" isIconOnly>
-                                                <FileQuestionIcon size="20"/>
+                                                <FileQuestionIcon color="green" size="20"/>
                                             </Button>
                                             {isCreatedByCurrentUser && (
                                                 <>
@@ -104,7 +106,7 @@ const SurveyList: React.FC<SurveyListProps> = ({
                                                     </Button>
                                                     <Button onPress={() => openDeleteConfirmationModal(survey)}
                                                             variant="bordered" isIconOnly>
-                                                        <TrashIcon size="20"/>
+                                                        <TrashIcon color="red" size="20"/>
                                                     </Button>
                                                 </>
 
