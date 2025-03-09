@@ -4,22 +4,7 @@ import TabView from "@/components/TabView";
 import {ClipboardIcon, ClipboardPenIcon} from "lucide-react";
 import CreateSurvey from "@/components/CreateSurvey";
 import SurveyList from "@/components/SurveyList";
-import axios from "axios";
-
-interface DaySchedule {
-    date: string;
-    timeSlots: string[];
-}
-
-interface Survey {
-    _id: string;
-    title: string;
-    description: string;
-    creator: string;
-    options: string[];
-    schedule: DaySchedule[];
-    status: "aktiv" | "entwurf" | "geschlossen";
-}
+import {Survey} from "@/lib/interfaces/Survey";
 
 interface Notification {
     message: string;
@@ -29,6 +14,9 @@ interface Notification {
 export default function SurveyTab() {
     const [loggedInUserId, setLoggedInUserId] = useState<string | null>(null);
     const [notification, setNotification] = useState<Notification | null>();
+    const [surveys, setSurveys] = useState<Survey[]>([]);
+    const [loading, setLoading] = useState<boolean>(true);
+    const [error, setError] = useState<string>("");
 
     useEffect(() => {
         const decodeToken = async () => {
@@ -56,77 +44,30 @@ export default function SurveyTab() {
         }
     }, [notification]);
 
-    const [surveys, setSurveys] = useState<Survey[]>([
-        {
-            _id: "1",
-            title: "Freizeitaktivität",
-            description: "Wählt eine Aktivität für das Wochenende",
-            creator: "67ca0e0ee1fde21758c3afe6",
-            options: ["Kino", "Bowling", "Escape Room"],
-            status: "entwurf",
-            schedule: []
-        },
-        {
-            _id: "2",
-            title: "Teammeeting",
-            description: "Finde den besten Termin für das Meeting",
-            creator: "67ca0e0ee1fde21758c3afe6",
-            options: [],
-            status: "geschlossen",
-            schedule: [
-                {date: "2024-05-10", timeSlots: ["10:00-11:00", "11:00-12:00"]},
-                {date: "2024-05-11", timeSlots: ["14:00-15:00", "15:00-16:00"]}
-            ]
-        },
-        {
-            _id: "3",
-            title: "Kinoabend",
-            description: "Welche Aktivität bevorzugt ihr?",
-            creator: "67c5632c1424a8f615090b09",
-            options: ["Kino", "Brettspiele", "Barbesuch"],
-            status: "aktiv",
-            schedule: []
-        },
-        {
-            _id: "4",
-            title: "Geburtstagsfeier",
-            description: "Ich möchte gerne meinen Geburtstag nachfeiern und möchte wissen, worauf ihr Lust und wann ihr Zeit habt?",
-            creator: "67c5632c1424a8f615090b09",
-            options: ["Kino", "Brettspiele", "Barbesuch"],
-            status: "aktiv",
-            schedule: [
-                {date: "2024-06-15", timeSlots: ["18:00-19:00", "19:00-20:00"]},
-                {date: "2024-06-16", timeSlots: ["18:00-19:00", "19:00-20:00"]},
-                {date: "2024-06-17", timeSlots: ["18:00-19:00", "19:00-20:00"]},
-            ]
-        }
-    ]);
 
-    // Funktion zum Löschen der Umfrage
-    const deleteSurvey = (surveyId: string) => {
-        if (!surveyId) {
-            setNotification({message: "Fehler beim Löschen der Umfrage!", type: "error"});
-        }
-        setSurveys((prevSurveys) => prevSurveys.filter((survey) => survey._id !== surveyId));
-        setNotification({message: "Umfrage erfolgreich gelöscht!", type: "success"});
-    };
+    useEffect(() => {
+        const fetchSurveys = async () => {
+            try {
+                const response = await fetch("/api/surveys/getparticipantssurvey");
 
-    // const deleteSurvey = async (surveyId: string) => {
-    //     try {
-    //         const response = await axios.delete(`/api/surveys/${surveyId}`, {
-    //             data: {_id: surveyId},
-    //             withCredentials: true
-    //         });
-    //
-    //         if (response.data.success) {
-    //             setSurveys((prevSurveys) => prevSurveys.filter((survey) => survey._id !== surveyId));
-    //
-    //             setNotification({message: "Umfrage erfolgreich gelöscht!", type: "success"});
-    //         }
-    //     } catch {
-    //         setNotification({message: "Fehler beim Löschen der Umfrage!", type: "error"});
-    //     }
-    // }
+                if (!response.ok) throw new Error("Fehler beim Aufrufen der Umfragen.")
+
+                const data = await response.json();
+
+                setSurveys(data);
+            } catch {
+                setError("Es gab ein Problem beim Laden der Umfragen.");
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchSurveys();
+    }, []);
+
+    if (error) {
+        return <div>{error}</div>
+    }
 
     const createdSurveys = surveys.filter((survey) => survey.creator === loggedInUserId);
     const receivedSurveys = surveys.filter((survey) => survey.creator !== loggedInUserId);
@@ -147,7 +88,7 @@ export default function SurveyTab() {
                             <div>
                                 <CreateSurvey/>
                                 <Card className="w-full p-4">
-                                    <SurveyList surveyList={createdSurveys} onDeleteSurvey={deleteSurvey}
+                                    <SurveyList error={error} loading={loading} surveyList={createdSurveys}
                                                 isCreatedByCurrentUser={true}/>
                                 </Card>
                             </div>
@@ -158,7 +99,8 @@ export default function SurveyTab() {
                         title: "Erhaltene Umfragen",
                         content: (
                             <Card className="w-full p-4">
-                                <SurveyList surveyList={receivedSurveys} isCreatedByCurrentUser={false}/>
+                                <SurveyList error={error} loading={loading} surveyList={receivedSurveys}
+                                            isCreatedByCurrentUser={false}/>
                             </Card>
                         ),
                         icon: <ClipboardIcon/>,
@@ -166,6 +108,7 @@ export default function SurveyTab() {
                 ]}
                 selectedTab="Selbsterstellte Umfragen"
             />
+
         </div>
     );
 }

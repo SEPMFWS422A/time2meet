@@ -3,27 +3,14 @@ import {Button, Card, CardBody} from "@heroui/react";
 import ModalWindow from "@/components/ModalWindow";
 import SurveyParticipationModal from "@/lib/modalContents/SurveyParticipationModal";
 import {EditIcon, FileQuestionIcon, TrashIcon} from "lucide-react";
-import Survey from "@/lib/models/Survey";
-
-interface DaySchedule {
-    date: string;
-    timeSlots: string[];
-}
-
-interface Survey {
-    _id: string;
-    title: string;
-    description: string;
-    creator: string;
-    options?: string[];
-    schedule?: DaySchedule[];
-    status: "aktiv" | "entwurf" | "geschlossen";
-}
+import {Survey} from "@/lib/interfaces/Survey";
 
 interface SurveyListProps {
-    surveyList: Survey[];
-    onDeleteSurvey?: (surveyId: string) => void;
-    isCreatedByCurrentUser: boolean;
+    surveyList: Survey[],
+    onDeleteSurvey?: (surveyId: string) => void,
+    isCreatedByCurrentUser: boolean,
+    loading: boolean,
+    error: string
 }
 
 const StatusBadge = ({status}: { status: string }) => {
@@ -47,7 +34,13 @@ const StatusBadge = ({status}: { status: string }) => {
     );
 };
 
-const SurveyList: React.FC<SurveyListProps> = ({surveyList, onDeleteSurvey, isCreatedByCurrentUser}) => {
+const SurveyList: React.FC<SurveyListProps> = ({
+                                                   surveyList,
+                                                   onDeleteSurvey,
+                                                   isCreatedByCurrentUser,
+                                                   loading,
+                                                   error
+                                               }) => {
     const [selectedSurvey, setSelectedSurvey] = useState<Survey | null>(null);
     const [isSurveyModalOpen, setIsSurveyModalOpen] = useState(false);
     const [isDeleteConfirmationModalOpen, setIsDeleteConfirmationModalOpen] = useState(false);
@@ -68,10 +61,6 @@ const SurveyList: React.FC<SurveyListProps> = ({surveyList, onDeleteSurvey, isCr
         setIsSurveyModalOpen(true);
     }
 
-    const closeSurveyModal = () => {
-        setIsSurveyModalOpen(false);
-    }
-
     const handleDeleteSurvey = () => {
         if (surveyToDelete) {
             if (onDeleteSurvey) {
@@ -83,15 +72,17 @@ const SurveyList: React.FC<SurveyListProps> = ({surveyList, onDeleteSurvey, isCr
 
     return (
         <div>
-            {surveyList.length === 0 ? (
+            {loading && <p id="surveyLoading">Lade Umfragen...</p>}
+            {error !== "" && <p id="surveyError" className="text-red-500">Fehler: {error}</p>}
+            {!loading && error === "" && surveyList.length === 0 ? (
                 <p className="text-gray-500">Keine Umfragen vorhanden.</p>
             ) : (
                 <div>
-                    {surveyList.map((survey, index) => (
+                    {surveyList.map((survey) => (
                         <Card
                             isPressable
                             onPress={() => openSurveyModal(survey)}
-                            key={index}
+                            key={survey._id}
                             className="w-full mb-3 hover:bg-gray-50 "
                         >
                             <CardBody>
@@ -118,7 +109,6 @@ const SurveyList: React.FC<SurveyListProps> = ({surveyList, onDeleteSurvey, isCr
                                                 </>
 
                                             )}
-
                                         </div>
                                     </div>
                                 </div>
@@ -150,12 +140,7 @@ const SurveyList: React.FC<SurveyListProps> = ({surveyList, onDeleteSurvey, isCr
                     onOpenChange={setIsSurveyModalOpen}
                     size="lg"
                     content={
-                        <SurveyParticipationModal
-                            title={selectedSurvey.title}
-                            description={selectedSurvey.description}
-                            options={selectedSurvey.options || []}
-                            schedule={selectedSurvey.schedule || []}
-                        />
+                        <SurveyParticipationModal survey={selectedSurvey}/>
                     }
                 />
             )}
