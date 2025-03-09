@@ -15,7 +15,7 @@ export async function GET(req: NextRequest) {
     try {
         // Find all surveys where current user is a participant
         const surveys = await Survey.find({
-            teilnehmer: { $elemMatch: { userId: currentUser.id } }
+            participants: { $elemMatch: { userId: currentUser.id } }
         });
         
         return NextResponse.json(surveys);

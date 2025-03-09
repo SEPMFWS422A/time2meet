@@ -14,7 +14,7 @@ export async function GET(req: NextRequest) {
 
     try {
         // Find all surveys where the current user is the creator
-        const surveys = await Survey.find({ ersteller: currentUser.id });
+        const surveys = await Survey.find({ creator: currentUser.id });
         
         return NextResponse.json(surveys);
     } catch (error) {
