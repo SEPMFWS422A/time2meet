@@ -48,7 +48,7 @@ export default function SurveyTab() {
     useEffect(() => {
         const fetchSurveys = async () => {
             try {
-                const response = await fetch("/api/surveys/getparticipantssurvey");
+                const response = await fetch("/api/surveys/participating");
 
                 if (!response.ok) throw new Error("Fehler beim Aufrufen der Umfragen.")
 
