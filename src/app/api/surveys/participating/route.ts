@@ -15,7 +15,7 @@ export async function GET(req: NextRequest) {
         
         const surveys = await Survey.find().lean();
         const filteredSurveys = surveys.filter(survey =>
-            survey.participants.some((participant: string) => participant === id)
+            survey.participants.some((participant:string) => participant.toString() === id)
         );
         return NextResponse.json(filteredSurveys);
     } catch (error) {
