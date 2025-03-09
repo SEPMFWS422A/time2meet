@@ -46,7 +46,7 @@ export async function GET(
   } catch (error: any) {
     return NextResponse.json(
       { success: false, error: error.message },
-      { status: 400 }
+      { status: 500 }
     );
   }
 }
@@ -89,7 +89,7 @@ export async function PATCH(
     } catch (error: any) {
       return NextResponse.json(
         { success: false, error: error.message },
-        { status: 400 }
+        { status: 500 }
       );
     }
   }

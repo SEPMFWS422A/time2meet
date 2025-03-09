@@ -17,11 +17,11 @@ export async function GET(
         { status: 404 }
       );
     }
-    return NextResponse.json({ success: true, data: user });
+    return NextResponse.json({ success: true, data: user, status: 200 });
   } catch (error: any) {
     return NextResponse.json(
       { success: false, error: error.message },
-      { status: 400 }
+      { status: 500 }
     );
   }
 }
@@ -45,7 +45,7 @@ export async function PUT(
         { status: 404 }
       );
     }
-    return NextResponse.json({ success: true, data: user });
+    return NextResponse.json({ success: true, data: user, status: 200 });
   } catch (error: any) {
     return NextResponse.json(
       { success: false, error: error.message },
@@ -70,7 +70,7 @@ export async function PATCH(
         { status: 404 }
       );
     }
-    return NextResponse.json({ success: true, data: user });
+    return NextResponse.json({ success: true, data: user, status: 200 });
   } catch (error: any) {
     return NextResponse.json(
       { success: false, error: error.message },
@@ -94,7 +94,7 @@ export async function DELETE(
         { status: 404 }
       );
     }
-    return NextResponse.json({ success: true, data: deletedUser });
+    return NextResponse.json({ success: true, data: deletedUser, status: 200 });
   } catch (error: any) {
     return NextResponse.json(
       { success: false, error: error.message },
