@@ -37,7 +37,7 @@ const AddEventModalContent: React.FC<AddEventModalContentProps> = ({ onClose, re
     if (isAllDay) {
       return title.trim() !== "" && startTime.trim() !== "";
     }
-    return title.trim() !== "" && startTime.trim() !== "" && endTime.trim() !== "";
+    return title.trim() !== "" && startTime.trim() !== "" && endTime.trim() !== "" && !unreachableEndTimeError;
   };
 
   const handleStartTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -125,10 +125,10 @@ const AddEventModalContent: React.FC<AddEventModalContentProps> = ({ onClose, re
 
   return (
       <div>
-        <Form className="p-4 space-y-3">
-          <Input label="Titel" isRequired value={title} onChange={(e) => setTitle(e.target.value)} />
+        <Form id="addEventForm" className="p-4 space-y-3">
+          <Input id="title" label="Titel" isRequired value={title} onChange={(e) => setTitle(e.target.value)} />
 
-          <Input label="Beschreibung" value={description} onChange={(e) => setDescription(e.target.value)} />
+          <Input id="description" label="Beschreibung" value={description} onChange={(e) => setDescription(e.target.value)} />
 
           {isAllDay ? (
               <Input
@@ -179,7 +179,7 @@ const AddEventModalContent: React.FC<AddEventModalContentProps> = ({ onClose, re
             </label>
           </div>
 
-          {errorMessage && <div className="text-red-500 text-sm">{errorMessage}</div>}
+          {errorMessage && <div id="generalFormError" className="text-red-500 text-sm">{errorMessage}</div>}
 
           <div className="pt-4 w-full flex justify-end space-x-4">
             <Button color="danger" variant="light" onPress={onClose} disabled={loading}>
