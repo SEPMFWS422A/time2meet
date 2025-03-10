@@ -3,3 +3,6 @@ import { TextEncoder, TextDecoder } from "util";
 
 global.TextEncoder = TextEncoder;
 global.TextDecoder = TextDecoder as any;
+
+jest.mock("@/lib/database/dbConnect");
+jest.mock("jsonwebtoken");

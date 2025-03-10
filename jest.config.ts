@@ -19,6 +19,8 @@ const config: Config = {
   setupFilesAfterEnv: ["<rootDir>/jest.setup.ts"],
   moduleNameMapper: {
     "^@/(.*)$": "<rootDir>/src/$1",
+    "^@/lib/(.*)$": "<rootDir>/src/lib/$1",
+    "^@/app/(.*)$": "<rootDir>/src/app/$1",
   },
   transform: {
     "^.+\\.(ts|tsx)$": "ts-jest",

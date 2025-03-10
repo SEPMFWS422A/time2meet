@@ -2,13 +2,13 @@ import { NextRequest, NextResponse } from "next/server";
 import dbConnect from "@/lib/database/dbConnect";
 import Group from "@/lib/models/Group";
 import User from "@/lib/models/User";
-import { getUserID, getGroup } from "@/lib/helper";
-
+import { getUserID } from "@/lib/helper";
 
 
 export async function GET(req: NextRequest) {
     await dbConnect();
     const user = await getUserID(req);
+
     if(user.error){
         return NextResponse.json({ success: false, error: user.error}, { status: user.status });
     }
@@ -17,10 +17,9 @@ export async function GET(req: NextRequest) {
         const userData = await User.findById(user.id).select("favouriteGroups");
         const favouriteGroups = userData?.favouriteGroups.map((id: any) => id.toString()) || [];
 
-
-        const groups = await Group.find({
+        const groups = (await Group.find({
             $or: [{members: user.id}, { admins: user.id}],
-        }).select("_id groupname beschreibung members").lean();
+        }).select("_id groupname beschreibung members").lean()) || [];
 
         const groupsWithFavStatus = groups.map((group: any) => ({
             ...group,
@@ -52,8 +51,10 @@ export async function POST(req: NextRequest) {
             members: [user.id],
         });
 
-        await newGroup.save();
-        return NextResponse.json({ success: true, data: newGroup }, { status: 201 });
+        
+
+        const savedGroup = await newGroup.save();
+        return NextResponse.json({ success: true, data: savedGroup }, { status: 201 });
     } catch (error: any) {
         return NextResponse.json({ success: false, error: error.message }, { status: 500 });
         
