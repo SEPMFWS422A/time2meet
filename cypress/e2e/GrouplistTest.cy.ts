@@ -1,4 +1,4 @@
-describe('Grouplist Component', () => {
+describe('Grouplist Tests', () => {
     beforeEach(() => {
         cy.visit('http://localhost:3000/login');
         cy.get('input#email').type('K2@K2.com');

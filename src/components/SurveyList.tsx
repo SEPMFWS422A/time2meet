@@ -1,7 +1,7 @@
 'use client';
 
 import React, {useState} from "react";
-import {Button, Card, CardBody} from "@heroui/react";
+import {Button, Listbox, ListboxItem, ListboxSection} from "@heroui/react";
 import ModalWindow from "@/components/ModalWindow";
 import SurveyParticipationModal from "@/lib/modalContents/SurveyParticipationModal";
 import {EditIcon, FileQuestionIcon, TrashIcon} from "lucide-react";
@@ -67,7 +67,7 @@ const SurveyList: React.FC<SurveyListProps> = ({
         if (surveyToDelete) {
             if (onDeleteSurvey) {
                 onDeleteSurvey(surveyToDelete._id);
-            } // Löscht die Umfrage über den Callback
+            }
         }
         closeDeleteConfirmationModal();
     };
@@ -79,19 +79,24 @@ const SurveyList: React.FC<SurveyListProps> = ({
             {!loading && error === "" && surveyList.length === 0 ? (
                 <p className="text-gray-500">Keine Umfragen vorhanden.</p>
             ) : (
-                <div>
-                    {surveyList.map((survey) => (
-                        <Card
-                            isPressable
-                            onPress={() => openSurveyModal(survey)}
-                            key={survey._id}
-                            className="w-full mb-3 hover:bg-gray-50 "
-                        >
-                            <CardBody>
-                                <div className="flex justify-between items-center">
+                <Listbox
+                    id="surveyList"
+                    aria-label="Surveys"
+                    items={surveyList}
+                >
+                    <ListboxSection>
+                        {surveyList.map((survey) => (
+                            <ListboxItem
+                                variant="faded"
+                                onPress={() => openSurveyModal(survey)}
+                                key={survey._id}
+                                textValue={survey.title}
+                            >
+                                <div id="surveyListItem" className="flex gap-2 justify-between items-center">
                                     <div>
-                                        <h3 className="font-semibold text-lg">{survey.title}</h3>
-                                        <p className="text-gray-600 text-sm">{survey.description}</p>
+                                        <h3 id="surveyTitle" className="font-semibold text-lg">{survey.title}</h3>
+                                        <p id="surveyDescription"
+                                           className="text-gray-600 text-sm">{survey.description}</p>
                                     </div>
                                     <div className="flex flex-col items-end gap-2">
                                         <StatusBadge status={survey.status}/>
@@ -104,7 +109,8 @@ const SurveyList: React.FC<SurveyListProps> = ({
                                                     <Button variant="bordered" isIconOnly>
                                                         <EditIcon size="20"/>
                                                     </Button>
-                                                    <Button onPress={() => openDeleteConfirmationModal(survey)}
+                                                    <Button id="deleteSurveyButton"
+                                                            onPress={() => openDeleteConfirmationModal(survey)}
                                                             variant="bordered" isIconOnly>
                                                         <TrashIcon color="red" size="20"/>
                                                     </Button>
@@ -114,10 +120,10 @@ const SurveyList: React.FC<SurveyListProps> = ({
                                         </div>
                                     </div>
                                 </div>
-                            </CardBody>
-                        </Card>
-                    ))}
-                </div>
+                            </ListboxItem>
+                        ))}
+                    </ListboxSection>
+                </Listbox>
             )}
 
             {isDeleteConfirmationModalOpen && (

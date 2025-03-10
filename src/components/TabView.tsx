@@ -18,11 +18,12 @@ const TabView: React.FC<TabViewProps> = ({tabs, selectedTab}) => {
 
     return (
         <div className="rounded-lg">
-            <Tabs className="flex justify-center items-center" aria-label="Options" color="primary"
+            <Tabs className="flex justify-center items-center" id="tabOptions" aria-label="Options" color="primary"
                   variant="solid" selectedKey={selected}
                   onSelectionChange={(key) => setSelected(key as string)}>
                 {(tabs.map((tab) => (
                     <Tab
+                        id="tabOption"
                         key={tab.title}
                         title={
                             <div className="flex items-center gap-2">

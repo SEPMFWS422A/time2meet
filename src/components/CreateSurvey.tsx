@@ -27,7 +27,7 @@ const CreateSurvey: React.FC = () => {
     }
 
     return (
-        <div className="text-center text-white py-4 rounded-t-lg ">
+        <div id="createSurveyButton" className="text-center text-white py-4 rounded-t-lg ">
             <Button
                 className="h-10 text-xl bg-blue-600 text-white"
                 onPress={handleOpenModal}>Umfrage erstellen</Button>
