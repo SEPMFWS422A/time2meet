@@ -13,6 +13,7 @@ interface UserData {
   profilsichtbarkeit: string;
   kalendersichtbarkeit: string;
   theme: string;
+  profilbild: string;
 }
 
 export function ProfilSettings() {
@@ -25,7 +26,8 @@ export function ProfilSettings() {
     geburtsdatum: "",
     profilsichtbarkeit: "Öffentlich",
     kalendersichtbarkeit: "Öffentlich",
-    theme: "Hell"
+    theme: "Hell",
+    profilbild: ""
   });
   const [birthDateError, setBirthDateError] = useState<string | null>(null);
   const [fileError, setFileError] = useState<string | null>(null);
@@ -84,6 +86,44 @@ export function ProfilSettings() {
     fetchUserData();
   }, [userId]);
 
+
+  const handleImageUpload = async (file: File) => {
+    if (!userId) {
+      setFileError("Benutzer nicht angemeldet");
+      return;
+    }
+
+    try {
+      const formData = new FormData();
+      formData.append("userId", userId);
+      formData.append("profilbild", file);
+
+      const res = await axios.post(
+        `/api/user/${userId}/uploadProfilePic`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+          withCredentials: true,
+        }
+      );
+
+      setUserData(prev => ({
+        ...prev,
+        profilbild: res.data.data.profilbild
+      }));
+      
+      setProfileImagePreview(res.data.data.profilbild);
+      setPopupMessage("Profilbild erfolgreich aktualisiert!");
+      setFileError(null);
+    } catch (error: any) {
+      console.error("Upload fehlgeschlagen:", error);
+      setFileError(error.response?.data?.error || "Fehler beim Hochladen des Bildes");
+      setProfileImagePreview(null);
+    }
+  };
+
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = event.target;
     setUserData(prevState => ({ ...prevState, [name]: value }));
@@ -111,12 +151,20 @@ export function ProfilSettings() {
         setFileError("Nur Bilddateien sind erlaubt.");
         setIsFormValid(false);
         setProfileImagePreview(null);
-      } else {
-        setFileError(null);
-        setIsFormValid(birthDateError === null && phoneError === null);
-        setProfileImagePreview(URL.createObjectURL(file));
-        // Optional: send file to API here using FormData if needed.
+        return;
       }
+      
+      if (file.size > 1 * 1024 * 1024) {
+        setFileError("Maximale Dateigröße: 1MB");
+        setIsFormValid(false);
+        setProfileImagePreview(null);
+        return;
+      }
+
+      setFileError(null);
+      setIsFormValid(true);
+      setProfileImagePreview(URL.createObjectURL(file));
+      handleImageUpload(file);
     }
   };
 
@@ -197,19 +245,20 @@ export function ProfilSettings() {
               Profilbild
             </label>
             <input
-              id="profile-picture-input"
-              type="file"
-              className="block w-full border rounded-lg p-2 text-sm"
-              onChange={handleFileChange}
-            />
+            id="profile-picture-input"
+            type="file"
+            className="block w-full border rounded-lg p-2 text-sm"
+            onChange={handleFileChange}
+            accept="image/*"
+          />
             {fileError && <p className="text-red-500 text-sm mt-1">{fileError}</p>}
-            {profileImagePreview && (
-              <img
-                src={profileImagePreview}
-                alt="Profil Bild"
-                className="w-32 h-32 object-cover rounded-full mx-auto mt-2"
-              />
-            )}
+            {(profileImagePreview || userData.profilbild) && (
+            <img
+              src={profileImagePreview || userData.profilbild}
+              alt="Profil Bild"
+              className="w-32 h-32 object-cover rounded-full mx-auto mt-2"
+            />
+          )}
           </div>
           <div>
             <label htmlFor="first-name-input" className="block text-base font-medium mb-1">
