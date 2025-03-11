@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from "react";
+import React, { forwardRef,useImperativeHandle, useState } from "react";
 import { DayPicker } from "react-day-picker";
 import "react-day-picker/dist/style.css";
 import { Form, TimeInput } from "@heroui/react";
@@ -8,14 +8,21 @@ import { MappedTimeValue, TimeValue } from "@react-types/datepicker";
 import { CalendarDateTime, Time, ZonedDateTime } from "@internationalized/date";
 import { Trash2 } from "lucide-react";
 
-export interface SchedulingSurvey {
-    dates: { date: Date; times: { start: TimeValue | null | undefined; end: TimeValue | null | undefined }[] }[];
+interface SchedulingSurveyProps {
+    onSchedulingData: (data: {
+        dates: { date: Date; times: { start: TimeValue | null | undefined; end: TimeValue | null | undefined }[] }[]
+    }) => void;
 }
 
-const CreateScheduling: React.FC = () => {
-    const [schedulingSurvey, setSchedulingSurvey] = useState<SchedulingSurvey>({
-        dates: [],
-    });
+export interface CreateSchedulingRef {
+    submitForm: () => void;
+}
+
+const CreateScheduling = forwardRef<CreateSchedulingRef, SchedulingSurveyProps>(({ onSchedulingData }, ref) => {
+
+    const [schedulingSurvey, setSchedulingSurvey] = useState<{
+        dates: { date: Date; times: { start: TimeValue | null | undefined; end: TimeValue | null | undefined }[] }[]
+    }>({ dates: [] });
 
     const [useSameTimeForAllDates, setUseSameTimeForAllDates] = useState(true);
     const [commonStartTime, setCommonStartTime] = useState<TimeValue | null | undefined>(undefined);
@@ -95,14 +102,26 @@ const CreateScheduling: React.FC = () => {
         setUseSameTimeForAllDates(event.target.checked);
     };
 
-    const handleSubmit = (event: React.FormEvent) => {
-        event.preventDefault();
-        console.log(schedulingSurvey);
+    const handleSubmit = () => {
+        const formData = {
+            dates: schedulingSurvey.dates.map((d) => ({
+                date: d.date,
+                times: d.times.map((t) => ({
+                    start: t.start,
+                    end: t.end,
+                })),
+            })),
+        };
+        onSchedulingData(formData); // Sende die Daten an die Parent-Komponente
     };
+
+    useImperativeHandle(ref, () => ({
+        submitForm: handleSubmit,
+    }));
 
     return (
         <div>
-            <Form onSubmit={handleSubmit}>
+            <Form>
                 <div className="flex flex-col items-center">
                     <DayPicker
                         weekStartsOn={1}
@@ -169,6 +188,8 @@ const CreateScheduling: React.FC = () => {
             </Form>
         </div>
     );
-};
+
+});
+
 
 export default CreateScheduling;
