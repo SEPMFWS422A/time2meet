@@ -10,7 +10,7 @@ import { Trash2 } from "lucide-react";
 
 interface SchedulingSurveyProps {
     onSchedulingData: (data: {
-        dates: { date: Date; times: { start: TimeValue | null | undefined; end: TimeValue | null | undefined }[] }[]
+        dates: { date: Date; times: { start: string; end: string }[] }[]
     }) => void;
 }
 
@@ -25,8 +25,8 @@ const CreateScheduling = forwardRef<CreateSchedulingRef, SchedulingSurveyProps>(
     }>({ dates: [] });
 
     const [useSameTimeForAllDates, setUseSameTimeForAllDates] = useState(true);
-    const [commonStartTime, setCommonStartTime] = useState<TimeValue | null | undefined>(undefined);
-    const [commonEndTime, setCommonEndTime] = useState<TimeValue | null | undefined>(undefined);
+    const [commonStartTime, setCommonStartTime] = useState<TimeValue | null | undefined>(null);
+    const [commonEndTime, setCommonEndTime] = useState<TimeValue | null | undefined>(null);
 
     const handleDateSelect = (dates: Date[] | undefined) => {
         if (dates) {
@@ -35,7 +35,7 @@ const CreateScheduling = forwardRef<CreateSchedulingRef, SchedulingSurveyProps>(
                     const existingDate = prev.dates.find((d) => d.date.getTime() === date.getTime());
                     return {
                         date,
-                        times: existingDate ? existingDate.times : [], // Zeiten beibehalten, wenn Datum bereits vorhanden ist
+                        times: existingDate ? existingDate.times : [],
                     };
                 });
                 return { dates: updatedDates };
@@ -49,7 +49,7 @@ const CreateScheduling = forwardRef<CreateSchedulingRef, SchedulingSurveyProps>(
         date: Date,
         index: number,
         field: "start" | "end",
-        value: MappedTimeValue<Time | CalendarDateTime | ZonedDateTime> | null
+        value: TimeValue | null
     ) => {
         if (useSameTimeForAllDates) {
             if (field === "start") setCommonStartTime(value);
@@ -60,7 +60,7 @@ const CreateScheduling = forwardRef<CreateSchedulingRef, SchedulingSurveyProps>(
                     if (d.date.getTime() === date.getTime()) {
                         const updatedTimes = [...d.times];
                         if (!updatedTimes[index]) {
-                            updatedTimes[index] = { start: undefined, end: undefined };
+                            updatedTimes[index] = { start: null, end: null };
                         }
                         updatedTimes[index][field] = value;
                         return { ...d, times: updatedTimes };
@@ -73,11 +73,12 @@ const CreateScheduling = forwardRef<CreateSchedulingRef, SchedulingSurveyProps>(
         }
     };
 
+
     const addTimeSlot = (date: Date) => {
         setSchedulingSurvey((prev) => {
             const updatedDates = prev.dates.map(d => {
                 if (d.date.getTime() === date.getTime()) {
-                    return { ...d, times: [...d.times, { start: undefined, end: undefined }] };
+                    return { ...d, times: [...d.times, { start: null, end: null }] };
                 }
                 return d;
             });
@@ -102,14 +103,24 @@ const CreateScheduling = forwardRef<CreateSchedulingRef, SchedulingSurveyProps>(
         setUseSameTimeForAllDates(event.target.checked);
     };
 
+    const formatTimeValue = (timeValue: TimeValue | null | undefined): string => {
+        if (!timeValue) return "";
+        if (timeValue instanceof Time) {
+            return timeValue.toString();
+        }
+        return "";
+    };
+
     const handleSubmit = () => {
         const formData = {
             dates: schedulingSurvey.dates.map((d) => ({
                 date: d.date,
-                times: d.times.map((t) => ({
-                    start: t.start,
-                    end: t.end,
-                })),
+                times: useSameTimeForAllDates
+                    ? [{ start: formatTimeValue(commonStartTime), end: formatTimeValue(commonEndTime) }]
+                    : d.times.map((t) => ({
+                        start: formatTimeValue(t.start),
+                        end: formatTimeValue(t.end),
+                    })),
             })),
         };
         onSchedulingData(formData); // Sende die Daten an die Parent-Komponente
