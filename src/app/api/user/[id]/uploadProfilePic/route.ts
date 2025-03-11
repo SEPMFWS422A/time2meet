@@ -4,7 +4,7 @@ import { join } from "path";
 import dbConnect from "@/lib/database/dbConnect";
 import User from "@/lib/models/User";
 
-// PATCH /api/user/[id]
+// POST /api/user/[id]
 export async function POST(request: Request) {
   await dbConnect();
   
@@ -13,7 +13,13 @@ export async function POST(request: Request) {
     const userId = formData.get("userId")?.toString();
     const file = formData.get("profilbild") as File | null;
 
-    if (!userId || !file) {
+    if (!userId) {
+      return NextResponse.json(
+        { success: false, error: "Unauthorized" },
+        { status: 401 }
+      );
+    }
+    if (!file) {
       return NextResponse.json(
         { success: false, error: "Fehlende Daten" },
         { status: 400 }
@@ -22,7 +28,7 @@ export async function POST(request: Request) {
 
     if (file.size > 1 * 1024 * 1024) {
         return NextResponse.json(
-            { success: false, error: "Maximale Dateigröße: 5MB" },
+            { success: false, error: "Maximale Dateigröße: 1MB" },
             { status: 400 }
           );
     }
@@ -34,10 +40,8 @@ export async function POST(request: Request) {
         const oldPath = join(process.cwd(), "public", existingUser.profilbild);
         await unlink(oldPath);
       } catch (error) {
-        
-        console.log("Altes Bild konnte nicht gelöscht werden:", error);
         return NextResponse.json(
-            { success: false, error: "Altes Bild konnte nicht gelöscht werden:" },
+            { success: false, error: "Altes Bild konnte nicht gelöscht werden." },
             { status: 500 }
           );
       }
