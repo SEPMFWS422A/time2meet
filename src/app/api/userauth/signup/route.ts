@@ -39,7 +39,7 @@ export async function POST(request: NextRequest) {
             message: "Benutzer erfolgreich registriert.",
             success: true,
             user: newUser,
-        });
+        }, { status: 201 });
 
     } catch (error: any) {
         return NextResponse.json({ error: error.message }, { status: 500 });

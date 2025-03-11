@@ -5,8 +5,6 @@ import { POST } from "@/app/api/userauth/login/route";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
-
-
 jest.mock("@/lib/database/dbConnect", () => jest.fn());
 jest.mock("@/lib/models/User", () => ({
     findOne: jest.fn(),

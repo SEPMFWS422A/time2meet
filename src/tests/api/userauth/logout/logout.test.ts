@@ -2,8 +2,6 @@ import { GET } from "@/app/api/userauth/logout/route";
 import { describe, expect, it } from "@jest/globals";
 import { NextResponse } from "next/server";
 
-
-
 jest.mock("@/lib/database/dbConnect", () => jest.fn());
 jest.mock("@/lib/models/User", () => ({ findOne: jest.fn() }));
 jest.mock("jsonwebtoken", () => ({ sign: jest.fn() }));
@@ -18,7 +16,7 @@ describe("POST /api/userauth/logout", () => {
 
         expect(response.status).toBe(200);
         expect(await response.json()).toEqual({ Message: "Logout successful", success: true });
-        expect(response.cookies.get("token")).toBeUndefined();
+        expect(response.cookies.get("token")?.value).toEqual("");
     });
 
 
