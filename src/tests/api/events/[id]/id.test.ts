@@ -33,7 +33,6 @@ describe("GET, PUT, DELETE /api/events/:id API Route: ", () => {
             const request = {} as NextRequest;
             const response = await GET(request, { params: { id: "eventId" } });
 
-
             expect(response.status).toBe(403);
             expect(await response.json()).toEqual({ success: false, error: "Zugriff verweigert" });
         });
@@ -51,7 +50,6 @@ describe("GET, PUT, DELETE /api/events/:id API Route: ", () => {
 
             const request = {} as NextRequest;
             const response = await GET(request, { params: { id: "eventId" } });
-
 
             expect(response.status).toBe(200);
             expect(await response.json()).toEqual({
@@ -71,7 +69,7 @@ describe("GET, PUT, DELETE /api/events/:id API Route: ", () => {
             (Event.findById as jest.Mock).mockResolvedValue(null);
 
             const request = {} as NextRequest;
-            const response = await PUT(request, { params: { id: "eventId" } });
+            const response = await GET(request, { params: { id: "eventId" } });
 
             expect(response.status).toBe(404);
             expect(await response.json()).toEqual({ success: false, error: "Event nicht gefunden." });
@@ -82,7 +80,7 @@ describe("GET, PUT, DELETE /api/events/:id API Route: ", () => {
             (Event.findById as jest.Mock).mockRejectedValue(new Error("Internal Server Error"));
 
             const request = {} as NextRequest;
-            const response = await PUT(request, { params: { id: "eventId" } });
+            const response = await GET(request, { params: { id: "eventId" } });
 
             expect(response.status).toBe(500);
             expect(await response.json()).toEqual({ success: false, error: "Internal Server Error" });

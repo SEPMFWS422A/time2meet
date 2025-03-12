@@ -24,29 +24,42 @@ const Calendar: React.FC<CalendarProps> = ({ onOpenDate, onOpenEvent }) => {
   useEffect(() => {
     const fetchEvents = async () => {
       try {
-        const response = await fetch("/api/events");
+        const response = await fetch("/api/events", {
+          method: "GET",
+          credentials: "include", // Cookies mit senden
+        });
+
         if (!response.ok) {
+          if (response.status === 404) {
+            console.warn("⚠️ Keine Events gefunden.");
+            setEvents([]); // Statt Fehler werfen, leere Liste setzen
+            return;
+          }
           throw new Error("Fehler beim Abrufen der Events");
         }
-        const data = await response.json();
 
-        // Events für FullCalendar anpassen
-        const formattedEvents = data.map((event: any) => ({
+        const result = await response.json();
+
+        if (!result.success) {
+          throw new Error(result.error || "Fehler beim Abrufen der Events");
+        }
+
+        const formattedEvents = result.data.map((event: any) => ({
           id: event._id,
           title: event.title,
           start: event.start,
-          end: event.allday ? undefined : event.end, // `end` nur setzen, wenn `allDay` false ist
-          allDay: event.allday, // Wichtig: FullCalendar braucht explizit `allDay`
+          end: event.allday ? undefined : event.end,
+          allDay: event.allday,
           extendedProps: {
             description: event.description,
             location: event.location,
           },
         }));
 
-
         setEvents(formattedEvents);
       } catch (error) {
         console.error("❌ Fehler beim Laden der Events:", error);
+        setEvents([]); // Falls Fehler, sicherstellen, dass Events-Array nicht undefiniert bleibt
       }
     };
 

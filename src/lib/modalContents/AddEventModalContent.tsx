@@ -77,19 +77,19 @@ const AddEventModalContent: React.FC<AddEventModalContentProps> = ({ onClose, re
     setErrorMessage(null);
 
     const eventData = {
-      id: existingEvent?.id, // Falls Bearbeitung, ID mitgeben
-      creator: "65efab12cd3456789ef01234", // 👈 Hier statisch setzen, bis User-Auth existiert
+      id: existingEvent?.id,
+      creator: existingEvent?.creator || "65efab12cd3456789ef01234",  // Falls nicht vorhanden, alte Werte nutzen
       title,
       description,
       start: isAllDay ? `${startTime}T00:00:00.000Z` : startTime,
       end: isAllDay ? undefined : endTime,
       location,
       allday: isAllDay,
-      members: [], // 👈 Standardwert für Mitglieder setzen
-      groups: [], // 👈 Standardwert für Gruppen setzen
+      members: existingEvent?.members || [],  // Falls Bearbeitung, alte Mitglieder behalten
+      groups: existingEvent?.groups || []
     };
 
-    console.log("📩 Event-Daten, die an die API gesendet werden:", eventData);
+    console.log("📩 Event-Daten an API:", eventData);
 
     try {
       let response;
