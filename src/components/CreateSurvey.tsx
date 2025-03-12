@@ -11,7 +11,7 @@ import CreateScheduling, {
 } from "@/components/CreateScheduling";
 import { CheckIcon, CloseIcon } from "@heroui/shared-icons";
 import { mergeSurveyData } from "@/lib/SurveyHelpers/SurveyHelper";
-import { postSurvey } from "@/lib/api_methods/surveys/surveyPost/surveyPost";
+import { postSurvey } from "@/lib/api_methods/surveys/postSurvey/surveyPost";
 import { ISurveyPostBody } from "@/lib/interfaces/ISurveyPostBody";
 
 const CreateSurvey: React.FC = () => {
