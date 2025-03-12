@@ -1,51 +1,37 @@
 'use client';
 
 import {Button, Listbox, ListboxItem, ListboxSection, User,} from "@heroui/react";
-import {StarIcon} from "lucide-react";
 import React, {useEffect, useState} from "react";
 import AddGroupModalContent from "@/lib/modalContents/AddGroupModalContent";
 import ModalWindow from "@/components/ModalWindow";
+import fetchAllGroups from "@/lib/api_methods/Groups/fetchAllGroups/fetchAllGroups";
+import {IGroup} from "@/lib/interfaces/IGroup";
+import {StarIcon} from "lucide-react";
 
-// Definiere den Typ für eine Gruppe
-export interface Group {
-    _id: string;
-    groupname: string;
-    beschreibung: string;
-    members: string[];
-    isFavourite: boolean;
-}
 
 function Grouplist() {
     // Zustand für die Gruppen
-    const [groups, setGroups] = useState<Group[]>([]);
+    const [groups, setGroups] = useState<IGroup[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
     const [isAddGroupModalOpen, setIsAddGroupModalOpen] = useState(false);
 
     // Gruppen von der API abrufen
     useEffect(() => {
-        const fetchGroups = async () => {
-            try {
-                const response = await fetch("/api/groups");
-                const data = await response.json();
-                if (!data.success) {
-                    throw new Error(data.error);
+        fetchAllGroups()
+            .then((groupList) => {
+                if (groupList && groupList.length > 0) {
+                    setGroups(sortGroups(groupList));
+                } else if (groupList && groupList.length === 0) {
+                    setError("Du hast noch keine Gruppen");
+                } else {
+                    setError("Gruppen konnten nicht geladen werden.")
                 }
-
-                const sortedGroups = sortGroups(data.data);
-
-                setGroups(sortedGroups);
-            } catch (error: any) {
-                setError("Fehler beim Abrufen der Gruppen: " + error.message);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchGroups();
+            })
+            .finally(() => setLoading(false));
     }, []);
 
-    const handleNewGroup = (newGroup: Group) => {
+    const handleNewGroup = (newGroup: IGroup) => {
         setGroups((prevGroups) => {
             // Neue Gruppe hinzufügen und dann sortieren
             const updatedGroups = [...prevGroups, newGroup];
@@ -54,7 +40,7 @@ function Grouplist() {
     };
 
     // Hilfsmethode zum Sortieren der Gruppen
-    const sortGroups = (groups: Group[]): Group[] => {
+    const sortGroups = (groups: IGroup[]): IGroup[] => {
         return groups.sort((a, b) => {
             // Zuerst nach isFavourite sortieren
             if (b.isFavourite === a.isFavourite) {
@@ -126,9 +112,9 @@ function Grouplist() {
                     virtualization={{maxListboxHeight: 400, itemHeight: 5}}
                 >
                     <ListboxSection>
-                        {groups.map((group) => (
+                        {groups.map((group, index) => (
                             <ListboxItem
-                                key={group._id}
+                                key={`${group._id}_${index}`}
                                 textValue={group.groupname}
                             >
                                 <div id="groupListItem" className="flex gap-2 justify-between items-center">

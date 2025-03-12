@@ -1,8 +1,8 @@
 import React from "react";
 import TabView from "@/components/TabView";
-import Grouplist from "@/components/Grouplist";
 import {LucideUsers, PersonStandingIcon} from "lucide-react";
 import Friendlist from "@/components/Friendlist";
+import Grouplist from "@/components/Grouplist";
 
 export default function Friends() {
     return (
