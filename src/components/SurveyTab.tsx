@@ -1,12 +1,13 @@
 'use client';
 
-import React, {useEffect, useState} from "react";
-import {Card} from "@heroui/react";
+import React, { useEffect, useState } from "react";
+import { Card } from "@heroui/react";
 import TabView from "@/components/TabView";
-import {ClipboardIcon, ClipboardPenIcon} from "lucide-react";
+import { ClipboardIcon, ClipboardPenIcon } from "lucide-react";
 import CreateSurvey from "@/components/CreateSurvey";
 import SurveyList from "@/components/SurveyList";
-import {Survey} from "@/lib/interfaces/Survey";
+import { Survey } from "@/lib/interfaces/Survey";
+import fetchParticipatingSurveys from "@/lib/api_methods/surveys/fetchParticipatingSurveys/fetchParticipatingSurveys";
 
 interface Notification {
     message: string;
@@ -46,25 +47,10 @@ export default function SurveyTab() {
         }
     }, [notification]);
 
-
     useEffect(() => {
-        const fetchSurveys = async () => {
-            try {
-                const response = await fetch("/api/surveys/participating");
-
-                if (!response.ok) throw new Error("Fehler beim Aufrufen der Umfragen.")
-
-                const data: Survey[] = await response.json();
-
-                setSurveys(data);
-            } catch {
-                setError("Es gab ein Problem beim Laden der Umfragen.");
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchSurveys();
+        fetchParticipatingSurveys()
+            .then((surveyList) => surveyList ? setSurveys(surveyList) : setError("Umfragen konnten nicht geladen werden"))
+            .finally(() => setLoading(false));
     }, []);
 
     if (error) {
@@ -89,24 +75,24 @@ export default function SurveyTab() {
                         title: "Selbsterstellte Umfragen",
                         content: (
                             <div>
-                                <CreateSurvey/>
+                                <CreateSurvey />
                                 <Card className="w-full p-4">
                                     <SurveyList error={error} loading={loading} surveyList={createdSurveys}
-                                                isCreatedByCurrentUser={true}/>
+                                        isCreatedByCurrentUser={true} />
                                 </Card>
                             </div>
                         ),
-                        icon: <ClipboardPenIcon/>,
+                        icon: <ClipboardPenIcon />,
                     },
                     {
                         title: "Erhaltene Umfragen",
                         content: (
                             <Card className="w-full p-4">
                                 <SurveyList error={error} loading={loading} surveyList={receivedSurveys}
-                                            isCreatedByCurrentUser={false}/>
+                                    isCreatedByCurrentUser={false} />
                             </Card>
                         ),
-                        icon: <ClipboardIcon/>,
+                        icon: <ClipboardIcon />,
                     },
                 ]}
                 selectedTab="Selbsterstellte Umfragen"
