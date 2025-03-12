@@ -1,7 +1,7 @@
-import {Survey} from "@/lib/interfaces/Survey";
+import {ISurvey} from "@/lib/interfaces/ISurvey";
 import mockUser from "./mockUser";
 
-const mockSurveys: Survey[] = [
+const mockSurveys: ISurvey[] = [
     {
         _id: "75f8b2e5d4fba4c5e4b0bgn4",
         title: "Wanderung in den Bergen",
