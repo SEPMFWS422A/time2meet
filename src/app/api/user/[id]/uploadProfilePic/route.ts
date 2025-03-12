@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import dbConnect from "@/lib/database/dbConnect";
 import User from "@/lib/models/User";
+import { user } from "@nextui-org/theme";
 
 // POST /api/user/[id]/uploadProfilePic
 export async function POST(request: Request) {
@@ -9,7 +10,14 @@ export async function POST(request: Request) {
   try {
     const { userId, image } = await request.json(); 
 
-    if (!userId || !image) {
+    if (!userId) {
+      return NextResponse.json(
+        { success: false, error: "Unauthorized" },
+        { status: 401 }
+      );
+    }
+
+    if (!image) {
       return NextResponse.json(
         { success: false, error: "Fehlende Daten" },
         { status: 400 }
