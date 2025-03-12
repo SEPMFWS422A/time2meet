@@ -11,13 +11,14 @@ import CreateScheduling, {
 } from "@/components/CreateScheduling";
 import { CheckIcon, CloseIcon } from "@heroui/shared-icons";
 import { mergeSurveyData } from "@/lib/SurveyHelpers/SurveyHelper";
-import axios from "axios";
+import { postSurvey } from "@/lib/api_methods/surveys/surveyPost/surveyPost";
+import { ISurveyPostBody } from "@/lib/interfaces/ISurveyPostBody";
 
 const CreateSurvey: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [popupMessage, setPopupMessage] = useState<{
     text: string;
-    status: "success" | "error";
+    status: string;
   } | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -76,39 +77,27 @@ const CreateSurvey: React.FC = () => {
 
   useEffect(() => {
     if (surveyData && schedulingData) {
-      const mergeData = mergeSurveyData(surveyData, schedulingData);
 
-      const postSurvey = async () => {
+      const mergeData :ISurveyPostBody = mergeSurveyData(surveyData, schedulingData);
+
+      const HandlePostSurvey = async () => {
         setIsLoading(true);
         try {
-          const res = await axios.post("/api/surveys", mergeData, {
-            headers: {
-              "Content-Type": "application/json",
-            },
-            validateStatus: (status) => {
-              return ((status >= 200 && status < 300) || status === 400 || status === 401 || status === 403);
-            },
-          });
-          if (res.status === 201) {
-            console.log("Umfrage erfolgreich erstellt:", res.data.message);
-            setPopupMessage({
-              text: "Umfrage erfolgreich erstellt",
-              status: "success",
-            });
-            closeModal();
-          }
+          const res = await postSurvey(mergeData);
+          if (res) {
+            if (res.code==201) {
+              setPopupMessage({
+                text: res.message,
+                status: res.status,
+              });
+              closeModal();
+            }
 
-          if (res.status === 400) {
-            console.error("Eingabefehler:", res.data);
-            setPopupMessage({ text: "Eingabefehler", status: "error" });
-          }
-          if (res.status === 401) {
-            console.error("Unautorisiert:", res.data);
-            setPopupMessage({ text: "Unautorisiert", status: "error" });
-          }
-          if (res.status === 403) {
-            console.error("Ungültige Session:", res.data);
-            setPopupMessage({ text: "Ungültige Session", status: "error" });
+            setPopupMessage({
+              text: res.message,
+              status: res.status,
+            });
+            
           }
         } catch (error) {
           console.error("Fehler beim Senden der Daten:", error);
@@ -121,7 +110,7 @@ const CreateSurvey: React.FC = () => {
         }
       };
 
-      postSurvey();
+      HandlePostSurvey().then();
     }
   }, [surveyData, schedulingData]);
 

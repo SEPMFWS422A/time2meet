@@ -22,7 +22,7 @@ export const surveyJoiValidationSchema = Joi.object({
         title: Joi.string().required().messages({
           'any.required': 'Options-Titel ist erforderlich'
         }),
-        votedBy: Joi.array().items(objectIdValidator).forbidden().default([]) //Wenn man eine Survey erstellt mit Options soll man 'votedby' nicht ausfüllen dürfen beim erstellen
+        votedBy: Joi.array().items(objectIdValidator).forbidden().default([]).strip() //Wenn man eine Survey erstellt mit Options soll man 'votedby' nicht ausfüllen dürfen beim erstellen
       })
     )
     .min(1)
@@ -60,7 +60,8 @@ export const surveyJoiValidationSchema = Joi.object({
           .messages({
             'string.pattern.base': 'Datum muss YYYY-MM-DD sein',
             'date.past': 'Datum darf nicht in der Vergangenheit liegen',
-            'any.required': 'Datum ist erforderlich'
+            'any.required': 'Datum ist erforderlich',
+            'string.empty': 'Startzeit darf nicht leer sein',
           }),
         timeSlots: Joi.array()
           .items(
@@ -70,7 +71,8 @@ export const surveyJoiValidationSchema = Joi.object({
                 .pattern(/^\d{2}:\d{2}$/)
                 .messages({
                   'string.pattern.base': 'Startzeit muss HH:MM Format sein',
-                  'any.required': 'Startzeit ist erforderlich'
+                  'any.required': 'Startzeit ist erforderlich',
+                  'string.empty': 'Startzeit darf nicht leer sein',
                 }),
               endTime: Joi.string()
                 .required()
@@ -88,7 +90,8 @@ export const surveyJoiValidationSchema = Joi.object({
                 .messages({
                   'string.pattern.base': 'Endzeit muss HH:MM Format sein',
                   'any.required': 'Endzeit ist erforderlich',
-                  'any.invalid': 'Endzeit muss nach Startzeit liegen'
+                  'any.invalid': 'Endzeit muss nach Startzeit liegen',
+                  'string.empty': 'Enzeit darf nicht leer sein',
                 })
             })
           )
@@ -99,7 +102,12 @@ export const surveyJoiValidationSchema = Joi.object({
           })
       })
     )
-    .optional(),
+    .min(1) // Mindestens ein Datum ist erforderlich
+    .required() // Pflichtfeld
+    .messages({
+      'array.min': 'Mindestens ein Datum mit Zeitfenstern ist erforderlich',
+      'any.required': 'Datumauswahlen sind erforderlich',
+    }),
 
     expiresAt: Joi.date()
     .iso()
