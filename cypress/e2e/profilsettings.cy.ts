@@ -34,24 +34,23 @@ describe('Profile Settings Page Tests', () => {
 
     cy.get('#imagePreview').should('be.visible');
   });
-  });
-
+  
   it('should show an error message when an invalid file is uploaded', () => {
     cy.get('#profile-picture-input').selectFile('cypress/fixtures/test-pdf.pdf');
     cy.get('p').contains('Nur Bilddateien sind erlaubt.').should('be.visible');
   });
-
+  
   it('should prevent form submission if the birth date is in the future', () => {
     cy.get('#birth-date-input').type('2100-01-01');
     cy.get('p').contains('Das Geburtsdatum darf nicht nach dem aktuellen Datum liegen.').should('be.visible');
     cy.get('#save-changes').should('be.disabled');
   });
-
+  
   it('should navigate to the privacy policy page', () => {
     cy.get('#privacy-policy-link').should('be.visible').and('contain', 'Datenschutzrichtlinien anzeigen').click();
     cy.url().should('include', '/privacy-policy');
   });
-
+  
   it('should show error messages dynamically as the user interacts', () => {
     cy.get('#birth-date-input').type('2100-01-01');
     cy.get('p').contains('Das Geburtsdatum darf nicht nach dem aktuellen Datum liegen.').should('be.visible');
@@ -60,12 +59,21 @@ describe('Profile Settings Page Tests', () => {
     cy.get('p').contains('Bitte geben Sie eine gültige Telefonnummer ein.').should('be.visible');
     cy.get('#save-changes').should('be.disabled');
   });
-
+  
   it('should allow the user to correctly fill out the profile form', () => {
+    cy.contains('User ID:').should('be.visible');
+    cy.get('body').then(($body) => {
+      if ($body.find('#profile-picture').length > 0) {
+        cy.get('#profile-picture').should('be.visible');
+      } else {
+        cy.log('Kein Profilbild vorhanden');
+      }
+    });
+
     cy.get('#first-name-input').type('K1');
     cy.get('#last-name-input').type('K1');
     cy.get('#username-input').type('K2');
-    cy.get('#email-display').should('contain', 'K2@K2.com');
+    cy.get('#email-display').should('contain', 'E2EUser@gmx.de');
     cy.get('#phone-input').type('0123456789');
     cy.get('#birth-date-input').type('2000-01-01');
     cy.get('#profile-visibility-input').select('Nur Freunde');
@@ -73,4 +81,6 @@ describe('Profile Settings Page Tests', () => {
     cy.get('#theme-input').select('Dunkel');
     cy.get('#save-changes').click();
   });
-
+  
+});
+  

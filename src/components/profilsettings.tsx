@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { postProfilePicture } from "@/lib/api_methods/profilePicture/postProfilePicture/postProfilePicture";
 
 interface UserData {
   vorname: string;
@@ -98,14 +99,7 @@ export function ProfilSettings() {
       const base64String = reader.result as string;
   
       try {
-        const response = await fetch(`/api/user/${userId}/uploadProfilePic`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          credentials: 'include', 
-          body: JSON.stringify({ userId, image: base64String }),
-        });
+        await postProfilePicture(userId,base64String);
         
         setUserData((prev) => ({
           ...prev,
