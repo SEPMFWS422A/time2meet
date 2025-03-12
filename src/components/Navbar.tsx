@@ -88,6 +88,7 @@ export default function App() {
             href: "/messages",
             label: "Nachrichten",
             icon: <MessageCircle size={25}/>,
+            id: "nachrichten"
         },
         {
             href: "/manageprofile",

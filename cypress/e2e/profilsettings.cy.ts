@@ -1,7 +1,7 @@
 describe('Profile Settings Page Tests', () => {
   beforeEach(() => {
     cy.visit('http://localhost:3000/login');
-    cy.get('#email').type('K2@K2.com');
+    cy.get('#email').type('E2EUser@gmx.de');
     cy.get('#password').type('123');
     cy.contains('button', 'Anmelden').click();
     cy.get('#profil-verwalten').click();
@@ -15,7 +15,25 @@ describe('Profile Settings Page Tests', () => {
   });
 
   it('should allow the user to upload a valid profile picture', () => {
+    cy.contains('User ID:').should('be.visible');
+    cy.intercept('POST', '/api/user/*/uploadProfilePic').as('uploadProfilePic');
     cy.get('#profile-picture-input').selectFile('cypress/fixtures/test-image.png');
+
+    cy.wait('@uploadProfilePic').then((interception) => {
+      expect(interception.request.body).to.have.property('userId'); 
+      expect(interception.request.body).to.have.property('image'); 
+    });
+    cy.get('#popUpMessage').should('be.visible').and('contain', 'Profilbild erfolgreich aktualisiert!');
+    cy.get('#imagePreview').should('be.visible');
+
+    cy.get('#nachrichten').click();
+    cy.url().should('include', '/messages');
+
+    cy.get('#profil-verwalten').click();
+    cy.url().should('include', '/manageprofile');
+
+    cy.get('#imagePreview').should('be.visible');
+  });
   });
 
   it('should show an error message when an invalid file is uploaded', () => {
@@ -55,4 +73,4 @@ describe('Profile Settings Page Tests', () => {
     cy.get('#theme-input').select('Dunkel');
     cy.get('#save-changes').click();
   });
-});
+

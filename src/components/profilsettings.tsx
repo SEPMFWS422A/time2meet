@@ -98,17 +98,15 @@ export function ProfilSettings() {
       const base64String = reader.result as string;
   
       try {
-        const res = await axios.post(
-          `/api/user/${userId}/uploadProfilePic`,
-          { userId, image: base64String },
-          {
-            headers: {
-              "Content-Type": "application/json",
-            },
-            withCredentials: true,
-          }
-        );
-  
+        const response = await fetch(`/api/user/${userId}/uploadProfilePic`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          credentials: 'include', 
+          body: JSON.stringify({ userId, image: base64String }),
+        });
+        
         setUserData((prev) => ({
           ...prev,
           profilbild: base64String,
@@ -257,6 +255,7 @@ export function ProfilSettings() {
             {fileError && <p className="text-red-500 text-sm mt-1">{fileError}</p>}
             {(profileImagePreview || userData.profilbild) && (
             <img
+              id="imagePreview"
               src={profileImagePreview || userData.profilbild}
               alt="Profil Bild"
               className="w-32 h-32 object-cover rounded-full mx-auto mt-2"
@@ -428,7 +427,7 @@ export function ProfilSettings() {
         {userId ? <p className="mt-4 text-center">User ID: {userId}</p> : <p>Loading...</p>}
       </div>
       {popupMessage && (
-        <div className="fixed top-4 right-4 z-50">
+        <div id="popUpMessage" className="fixed top-4 right-4 z-50">
           <div className="bg-[#082f49] rounded-lg shadow-lg p-4">
             <p className="text-white">{popupMessage}</p>
           </div>
