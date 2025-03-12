@@ -6,8 +6,8 @@ import {Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle,} 
 import {Label} from "@/components/ui/label";
 import {Input} from "@/components/ui/input";
 import {useRouter} from "next/navigation";
-import axios from "axios";
 import toast, {Toaster} from "react-hot-toast";
+import login from "@/lib/api_methods/userauth/login";
 
 export default function SignInForm() {
     const router = useRouter();
@@ -29,14 +29,16 @@ export default function SignInForm() {
 
     // Login-Handler
     const onLogin = async () => {
-        try {
-            setProcessing(true);
-            const response = await axios.post("/api/userauth/login", user);
-            toast.success(response.data.message);
+        setProcessing(true);
+        const loginMessage = await login(user);
+        console.log(loginMessage)
+        if (loginMessage) {
+            console.log("in IF", loginMessage);
+
+            toast.success(loginMessage);
             router.push("/");
-        } catch (error: any) {
-            toast.error(error.response?.data?.error || "An error occurred");
-        } finally {
+        } else {
+            console.log("IN ELSE", loginMessage);
             setProcessing(false);
         }
     };
