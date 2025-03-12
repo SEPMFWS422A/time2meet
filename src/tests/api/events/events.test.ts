@@ -1,16 +1,27 @@
 import { GET, POST } from "@/app/api/events/route";
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 import dbConnect from "@/lib/database/dbConnect";
 import Event from "@/lib/models/Event";
+import { getUserID } from "@/lib/helper";
 import { expect, describe, it, beforeEach } from "@jest/globals";
 
 jest.mock("@/lib/database/dbConnect");
 jest.mock("@/lib/models/Event");
+jest.mock("@/lib/helper", () => ({
+    getUserID: jest.fn(),
+}));
 
 describe("Events API Route", () => {
     const mockRequest = {
+        cookies: {
+            get: jest.fn(),
+        },
         json: jest.fn(),
     } as unknown as NextRequest;
+
+    const mockUser = {
+        id: "user123",
+    };
 
     const mockEvents = [
         {
@@ -30,53 +41,64 @@ describe("Events API Route", () => {
     beforeEach(() => {
         jest.clearAllMocks();
         (dbConnect as jest.Mock).mockResolvedValue(true);
-
-        const mockEventQuery = {
+        (getUserID as jest.Mock).mockResolvedValue(mockUser);
+        (Event.find as jest.Mock).mockImplementation(() => ({
             populate: jest.fn().mockReturnThis(),
             select: jest.fn().mockResolvedValue(mockEvents),
-        };
-
-        // `find()` gibt das Mock-Objekt zurück, das `.populate()` und `.select()` erlaubt
-        (Event.find as jest.Mock).mockImplementation(() => mockEventQuery);
+            lean: jest.fn().mockResolvedValue(mockEvents),
+        }));
     });
 
-
     describe("GET", () => {
-        it("should return all events with populated fields", async () => {
-            const response = await GET();
+        it("should return events for the authenticated user", async () => {
+            const response = await GET(mockRequest);
             const data = await response.json();
 
             expect(response.status).toBe(200);
-            expect(data).toEqual(mockEvents);
+            expect(data.success).toBe(true);
+            expect(data.data).toEqual(mockEvents);
         });
 
         it("should return 404 if no events are found", async () => {
             (Event.find as jest.Mock).mockImplementation(() => ({
                 populate: jest.fn().mockReturnThis(),
                 select: jest.fn().mockResolvedValue([]),
+                lean: jest.fn().mockResolvedValue([]),
             }));
 
-            const response = await GET();
+            const response = await GET(mockRequest);
             const data = await response.json();
 
             expect(response.status).toBe(404);
-            expect(data).toEqual({ error: "Keine Events gefunden." });
+            expect(data.success).toBe(false);
+            expect(data.error).toBe("Keine Events gefunden.");
+        });
+
+        it("should return error when user is not authenticated", async () => {
+            (getUserID as jest.Mock).mockResolvedValue({ error: "Nicht authentifiziert", status: 401 });
+
+            const response = await GET(mockRequest);
+            const data = await response.json();
+
+            expect(response.status).toBe(401);
+            expect(data.success).toBe(false);
+            expect(data.error).toBe("Nicht authentifiziert");
         });
 
         it("should return 500 on database error", async () => {
             (Event.find as jest.Mock).mockRejectedValue(new Error("Datenbankfehler"));
 
-            const response = await GET();
+            const response = await GET(mockRequest);
             const data = await response.json();
 
             expect(response.status).toBe(500);
-            expect(data).toEqual({ error: "Fehler beim Abrufen der Events." });
+            expect(data.success).toBe(false);
+            expect(data.error).toBe("Datenbankfehler");
         });
     });
 
     describe("POST", () => {
         const mockEventData = {
-            creator: "user123",
             title: "Team Meeting",
             start: "2025-04-01T09:00:00",
             end: "2025-04-01T10:00:00",
@@ -95,7 +117,8 @@ describe("Events API Route", () => {
             const data = await response.json();
 
             expect(response.status).toBe(201);
-            expect(data).toEqual({ _id: "eventNew", ...mockEventData });
+            expect(data.success).toBe(true);
+            expect(data.data).toEqual({ _id: "eventNew", ...mockEventData });
         });
 
         it("should return 400 if required fields are missing", async () => {
@@ -105,7 +128,19 @@ describe("Events API Route", () => {
             const data = await response.json();
 
             expect(response.status).toBe(400);
-            expect(data).toEqual({ error: "creator, title und start sind erforderlich." });
+            expect(data.success).toBe(false);
+            expect(data.error).toBe("Title und Start-Datum sind erforderlich.");
+        });
+
+        it("should return error when user is not authenticated", async () => {
+            (getUserID as jest.Mock).mockResolvedValue({ error: "Nicht authentifiziert", status: 401 });
+
+            const response = await POST(mockRequest);
+            const data = await response.json();
+
+            expect(response.status).toBe(401);
+            expect(data.success).toBe(false);
+            expect(data.error).toBe("Nicht authentifiziert");
         });
 
         it("should return 500 on event creation error", async () => {
@@ -116,7 +151,8 @@ describe("Events API Route", () => {
             const data = await response.json();
 
             expect(response.status).toBe(500);
-            expect(data).toEqual({ error: "Fehler beim Erstellen des Events: Datenbankfehler" });
+            expect(data.success).toBe(false);
+            expect(data.error).toBe("Fehler beim Erstellen des Events: Datenbankfehler");
         });
     });
 });

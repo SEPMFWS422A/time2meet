@@ -68,15 +68,27 @@ describe('AddModalContentCheck', () => {
         cy.get('#HomePageLayout').find('td[data-date="2025-03-22"]').find('a.fc-event').should('have.class', 'fc-event').and('include.text', 'Test normal Event');
     });
 
-    it('should show invalid input for "Endtime" when "Endtime" is in the past compared to "Starttime" ', () => {
+    it('should save an event after the user corrects his invalid inputs', () => {
         cy.get('section[role="dialog"]').should('be.visible');
       
-        cy.get('#title').type('Test normal Event');
+        cy.get('#title').type('Test invalid Event');
         cy.get('input[placeholder="Wählen Sie Startdatum und -uhrzeit"]').type('2025-03-22T10:00');
         cy.get('input[placeholder="Wählen Sie Enddatum und -uhrzeit"]').type('2025-03-21T12:00');
 
         cy.get('div[data-invalid="true"]').should('contain', 'Ungültige Endzeit');    
         cy.get('button').contains('Ereignis speichern').click();
         cy.get('#generalFormError').should('be.visible').should('contain', 'Bitte alle erforderlichen Felder ausfüllen.'); 
+
+        cy.get('#title').clear().type('Test correct Event');
+        cy.get('input[placeholder="Wählen Sie Startdatum und -uhrzeit"]').type('2025-03-22T10:00');
+        cy.get('input[placeholder="Wählen Sie Enddatum und -uhrzeit"]').type('2025-03-22T12:00');
+        cy.get('button').contains('Ereignis speichern').click();
+
+
+        cy.get('section[role="dialog"]').should('not.exist');
+
+        cy.get('#HomePageLayout').find('td[data-date="2025-03-22"]').find('a.fc-event').should('have.class', 'fc-event').and('include.text', 'Test normal Event');
+
+
     });
 });

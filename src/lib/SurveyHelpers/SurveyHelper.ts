@@ -1,3 +1,5 @@
+import { ISurveyPostBody } from "../interfaces/ISurveyPostBody";
+
 export const mergeSurveyData = (
     surveyData: {
         title: string;
@@ -10,13 +12,12 @@ export const mergeSurveyData = (
     schedulingData: {
         dates: { date: Date; times: { start: string; end: string }[] }[]
     }
-) => {
+) : ISurveyPostBody => {
         // ich musste das Date-Objekt so umwandeln das es nicht mehr UTC verwendet um einen "Vergangenheitsfehler" bei richtig ausgewähltem Datum zu umgehen
     const formatDate = (date: Date): string => {
         const year = date.getFullYear();
         const month = String(date.getMonth() + 1).padStart(2, '0'); 
         const day = String(date.getDate()).padStart(2, '0');
-        console.log(`${year}-${month}-${day}`)
         return `${year}-${month}-${day}`;
     };
 
