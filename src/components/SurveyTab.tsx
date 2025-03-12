@@ -6,7 +6,7 @@ import TabView from "@/components/TabView";
 import { ClipboardIcon, ClipboardPenIcon } from "lucide-react";
 import CreateSurvey from "@/components/CreateSurvey";
 import SurveyList from "@/components/SurveyList";
-import { Survey } from "@/lib/interfaces/Survey";
+import { ISurvey } from "@/lib/interfaces/ISurvey";
 import fetchParticipatingSurveys from "@/lib/api_methods/surveys/fetchParticipatingSurveys/fetchParticipatingSurveys";
 
 interface Notification {
@@ -17,7 +17,7 @@ interface Notification {
 export default function SurveyTab() {
     const [loggedInUserId, setLoggedInUserId] = useState<string | null>(null);
     const [notification, setNotification] = useState<Notification | null>();
-    const [surveys, setSurveys] = useState<Survey[]>([]);
+    const [surveys, setSurveys] = useState<ISurvey[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string>("");
 
@@ -49,7 +49,15 @@ export default function SurveyTab() {
 
     useEffect(() => {
         fetchParticipatingSurveys()
-            .then((surveyList) => surveyList ? setSurveys(surveyList) : setError("Umfragen konnten nicht geladen werden"))
+            .then((surveyList) => {
+                if (surveyList && surveyList.length > 0) {
+                    setSurveys(surveyList)
+                } else if (surveyList && surveyList.length === 0) {
+                    setError("Du hast noch keine Umfragen")
+                } else {
+                    setError("Umfragen konnten nicht geladen werden")
+                }
+            })
             .finally(() => setLoading(false));
     }, []);
 

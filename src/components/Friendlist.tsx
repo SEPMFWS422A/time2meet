@@ -1,11 +1,12 @@
 'use client';
 
-import { Button, Listbox, ListboxItem, ListboxSection, User as UserAvatar} from "@heroui/react";
+import { Button, Listbox, ListboxItem, ListboxSection, User as UserAvatar } from "@heroui/react";
 import { StarIcon, XIcon } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import AddFriendModalContent from "@/lib/modalContents/AddFriendModalContent";
 import ModalWindow from "@/components/ModalWindow";
 import axios from "axios";
+import fetchAllFriends from "@/lib/api_methods/friends/fetchFriends/fetchFriends";
 
 // Typdefinition für den Freund (gemäß der API)
 export interface Friend {
@@ -28,6 +29,7 @@ function Friendlist() {
   const [userId, setUserId] = useState<string>("");
   const [notification, setNotification] = useState<Notification | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const decodeToken = async () => {
@@ -45,28 +47,22 @@ function Friendlist() {
     decodeToken();
   }, []);
 
-  const fetchFriends = async () => {
-    setIsLoading(true);
-    try {
-      const res = await axios.get(`/api/friends/${userId}`);
-      if (res.data.success) {
-        const friendsWithFav = res.data.data.map((friend: Friend) => ({
-          ...friend,
-          isFavourite: friend.isFavourite || false,
-        }));
-        friendsWithFav.sort((a: Friend, b: Friend) => Number(b.isFavourite) - Number(a.isFavourite));
-        setFriends(friendsWithFav);
-      }
-    } catch (error) {
-      console.error("Fehler beim Abrufen der Freunde:", error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+
 
   useEffect(() => {
     if (userId) {
-      fetchFriends();
+      setIsLoading(true);
+      fetchAllFriends(userId)
+        .then((friendList) => {
+          if (friendList && friendList.length > 0) {
+            setFriends(friendList)
+          } else if (friendList && friendList.length === 0) {
+            setError("Du hast noch keine Freunde");
+          } else {
+            setError("Freunde konnten nicht geladen werden.")
+          }
+        })
+        .finally(() => setIsLoading(false));
     }
   }, [userId]);
 
@@ -139,10 +135,12 @@ function Friendlist() {
           {notification.message}
         </div>
       )}
+      {error && <p id="groupError" className="text-red-500">Fehler: {error}</p>}
+
       <Button color="primary" onPress={openAddFriendModal}>
         Neuen Freund adden
       </Button>
-      
+
       {isLoading ? (
         <div className="flex flex-col items-center justify-center p-4">
           <p>Lade Freunde...</p>
@@ -151,12 +149,12 @@ function Friendlist() {
         <Listbox
           aria-label="Freunde"
           items={friends}
-          
+
         >
           <ListboxSection>
             {friends.map((friend) => (
-              <ListboxItem 
-                key={friend._id} 
+              <ListboxItem
+                key={friend._id}
                 textValue={`${friend.vorname} ${friend.name}`}
               >
                 <div className="flex gap-2 justify-between items-center">
@@ -200,9 +198,9 @@ function Friendlist() {
           onOpenChange={setAddFriendModalOpen}
           title="Freunde hinzufügen"
           content={
-            <AddFriendModalContent 
-              onClose={closeAddFriendModal} 
-              onAddSuccess={handleAddFriendSuccess} 
+            <AddFriendModalContent
+              onClose={closeAddFriendModal}
+              onAddSuccess={handleAddFriendSuccess}
             />
           }
         />

@@ -1,4 +1,4 @@
-export interface Survey {
+export interface ISurvey {
     _id: string;
     title: string;
     description?: string;

@@ -5,10 +5,10 @@ import {Button, Listbox, ListboxItem, ListboxSection} from "@heroui/react";
 import ModalWindow from "@/components/ModalWindow";
 import SurveyParticipationModal from "@/lib/modalContents/SurveyParticipationModal";
 import {EditIcon, FileQuestionIcon, TrashIcon} from "lucide-react";
-import {Survey} from "@/lib/interfaces/Survey";
+import {ISurvey} from "@/lib/interfaces/ISurvey";
 
 interface SurveyListProps {
-    surveyList: Survey[],
+    surveyList: ISurvey[],
     onDeleteSurvey?: (surveyId: string) => void,
     isCreatedByCurrentUser: boolean,
     loading: boolean,
@@ -43,12 +43,12 @@ const SurveyList: React.FC<SurveyListProps> = ({
                                                    loading,
                                                    error
                                                }) => {
-    const [selectedSurvey, setSelectedSurvey] = useState<Survey | null>(null);
+    const [selectedSurvey, setSelectedSurvey] = useState<ISurvey | null>(null);
     const [isSurveyModalOpen, setIsSurveyModalOpen] = useState(false);
     const [isDeleteConfirmationModalOpen, setIsDeleteConfirmationModalOpen] = useState(false);
-    const [surveyToDelete, setSurveyToDelete] = useState<Survey | null>(null);
+    const [surveyToDelete, setSurveyToDelete] = useState<ISurvey | null>(null);
 
-    const openDeleteConfirmationModal = (survey: Survey) => {
+    const openDeleteConfirmationModal = (survey: ISurvey) => {
         setSurveyToDelete(survey);
         setIsDeleteConfirmationModalOpen(true);
     };
@@ -58,7 +58,7 @@ const SurveyList: React.FC<SurveyListProps> = ({
         setSurveyToDelete(null);
     };
 
-    const openSurveyModal = (survey: Survey) => {
+    const openSurveyModal = (survey: ISurvey) => {
         setSelectedSurvey(survey)
         setIsSurveyModalOpen(true);
     }

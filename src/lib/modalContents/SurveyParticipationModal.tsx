@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Button, Card, CardBody, CardHeader, Radio, RadioGroup } from "@heroui/react";
 import { LucideBadgeCheck } from "lucide-react";
 import DateSurvey from "@/components/DateSurvey";
-import { Survey } from "@/lib/interfaces/Survey";
+import { Survey } from "@/lib/interfaces/ISurvey";
 
 interface SurveyProps {
     survey: Survey;
