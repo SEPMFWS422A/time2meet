@@ -15,7 +15,7 @@ interface User {
 
 interface AddFriendModalContentProps {
   onClose: () => void;
-  onAddSuccess?: () => void;
+  onAddSuccess?: (user: User) => void;
 }
 
 interface Notification {
@@ -81,14 +81,14 @@ const AddFriendModalContent: React.FC<AddFriendModalContentProps> = ({
     }
   };
 
-  const handleAddFriend = async (userId: string) => {
+  const handleAddFriend = async (user: User) => {
     setError("");
     setNotification(null);
     setIsAddingFriend(true);
     try {
       const response = await axios.post(
         "/api/friends/add",
-        { friendId: userId },
+        { friendId: user._id },
         { withCredentials: true }
       );
       if (response.data.success) {
@@ -97,12 +97,12 @@ const AddFriendModalContent: React.FC<AddFriendModalContentProps> = ({
           type: "success",
         });
         setSearchResults((prev) =>
-          prev.map((user) =>
-            user._id === userId ? { ...user, isFriend: true } : user
+          prev.map((u) =>
+            u._id === user._id ? { ...u, isFriend: true } : u
           )
         );
         if (onAddSuccess) {
-          onAddSuccess();
+          onAddSuccess(user);
         }
       }
     } catch (err: any) {
@@ -125,7 +125,7 @@ const AddFriendModalContent: React.FC<AddFriendModalContentProps> = ({
     return (
       <Button
         color="primary"
-        onPress={() => handleAddFriend(user._id)}
+        onPress={() => handleAddFriend(user)}
         isLoading={isAddingFriend}
         isDisabled={isAddingFriend}
         size="sm"
@@ -178,7 +178,7 @@ const AddFriendModalContent: React.FC<AddFriendModalContentProps> = ({
                 <div className="flex items-center">
                   <Avatar
                     src={
-                      user.profilbild ||
+                      user.profilbild ??
                       "https://via.placeholder.com/150"
                     }
                     alt={`${user.vorname} {user.name}`}

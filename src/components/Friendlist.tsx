@@ -7,6 +7,7 @@ import AddFriendModalContent from "@/lib/modalContents/AddFriendModalContent";
 import ModalWindow from "@/components/ModalWindow";
 import axios from "axios";
 import fetchAllFriends from "@/lib/api_methods/friends/fetchFriends/fetchFriends";
+import {IFriend} from "@/lib/interfaces/IFriend";
 
 // Typdefinition für den Freund (gemäß der API)
 export interface Friend {
@@ -125,8 +126,10 @@ function Friendlist() {
     const openAddFriendModal = () => setIsAddFriendModalOpen(true);
 
     // Wird aufgerufen, wenn ein Freund erfolgreich hinzugefügt wurde
-    const handleAddFriendSuccess = () => {
-        fetchFriends(); // Aktualisiere die Freundesliste
+    const handleAddFriendSuccess = (newFriend: IFriend) => {
+        setFriends((prevFriends) => {
+            return [...prevFriends, newFriend]
+        })
     };
 
     return (
