@@ -3,6 +3,7 @@ import Survey from "@/lib/models/Survey";
 import dbConnect from "@/lib/database/dbConnect";
 import { getUserID } from "@/lib/helper";
 import { surveyJoiValidationSchema } from "@/lib/validation/surveyValidation";
+import { ISurveyPostBody } from "@/lib/interfaces/ISurveyPostBody";
 
 // POST /api/survey - Neue Umfrage erstellen
 export async function POST(req: NextRequest) {
@@ -23,10 +24,10 @@ export async function POST(req: NextRequest) {
         { status: 400 }
       );
     }
-
+    const validatedBody :ISurveyPostBody = value;
     //Wenn die Validation erfolgreich war und keine Fehler zurück kommt, werden die Values übernommen und eine neue Survey wird erstellt
     const newSurvey = new Survey({
-        ...value,
+        ...validatedBody,
         creator: currentUser.id,
         //Creator immer als Participant einfügen
         participants: value.participants 

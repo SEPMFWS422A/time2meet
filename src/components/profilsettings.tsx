@@ -92,36 +92,39 @@ export function ProfilSettings() {
       setFileError("Benutzer nicht angemeldet");
       return;
     }
-
-    try {
-      const formData = new FormData();
-      formData.append("userId", userId);
-      formData.append("profilbild", file);
-
-      const res = await axios.post(
-        `/api/user/${userId}/uploadProfilePic`,
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-          withCredentials: true,
-        }
-      );
-
-      setUserData(prev => ({
-        ...prev,
-        profilbild: res.data.data.profilbild
-      }));
-      
-      setProfileImagePreview(res.data.data.profilbild);
-      setPopupMessage("Profilbild erfolgreich aktualisiert!");
-      setFileError(null);
-    } catch (error: any) {
-      console.error("Upload fehlgeschlagen:", error);
-      setFileError(error.response?.data?.error || "Fehler beim Hochladen des Bildes");
-      setProfileImagePreview(null);
-    }
+  
+    const reader = new FileReader();
+    reader.onloadend = async () => {
+      const base64String = reader.result as string;
+  
+      try {
+        const res = await axios.post(
+          `/api/user/${userId}/uploadProfilePic`,
+          { userId, image: base64String },
+          {
+            headers: {
+              "Content-Type": "application/json",
+            },
+            withCredentials: true,
+          }
+        );
+  
+        setUserData((prev) => ({
+          ...prev,
+          profilbild: base64String,
+        }));
+  
+        setProfileImagePreview(base64String);
+        setPopupMessage("Profilbild erfolgreich aktualisiert!");
+        setFileError(null);
+      } catch (error: any) {
+        console.error("Upload fehlgeschlagen:", error);
+        setFileError(error.response?.data?.error || "Fehler beim Hochladen des Bildes");
+        setProfileImagePreview(null);
+      }
+    };
+  
+    reader.readAsDataURL(file); // Starte die Konvertierung
   };
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
