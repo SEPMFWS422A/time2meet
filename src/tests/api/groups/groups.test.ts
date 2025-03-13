@@ -44,7 +44,7 @@ import { expect, describe, it, beforeEach } from '@jest/globals';
      (Group.findById as jest.Mock).mockResolvedValue(mockGroups[0]);
    });
  
-   describe('GET', () => {
+   describe('GET: /api/groups', () => {
      it('should return groups with favourite status (true or false)', async () => {
       (mockRequest.cookies.get as jest.Mock).mockReturnValue({ value: 'validToken' });
        (jwt.verify as jest.Mock).mockReturnValue({ id: 'user123' });
@@ -84,7 +84,7 @@ import { expect, describe, it, beforeEach } from '@jest/globals';
      });
    });
  
-   describe('POST', () => {
+   describe('POST: /api/groups', () => {
      it('should create a new group', async () => {
        (mockRequest.json as jest.Mock).mockResolvedValue({ groupname: 'New Group', beschreibung: 'New Desc' });
        (Group.prototype.save as jest.Mock).mockResolvedValue({ _id: 'newGroup123', groupname: 'New Group', beschreibung: 'New Desc', creator: 'user123', admins: ['user123'], members: ['user123'] });
