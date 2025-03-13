@@ -10,17 +10,18 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
         await dbConnect();
         const user = await getUserID(req);
         const groupId = (await params).id as string;
-        const result = await getGroup(groupId);
-        if(result.error){
-            return NextResponse.json({ success: false, error: result.error}, { status: result.status });
+        const group = await getGroup(groupId);
+
+        if(group.error){
+            return NextResponse.json({ success: false, error: group.error}, { status: group.status });
         }
-        const group = result.group;
+ 
        
        if(!group.members.some((member: mongoose.Types.ObjectId) => member.equals(user.id))){
         return NextResponse.json({ success: false, error: "Zugriff verweigert"}, { status: 403 });
        }
 
-        return NextResponse.json({ success: true, data: result.group }, { status: 200 });
+        return NextResponse.json({ success: true, data: group }, { status: 200 });
     } catch (error: any) {
         return NextResponse.json({ success: false, error: error.message }, { status: 500 });
     }
@@ -31,11 +32,14 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
         await dbConnect();
         const user = await getUserID(req);
         const groupId = (await params).id as string;
-        const result = await getGroup(groupId);
-        if(result.error){
-            return NextResponse.json({ success: false, error: result.error}, { status: result.status });
+        const group = await getGroup(groupId);
+
+        console.log("user: ", user);
+        console.log("group: ", group);
+
+        if(group.error){
+            return NextResponse.json({ success: false, error: group.error}, { status: group.status });
         }
-        const group = result.group;
 
         if(group.creator.toString() !== user.id) {
             return NextResponse.json({ success: false, error: "Nicht berechtigt, diese Gruppe zu löschen" }, { status: 403 });
