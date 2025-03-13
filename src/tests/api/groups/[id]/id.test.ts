@@ -24,14 +24,15 @@ describe("GET and DELETE by ID API Route: ", () => {
 
     describe("GET /api/groups/:id => get group by id", () => {
         it("should eturn 403 if user is not a member of the group", async () => {
-            (getUserID as jest.Mock).mockResolvedValue({ id: "userId" });
+            const userId = new mongoose.Types.ObjectId().toString();
+            (getUserID as jest.Mock).mockResolvedValue({ id: userId });
             (getGroup as jest.Mock).mockResolvedValue({
-                error: null,
-                group: { members: [new mongoose.Types.ObjectId("1234567890abcdef12345678")] },
+                _id: "groupId",
+                members: [new mongoose.Types.ObjectId()],
             });
 
             const request = {} as NextRequest;
-            const response = await GET(request, { params: Promise.resolve({ id: "groupId" }) });
+            const response = await GET(request, { params: Promise.resolve({ id: "1234567890abcdef01234567" }) });
 
             expect(response.status).toBe(403);
             expect(await response.json()).toEqual({ success: false, error: "Zugriff verweigert" });
@@ -39,11 +40,13 @@ describe("GET and DELETE by ID API Route: ", () => {
 
 
         it("should return 200 and the group if the user is a member", async () => {
-            const userId = new mongoose.Types.ObjectId("abcdef0123567890abcdef01");
+            const userId = new mongoose.Types.ObjectId();
             (getUserID as jest.Mock).mockResolvedValue({ id: userId.toString() });
             (getGroup as jest.Mock).mockResolvedValue({
-                error: null,
-                group: { members: [userId], name: "Test Group", description: "Test Description" },
+                 _id: "groupId", 
+                 members: [userId], 
+                 name: "Test Group", 
+                 description: "Test Description" ,
             });
             const request = {} as NextRequest;
             const response = await GET(request, { params: Promise.resolve({ id: "groupId" }) });
@@ -51,7 +54,7 @@ describe("GET and DELETE by ID API Route: ", () => {
             expect(response.status).toBe(200);
             expect(await response.json()).toEqual({
                 success: true,
-                data: { members: [userId.toString()], name: "Test Group", description: "Test Description" },
+                data: { _id: "groupId", members: [userId.toString()], name: "Test Group", description: "Test Description" },
             });
         });
 
@@ -82,8 +85,8 @@ describe("GET and DELETE by ID API Route: ", () => {
         it("should return 403 if user is not the group creator", async () => {
             (getUserID as jest.Mock).mockResolvedValue({ id: "userId" });
             (getGroup as jest.Mock).mockResolvedValue({
-                error: null,
-                group: { _id: "groupId", creator: "anotherUserId" },
+                 _id: "groupId",
+                 creator: "anotherUserId" ,
             });
 
             const request = {} as NextRequest;
@@ -96,8 +99,8 @@ describe("GET and DELETE by ID API Route: ", () => {
         it("should delete the group if user is the creator", async () => {
             (getUserID as jest.Mock).mockResolvedValue({ id: "userId" });
             (getGroup as jest.Mock).mockResolvedValue({
-                error: null,
-                group: { _id: "groupId", creator: "userId" },
+                _id: "groupId",
+                creator: "userId",
             });
 
             (Group.findByIdAndDelete as jest.Mock).mockResolvedValue({});
