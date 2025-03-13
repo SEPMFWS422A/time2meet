@@ -11,12 +11,15 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
         const user = await getUserID(req);
         const groupId = (await params).id as string;
         const group = await getGroup(groupId);
+        console.log("user: ", user);
+        console.log("group: ", group);
 
         if(group.error){
+            console.log("group.error: ", group.error);
             return NextResponse.json({ success: false, error: group.error}, { status: group.status });
         }
  
-       
+       console.log("got here");
        if(!group.members.some((member: mongoose.Types.ObjectId) => member.equals(user.id))){
         return NextResponse.json({ success: false, error: "Zugriff verweigert"}, { status: 403 });
        }
