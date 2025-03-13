@@ -1,9 +1,9 @@
 import mongoose from "mongoose";
 
-const MONGODB_URI = process.env.MONGODB_URI!;
+const MONGODB_URI = process.env.MONGODB_URI;
 
 if (!MONGODB_URI) {
-    throw new Error("❌ Bitte definiere die MONGODB_URI Umgebungsvariable in der .env.local Datei");
+    throw new Error("Bitte definiere die MONGODB_URI Umgebungsvariable in der .env.local Datei");
 }
 
 // Caching für die MongoDB-Verbindung (Verhindert doppelte Verbindungen in Next.js API-Routen)
@@ -24,27 +24,31 @@ if (!cached) {
 
 async function dbConnect() {
     if (cached.conn) {
-        console.log("✅ Bereits mit MongoDB verbunden.");
         return cached.conn;
     }
 
     if (!cached.promise) {
-        console.log("🔄 Verbinde mit MongoDB Atlas...");
         // @ts-ignore
         cached.promise = mongoose
-            .connect(MONGODB_URI, {
-                dbName: "time2meet", // Stelle sicher, dass immer die korrekte DB genutzt wird
+            .connect(MONGODB_URI!, {
+                dbName: "time2meet",
             })
             .then((mongoose) => {
-                console.log("✅ Erfolgreich mit MongoDB Atlas verbunden!");
                 return mongoose;
             })
             .catch((error) => {
-                console.error("❌ Fehler bei der Verbindung mit MongoDB Atlas:", error);
+                console.error("Fehler bei der Verbindung mit MongoDB Atlas:", error);
+                throw new Error("Verbindung zu MongoDB fehlgeschlagen");
             });
     }
 
-    cached.conn = await cached.promise;
+    try {
+        cached.conn = await cached.promise;
+    } catch (error) {
+        cached.promise
+        throw error;
+    }
+    
     return cached.conn;
 }
 
