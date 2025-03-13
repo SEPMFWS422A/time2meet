@@ -14,13 +14,13 @@ export async function POST(request: NextRequest) {
         const user = await User.findOne({ email });
 
         if (!user) {
-            return NextResponse.json({ error: "Login fehlgeschlagen" }, { status: 404 });
+            return NextResponse.json({success: false, error: "Login fehlgeschlagen" }, { status: 404 });
         }
 
         const isMatch = await bcrypt.compare(password, user.password);
 
         if (!isMatch) {
-            return NextResponse.json({ error: "Login fehlgeschlagen" }, { status: 400 });
+            return NextResponse.json({ success: false, error: "Login fehlgeschlagen" }, { status: 400 });
         }
 
         // Token erstellen
