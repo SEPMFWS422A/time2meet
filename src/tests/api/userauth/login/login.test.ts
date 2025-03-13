@@ -36,7 +36,7 @@ describe("POST /api/userauth/login", () => {
         const response = await POST(request);
 
         expect(response.status).toBe(404);
-        expect(await response.json()).toEqual({ error: "Login fehlgeschlagen" });
+        expect(await response.json()).toEqual({success: false, error: "Login fehlgeschlagen" });
     });
 
     it("should return 400 if password is incorrect", async () => {
@@ -56,7 +56,7 @@ describe("POST /api/userauth/login", () => {
         const response = await POST(request);
 
         expect(response.status).toBe(400);
-        expect(await response.json()).toEqual({ error: "Login fehlgeschlagen" });
+        expect(await response.json()).toEqual({ success: false, error: "Login fehlgeschlagen" });
     });
 
     it("should return 200 and set a cookie if login is successful", async () => {
