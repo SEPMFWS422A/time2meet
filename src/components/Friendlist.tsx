@@ -140,9 +140,9 @@ function Friendlist() {
                     {notification.message}
                 </div>
             )}
-            {error && <p id="groupError" className="text-red-500">Fehler: {error}</p>}
+            {error && error !== "Du hast noch keine Freunde" && <p id="groupError" className="text-red-500">Fehler: {error}</p>}
 
-            <Button color="primary" onPress={openAddFriendModal}>
+            <Button id="add-friend-button" color="primary" onPress={openAddFriendModal}>
                 Neuen Freund adden
             </Button>
 
@@ -150,11 +150,14 @@ function Friendlist() {
                 <div className="flex flex-col items-center justify-center p-4">
                     <p>Lade Freunde...</p>
                 </div>
+            ) : friends.length === 0 ? (
+                <div className="flex flex-col items-center justify-center p-8 mt-4" data-testid="no-friends-message">
+                    <p className="text-gray-500 mb-2 text-center text-lg">Du hast keine Freunde</p>
+                </div>
             ) : (
                 <Listbox
                     aria-label="Freunde"
                     items={friends}
-
                 >
                     <ListboxSection>
                         {friends.map((friend) => (
@@ -181,6 +184,7 @@ function Friendlist() {
                                             <StarIcon fill={friend.isFavourite ? "currentColor" : "none"}/>
                                         </Button>
                                         <Button
+                                            id="remove-friend"
                                             variant="light"
                                             isIconOnly
                                             aria-label="remove friend"

@@ -124,6 +124,7 @@ const AddFriendModalContent: React.FC<AddFriendModalContentProps> = ({
     }
     return (
       <Button
+        id="add-friend"
         color="primary"
         onPress={() => handleAddFriend(user)}
         isLoading={isAddingFriend}
@@ -139,6 +140,7 @@ const AddFriendModalContent: React.FC<AddFriendModalContentProps> = ({
     <div className="p-4 w-full relative">
       <h3 className="text-lg font-bold mb-4">Freunde finden</h3>
       <Input
+        id = "Freundessuche"
         ref={inputRef}
         label="Freundessuche"
         placeholder="Gib Username oder E-Mail ein (mind. 2 Zeichen)"
@@ -178,8 +180,7 @@ const AddFriendModalContent: React.FC<AddFriendModalContentProps> = ({
                 <div className="flex items-center">
                   <Avatar
                     src={
-                      user.profilbild ??
-                      "https://via.placeholder.com/150"
+                      user.profilbild 
                     }
                     alt={`${user.vorname} {user.name}`}
                     className="mr-2"
