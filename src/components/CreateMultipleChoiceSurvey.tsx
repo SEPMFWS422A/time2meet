@@ -134,6 +134,7 @@ const CreateMultipleChoiceSurvey = forwardRef<CreateMultipleChoiceSurveyRef, Cre
             {inputs.map((input, index) => (
               <div key={`${input.id}-${index}`} className="flex items-center">
                 <Input
+                    aria-label="Option"
                   isRequired
                   label="Option"
                   value={input.value}
@@ -152,6 +153,7 @@ const CreateMultipleChoiceSurvey = forwardRef<CreateMultipleChoiceSurveyRef, Cre
           </div>
 
           <Button
+              aria-label="Option hinzufügen"
             isIconOnly
             variant="bordered"
             className=""

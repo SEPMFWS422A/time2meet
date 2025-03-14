@@ -162,7 +162,8 @@ const CreateSurvey: React.FC = () => {
                 <CloseIcon />
                 Schließen
               </Button>
-              <Button color="primary" onPress={getFormData} isDisabled={isLoading}>
+              <Button aria-label = "abschicken" color="primary" onPress={getFormData} isDisabled={isLoading}>
+
                 <CheckIcon />
                 Abschicken
               </Button>
