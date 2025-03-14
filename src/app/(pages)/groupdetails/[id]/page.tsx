@@ -50,14 +50,7 @@ export default function GroupPage({ params }) {
 
                 <h2 className="text-xl font-semibold mb-2">Umfragen</h2>
                 <div className="space-y-6">
-                    {group.surveys.map((survey, index) => (
-                        <SurveyParticipationModal
-                            key={index}
-                            title={survey.title}
-                            description={survey.description}
-                            options={survey.options}
-                        />
-                    ))}
+                   Survey platzhalter
                 </div>
             </div>
 
