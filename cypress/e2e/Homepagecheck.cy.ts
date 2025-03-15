@@ -1,6 +1,10 @@
 beforeEach(() => {
-  // Besuche die lokale Anwendung vor jedem Test
   cy.visit('http://localhost:3000');
+
+        cy.get('input#email').type('E2EUser@gmx.de');
+        cy.get('input#password').type('123');
+        cy.contains('button', 'Anmelden').click();
+        cy.url().should('eq', 'http://localhost:3000/');
 });
 
 describe('Homepagecheck', () => {
