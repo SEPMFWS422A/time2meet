@@ -75,7 +75,7 @@ const SurveyList: React.FC<SurveyListProps> = ({
     return (
         <div>
             {loading && <p id="surveyLoading">Lade Umfragen...</p>}
-            {error !== "" && <p id="surveyError" className="text-red-500">Fehler: {error}</p>}
+            {error !== "" && <p id="surveyError" className="text-center">{error}</p>}
             {!loading && error === "" && surveyList.length === 0 ? (
                 <p className="text-gray-500">Keine Umfragen vorhanden.</p>
             ) : (

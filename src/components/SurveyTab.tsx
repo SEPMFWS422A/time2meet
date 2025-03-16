@@ -53,17 +53,13 @@ export default function SurveyTab() {
                 if (surveyList && surveyList.length > 0) {
                     setSurveys(surveyList)
                 } else if (surveyList && surveyList.length === 0) {
-                    setError("Du hast noch keine Umfragen")
+                    setError("Du hast noch keine Umfragen.")
                 } else {
                     setError("Umfragen konnten nicht geladen werden")
                 }
             })
             .finally(() => setLoading(false));
     }, []);
-
-    if (error) {
-        return <div>{error}</div>
-    }
 
     const createdSurveys = Array.isArray(surveys) ? surveys.filter((survey) => survey.creator === loggedInUserId) : [];
     const receivedSurveys = Array.isArray(surveys) ? surveys.filter((survey) => survey.creator !== loggedInUserId) : [];
