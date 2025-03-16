@@ -38,12 +38,23 @@ describe("Integration Test: Events API", () => {
         await mongoose.connection.close();
     });
 
-    // 🔹 Fix: Mocking der Authentifizierung für alle Tests
+    // Korrigiertes Mock für den Auth-Endpoint
     beforeEach(() => {
-        global.fetch = jest.fn().mockResolvedValue({
-            ok: true,
-            json: async () => ({ id: primaryUser._id.toString() }), // Benutzer-ID zurückgeben
-        }) as any;
+        // Mock für den Fetch-Aufruf zur Authentifizierungs-API
+        global.fetch = jest.fn((url) => {
+            if (url === "http://localhost:3000/api/userauth/decode") {
+                return Promise.resolve({
+                    ok: true,
+                    json: () => Promise.resolve({ id: primaryUser._id.toString() })
+                }) as any;
+            }
+            return Promise.reject(new Error(`Unexpected fetch call: ${url}`));
+        });
+
+        // Mock für die Cookie-Überprüfung - Stellt sicher, dass der "token" Cookie erkannt wird
+        jest.spyOn(NextRequest.prototype, 'cookies', 'get').mockImplementation(() => ({
+            get: (name: string) => name === "token" ? { value: "valid-jwt-token" } : null
+        } as any));
     });
 
     afterEach(() => {
@@ -54,8 +65,11 @@ describe("Integration Test: Events API", () => {
         it("returns an empty event list if no events exist", async () => {
             const mockRequest = {
                 headers: {
-                    get: (header: string) => (header === "cookie" ? "cookie=valid" : null),
+                    get: (header: string) => (header === "cookie" ? "token=valid-jwt-token" : null),
                 },
+                cookies: {
+                    get: (name: string) => name === "token" ? { value: "valid-jwt-token" } : null
+                }
             } as unknown as NextRequest;
 
             const response = await getEvents(mockRequest);
@@ -67,6 +81,7 @@ describe("Integration Test: Events API", () => {
         });
 
         it("returns a list of events when events exist", async () => {
+            // Event erstellen
             const testEvent = await Event.create({
                 title: "Test Event",
                 start: new Date("2025-01-20T10:00:00"),
@@ -78,13 +93,13 @@ describe("Integration Test: Events API", () => {
                 members: [primaryUser._id, secondaryUser._id],
             });
 
-            // 🔹 Benutzer neu laden, um sicherzustellen, dass die Events referenziert werden
-            primaryUser = await User.findById(primaryUser._id);
-
             const mockRequest = {
                 headers: {
-                    get: (header: string) => (header === "cookie" ? "cookie=valid" : null),
+                    get: (header: string) => (header === "cookie" ? "token=valid-jwt-token" : null),
                 },
+                cookies: {
+                    get: (name: string) => name === "token" ? { value: "valid-jwt-token" } : null
+                }
             } as unknown as NextRequest;
 
             const response = await getEvents(mockRequest);
@@ -93,7 +108,7 @@ describe("Integration Test: Events API", () => {
             const result = await response.json();
             expect(result.success).toBe(true);
             expect(result.data).toHaveLength(1);
-            expect(result.data[0]._id).toBe(testEvent._id.toString());
+            expect(result.data[0]._id.toString()).toBe(testEvent._id.toString());
             expect(result.data[0].title).toBe(testEvent.title);
         });
     });
@@ -110,7 +125,12 @@ describe("Integration Test: Events API", () => {
                     members: [primaryUser._id, secondaryUser._id],
                     allday: false,
                 }),
-                headers: { get: () => "cookie=valid" },
+                headers: {
+                    get: (header: string) => (header === "cookie" ? "token=valid-jwt-token" : null),
+                },
+                cookies: {
+                    get: (name: string) => name === "token" ? { value: "valid-jwt-token" } : null
+                }
             } as unknown as NextRequest;
 
             const response = await createEvent(mockRequest);
@@ -131,7 +151,12 @@ describe("Integration Test: Events API", () => {
                     description: "Event ohne Titel",
                     location: "Location",
                 }),
-                headers: { get: () => "cookie=valid" },
+                headers: {
+                    get: (header: string) => (header === "cookie" ? "token=valid-jwt-token" : null),
+                },
+                cookies: {
+                    get: (name: string) => name === "token" ? { value: "valid-jwt-token" } : null
+                }
             } as unknown as NextRequest;
 
             const response = await createEvent(mockRequest);
