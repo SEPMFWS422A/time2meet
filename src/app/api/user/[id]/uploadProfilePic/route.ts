@@ -39,6 +39,13 @@ export async function POST(request: Request) {
       { new: true }
     );
 
+    if (!user) {
+      return NextResponse.json(
+        { success: false, error: "Benutzer nicht gefunden" },
+        { status: 404 }
+      );
+    }
+
     return NextResponse.json({ success: true, data: user });
   } catch (error: any) {
     console.error("Upload error:", error);
