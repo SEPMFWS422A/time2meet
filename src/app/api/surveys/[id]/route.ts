@@ -2,35 +2,56 @@ import {NextRequest, NextResponse} from "next/server";
 import Survey from "@/lib/models/Survey";
 import dbConnect from "@/lib/database/dbConnect";
 import {getUserID} from "@/lib/helper";
+import mongoose from "mongoose";
 
 // DELETE /api/surveys/[id]
 // Löschen von eigener Umfrage
-export async function DELETE(req: NextRequest, {params}: { params: Promise<{ id: string }> }) {
-    const {id} = await params;
+export async function DELETE(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+    const { id } = await params;
 
     await dbConnect();
 
     const currentUser = await getUserID(req);
 
+    // Überprüfe, ob der Benutzer authentifiziert ist
     if (currentUser.error) {
-        return NextResponse.json({message: currentUser.error}, {status: currentUser.status})
+        return NextResponse.json({ message: currentUser.error }, { status: currentUser.status });
     }
 
     try {
-        if (!id) return NextResponse.json({message: "Umfrage-Id muss angegeben werden"}, {status: 400});
-
-        const deletedSurvey = await Survey.findOneAndDelete({
-            _id: id,
-            creator: currentUser.id
-        });
-
-        if (!deletedSurvey) {
-            return NextResponse.json({message: "Umfrage nicht gefunden oder du bist nicht der Ersteller."}, {status: 404});
+        // Überprüfe, ob die Umfrage-ID angegeben ist
+        if (!id) {
+            return NextResponse.json({ message: "Umfrage-Id muss angegeben werden." }, { status: 400 });
         }
 
-        return NextResponse.json({message: `Die Umfrage wurde erfolgreich gelöscht.`}, {status: 200});
+        // Überprüfe, ob die Umfrage-ID ein gültiges MongoDB-Format hat
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            return NextResponse.json({ message: "Ungültige Umfrage-Id." }, { status: 400 });
+        }
+
+        // Finde die Umfrage in der Datenbank
+        const survey = await Survey.findById(id);
+
+        // Überprüfe, ob die Umfrage existiert
+        if (!survey) {
+            return NextResponse.json({ message: "Umfrage nicht gefunden." }, { status: 404 });
+        }
+
+        // Überprüfe, ob der aktuelle Benutzer der Ersteller der Umfrage ist
+        if (survey.creator.toString() !== currentUser.id!.toString()) {
+            return NextResponse.json(
+                { message: "Du bist nicht der Ersteller der Umfrage." },
+                { status: 403 } // 403 Forbidden: Der Benutzer hat keine Berechtigung
+            );
+        }
+
+        // Lösche die Umfrage
+        await Survey.findByIdAndDelete(survey._id);
+
+        return NextResponse.json({ message: "Die Umfrage wurde erfolgreich gelöscht." }, { status: 200 });
     } catch (error) {
-        return NextResponse.json({message: "Internal Server Error", error}, {status: 500});
+        console.error("Fehler beim Löschen der Umfrage:", error);
+        return NextResponse.json({ message: "Internal Server Error" }, { status: 500 });
     }
 }
 
