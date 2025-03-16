@@ -80,10 +80,11 @@ const CreateMultipleChoiceSurvey = forwardRef<CreateMultipleChoiceSurveyRef, Cre
 
     return (
       <div className="w-full md:w-6/12">
-        <Form>
+        <Form id="createMultiplechoiceForm">
           <Input
             isRequired
             label="Titel"
+            id="titel"
             labelPlacement="outside"
             name="Titel"
             placeholder="Titel der Umfrage angeben"
@@ -92,6 +93,7 @@ const CreateMultipleChoiceSurvey = forwardRef<CreateMultipleChoiceSurveyRef, Cre
             onChange={handleTitleChange}
           />
           <Input
+              id="beschreibung"
             label="Beschreibung"
             labelPlacement="outside"
             name="description"
@@ -101,6 +103,7 @@ const CreateMultipleChoiceSurvey = forwardRef<CreateMultipleChoiceSurveyRef, Cre
             onChange={handleDescriptionChange}
           />
           <Input
+              id="ort"
             label="Ort"
             labelPlacement="outside"
             name="Ort"
@@ -135,6 +138,7 @@ const CreateMultipleChoiceSurvey = forwardRef<CreateMultipleChoiceSurveyRef, Cre
               <div key={`${input.id}-${index}`} className="flex items-center">
                 <Input
                   isRequired
+                  id={`Option${index}`}
                   label="Option"
                   value={input.value}
                   onChange={(e) => handleInputChange(e, input.id)} // Korrektes ID-Binding
@@ -153,6 +157,7 @@ const CreateMultipleChoiceSurvey = forwardRef<CreateMultipleChoiceSurveyRef, Cre
 
           <Button
             isIconOnly
+            id="plusOption"
             variant="bordered"
             className=""
             onPress={handleAddInput}

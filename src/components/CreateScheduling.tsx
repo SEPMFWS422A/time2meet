@@ -132,7 +132,7 @@ const CreateScheduling = forwardRef<CreateSchedulingRef, SchedulingSurveyProps>(
 
     return (
         <div>
-            <Form>
+            <Form id="createSchedulingForm">
                 <div className="flex flex-col items-center">
                     <DayPicker
                         weekStartsOn={1}
@@ -154,12 +154,14 @@ const CreateScheduling = forwardRef<CreateSchedulingRef, SchedulingSurveyProps>(
                     {useSameTimeForAllDates ? (
                         <div className="mt-4 flex flex-row gap-5 w-full">
                             <TimeInput
+                                id="uhrzeitVon"
                                 label="Uhrzeit von"
                                 variant="bordered"
                                 value={commonStartTime}
                                 onChange={(value) => handleTimeChange(new Date(), 0, "start", value)}
                             />
                             <TimeInput
+                                id="uhrzeitBis"
                                 label="Uhrzeit bis"
                                 variant="bordered"
                                 value={commonEndTime}
