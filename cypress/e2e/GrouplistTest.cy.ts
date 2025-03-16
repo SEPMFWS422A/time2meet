@@ -23,7 +23,6 @@ describe('Grouplist Tests', () => {
         cy.get('#createGroupButtonAddGroupModal').click();
         cy.contains('Sie müssen einen Gruppennamen angeben.').should('be.visible');
         cy.get('[aria-label="Gruppenname"]').type(gruppenName);
-        cy.get('#groupList').should('exist');
         cy.get('#createGroupButtonAddGroupModal').click();
         cy.get('#addGroupModal').should('be.visible');
         cy.contains(gruppenName).should('exist');

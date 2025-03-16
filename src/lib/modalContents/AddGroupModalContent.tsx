@@ -1,6 +1,6 @@
 import React, {useState} from "react";
 import {Button, Input} from "@heroui/react";
-import postGroup from "@/lib/api_methods/Groups/postGroup/postGroup";
+import postGroup from "@/lib/api_methods/groups/postGroup/postGroup";
 import {IGroup} from "@/lib/interfaces/IGroup";
 
 interface AddGroupModalContentProps {
@@ -35,7 +35,7 @@ const AddGroupModalContent: React.FC<AddGroupModalContentProps> = ({
     }
 
     return (
-        <div className="flex flex-col gap-4">
+        <div id="addGroupModal" className="flex flex-col gap-4">
             <Input
                 label="Gruppenname"
                 variant="bordered"

@@ -133,13 +133,13 @@ export default function App() {
 
     return (
         <>
-            <Navbar className="hidden md:flex bg-sky-950 w-screen text-black text-xl">
+            <Navbar id="navbar" className="hidden md:flex bg-sky-950 w-screen text-black text-xl">
                 <NavbarContent justify="center">
                     {desktopNavlinks.map((link, i) => (
                         <NavbarItem key={`${link.label}-${i}`}>
                             <Link
                                 href={link.href}
-                                id={link.id}
+                                id={link.label}
                                 className={clsx(
                                     "text-white hover:bg-sky-800 px-3 py-3 rounded-xl transition-all",
                                     pathname === link.href && "bg-sky-800 font-bold shadow-lg"
