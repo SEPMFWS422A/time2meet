@@ -8,11 +8,16 @@ import { NextRequest } from "next/server";
 
 let primaryUser: any;
 let secondaryUser: any;
+let testEvents: any[] = [];
 
 describe("Integration Test: Events API", () => {
     beforeAll(async () => {
         await dbConnect();
+
+        // Nur die spezifischen Test-Benutzer löschen
         await User.deleteMany({ email: { $in: ["testuser@example.com", "memberuser@example.com"]}});
+
+        // Nur die spezifischen Test-Events löschen
         await Event.deleteMany({ title: { $in: ["Test Event", "New Event"] } });
 
         primaryUser = await User.create({
@@ -33,8 +38,12 @@ describe("Integration Test: Events API", () => {
     });
 
     afterAll(async () => {
+        // Nur die für den Test erstellten Events löschen
         await Event.deleteMany({ title: { $in: ["Test Event", "New Event"] } });
+
+        // Nur die für den Test erstellten Benutzer löschen
         await User.deleteMany({ email: { $in: ["testuser@example.com", "memberuser@example.com"]}});
+
         await mongoose.connection.close();
     });
 
@@ -93,6 +102,9 @@ describe("Integration Test: Events API", () => {
                 members: [primaryUser._id, secondaryUser._id],
             });
 
+            // Event zur Liste der zu löschenden Events hinzufügen
+            testEvents.push(testEvent);
+
             const mockRequest = {
                 headers: {
                     get: (header: string) => (header === "cookie" ? "token=valid-jwt-token" : null),
@@ -143,6 +155,11 @@ describe("Integration Test: Events API", () => {
 
             const savedEvent = await Event.findOne({ title: "New Event" });
             expect(savedEvent).not.toBeNull();
+
+            // Neues Event zur Liste der zu löschenden Events hinzufügen
+            if (savedEvent) {
+                testEvents.push(savedEvent);
+            }
         });
 
         it("returns an error if title or start date is missing", async () => {

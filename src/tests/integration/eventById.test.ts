@@ -30,7 +30,12 @@ jest.mock("@/app/api/events/[id]/route", () => {
 describe("Integration Test: Events by User ID API", () => {
     beforeAll(async () => {
         await dbConnect();
+
+        // Nur die spezifischen Test-Benutzer löschen
         await User.deleteMany({ email: { $in: ["testuser@example.com", "otheruser@example.com"]}});
+
+        // Test-Gruppen mit dem Namen "Test Group" löschen
+        await Group.deleteMany({ groupname: "Test Group" });
 
         // Testbenutzer erstellen
         testUser = await User.create({
@@ -108,11 +113,17 @@ describe("Integration Test: Events by User ID API", () => {
     });
 
     afterAll(async () => {
+        // Nur die für den Test erstellten Benutzer löschen
         await User.deleteMany({ email: { $in: ["testuser@example.com", "otheruser@example.com"]}});
+
+        // Nur die für den Test erstellte Gruppe löschen
+        await Group.deleteMany({ _id: testGroup._id });
+
+        // Nur die für den Test erstellten Events löschen
         await Event.deleteMany({
             _id: { $in: [...userEvents.map(e => e._id), ...otherEvents.map(e => e._id)] }
         });
-        await Group.deleteMany({});
+
         await mongoose.connection.close();
     });
 
