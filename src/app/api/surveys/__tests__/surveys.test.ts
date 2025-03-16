@@ -3,7 +3,9 @@ import { getUserID } from "@/lib/helper";
 import Survey from "@/lib/models/Survey";
 import dbConnect from "@/lib/database/dbConnect";
 import { beforeEach, describe, expect, test } from '@jest/globals';
+import mongoose from 'mongoose';
 
+// Mocking der Abhängigkeiten
 jest.mock("@/lib/database/dbConnect");
 jest.mock("@/lib/models/Survey");
 jest.mock("@/lib/helper", () => ({
@@ -11,81 +13,117 @@ jest.mock("@/lib/helper", () => ({
 }));
 
 describe("Surveys API Tests", () => {
+    const mockUserId = "user123";
+    const mockSurveyId = new mongoose.Types.ObjectId().toString(); // Gültige MongoDB-ObjectId
+    const mockInvalidSurveyId = "invalidId"; // Ungültige ID
+    const request = { method: "DELETE", headers: {} };
+
     beforeEach(() => {
         jest.clearAllMocks();
+        (dbConnect as jest.Mock).mockResolvedValue(undefined);
     });
 
     describe("DELETE /api/surveys/[id]", () => {
-        const mockUserId = "user123";
-        const mockSurveyId = "survey123";
-        const request = { method: "DELETE", headers: {} };
-
         test("should return 200 if the survey is successfully deleted", async () => {
-            (dbConnect as jest.Mock).mockResolvedValue(undefined);
+            // Mock für einen authentifizierten Benutzer
             (getUserID as jest.Mock).mockResolvedValue({ id: mockUserId });
 
-            (Survey.findOneAndDelete as jest.Mock).mockResolvedValue({ _id: mockSurveyId, creator: mockUserId });
+            // Mock für eine erfolgreiche Umfrage-Suche und Löschung
+            const mockSurvey = {
+                _id: mockSurveyId,
+                creator: mockUserId,
+            };
+            (Survey.findById as jest.Mock).mockResolvedValue(mockSurvey);
+            (Survey.findByIdAndDelete as jest.Mock).mockResolvedValue(mockSurvey);
 
-            const expectedResponseMessage = { message: "Die Umfrage wurde erfolgreich gelöscht." };
             const params = { params: Promise.resolve({ id: mockSurveyId }) };
             const response = await DELETE(request as never, params);
 
-            expect(Survey.findOneAndDelete).toHaveBeenCalledWith({ _id: mockSurveyId, creator: mockUserId });
-            expect(await response.json()).toEqual(expectedResponseMessage);
+            expect(Survey.findById).toHaveBeenCalledWith(mockSurveyId);
+            expect(Survey.findByIdAndDelete).toHaveBeenCalledWith(mockSurveyId);
+            expect(await response.json()).toEqual({ message: "Die Umfrage wurde erfolgreich gelöscht." });
             expect(response.status).toBe(200);
         });
 
         test("should return 400 if no survey id is provided", async () => {
-            (dbConnect as jest.Mock).mockResolvedValue(undefined);
+            // Mock für einen authentifizierten Benutzer
             (getUserID as jest.Mock).mockResolvedValue({ id: mockUserId });
 
-            const expectedResponseMessage = { message: "Umfrage-Id muss angegeben werden" };
-            const params = { params: Promise.resolve({ id: "" }) }; // no id provided
+            const params = { params: Promise.resolve({ id: "" }) }; // Keine ID angegeben
             const response = await DELETE(request as never, params);
 
-            expect(await response.json()).toEqual(expectedResponseMessage);
+            expect(await response.json()).toEqual({ message: "Umfrage-Id muss angegeben werden." });
             expect(response.status).toBe(400);
         });
 
-        test("should return 404 if the survey is not found or user is not the creator", async () => {
-            (dbConnect as jest.Mock).mockResolvedValue(undefined);
+        test("should return 400 if the survey id is invalid", async () => {
+            // Mock für einen authentifizierten Benutzer
             (getUserID as jest.Mock).mockResolvedValue({ id: mockUserId });
 
-            (Survey.findOneAndDelete as jest.Mock).mockResolvedValue(null); // Survey not found
+            const params = { params: Promise.resolve({ id: mockInvalidSurveyId }) }; // Ungültige ID
+            const response = await DELETE(request as never, params);
 
-            const expectedResponseMessage = { message: "Umfrage nicht gefunden oder du bist nicht der Ersteller." }
+            expect(await response.json()).toEqual({ message: "Ungültige Umfrage-Id." });
+            expect(response.status).toBe(400);
+        });
+
+        test("should return 404 if the survey is not found", async () => {
+            // Mock für einen authentifizierten Benutzer
+            (getUserID as jest.Mock).mockResolvedValue({ id: mockUserId });
+
+            // Mock für eine nicht gefundene Umfrage
+            (Survey.findById as jest.Mock).mockResolvedValue(null);
+
             const params = { params: Promise.resolve({ id: mockSurveyId }) };
             const response = await DELETE(request as never, params);
 
-            expect(await response.json()).toEqual(expectedResponseMessage);
+            expect(Survey.findById).toHaveBeenCalledWith(mockSurveyId);
+            expect(await response.json()).toEqual({ message: "Umfrage nicht gefunden." });
             expect(response.status).toBe(404);
         });
 
-        test("should return 500 if an error occurs during deletion", async () => {
-            (dbConnect as jest.Mock).mockResolvedValue(undefined);
+        test("should return 403 if the user is not the creator of the survey", async () => {
+            // Mock für einen authentifizierten Benutzer
             (getUserID as jest.Mock).mockResolvedValue({ id: mockUserId });
 
-            (Survey.findOneAndDelete as jest.Mock).mockRejectedValue(new Error("Some error")); // Simulating error
+            // Mock für eine Umfrage, die einem anderen Benutzer gehört
+            const mockSurvey = {
+                _id: mockSurveyId,
+                creator: "anotherUser",
+            };
+            (Survey.findById as jest.Mock).mockResolvedValue(mockSurvey);
 
-            const expectedResponseMessage = "Internal Server Error";
             const params = { params: Promise.resolve({ id: mockSurveyId }) };
             const response = await DELETE(request as never, params);
 
-            const jsonResponse = await response.json();
+            expect(Survey.findById).toHaveBeenCalledWith(mockSurveyId);
+            expect(await response.json()).toEqual({ message: "Du bist nicht der Ersteller der Umfrage." });
+            expect(response.status).toBe(403);
+        });
 
-            expect(jsonResponse.message).toBe(expectedResponseMessage);
+        test("should return 500 if an error occurs during deletion", async () => {
+            // Mock für einen authentifizierten Benutzer
+            (getUserID as jest.Mock).mockResolvedValue({ id: mockUserId });
+
+            // Mock für einen Fehler beim Löschen der Umfrage
+            (Survey.findById as jest.Mock).mockRejectedValue(new Error("Some error"));
+
+            const params = { params: Promise.resolve({ id: mockSurveyId }) };
+            const response = await DELETE(request as never, params);
+
+            expect(Survey.findById).toHaveBeenCalledWith(mockSurveyId);
+            expect(await response.json()).toEqual({ message: "Internal Server Error" });
             expect(response.status).toBe(500);
         });
 
         test("should return 401 if the user is not authenticated", async () => {
-            (dbConnect as jest.Mock).mockResolvedValue(undefined);
+            // Mock für einen nicht authentifizierten Benutzer
             (getUserID as jest.Mock).mockResolvedValue({ error: "Unauthorized", status: 401 });
 
-            const expectedResponseMessage = { message: "Unauthorized" };
             const params = { params: Promise.resolve({ id: mockSurveyId }) };
             const response = await DELETE(request as never, params);
 
-            expect(await response.json()).toEqual(expectedResponseMessage);
+            expect(await response.json()).toEqual({ message: "Unauthorized" });
             expect(response.status).toBe(401);
         });
     });
