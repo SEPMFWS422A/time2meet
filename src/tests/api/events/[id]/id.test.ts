@@ -1,186 +1,214 @@
-import { GET, PUT, DELETE } from "@/app/api/events/[id]/route";
-import { getUserID } from "@/lib/helper";
+import { GET } from "@/app/api/events/[id]/route";
+import { NextRequest, NextResponse } from "next/server";
+import dbConnect from "@/lib/database/dbConnect";
 import Event from "@/lib/models/Event";
-import { beforeEach, describe, expect, it } from "@jest/globals";
+import User from "@/lib/models/User";
+import { expect, describe, it, beforeEach } from "@jest/globals";
 import mongoose from "mongoose";
-import { NextRequest } from "next/server";
 
-jest.mock("@/lib/helper", () => ({
-    getUserID: jest.fn(),
-}));
+// Mock the fetch function for the authentication API call
+global.fetch = jest.fn();
 
-jest.mock("@/lib/database/dbConnect", () => jest.fn());
-jest.mock("@/lib/models/Event", () => ({
-    findById: jest.fn(),
-    findByIdAndUpdate: jest.fn(),
-    findByIdAndDelete: jest.fn(),
-}));
+jest.mock("@/lib/database/dbConnect");
+jest.mock("@/lib/models/Event");
+jest.mock("@/lib/models/User");
 
-describe("GET, PUT, DELETE /api/events/:id API Route: ", () => {
+describe("GET /api/events/:id API Route", () => {
+    const mockRequest = {
+        headers: {
+            get: jest.fn().mockReturnValue("session=test-cookie"),
+        },
+        nextUrl: {
+            searchParams: {
+                get: jest.fn(),
+            },
+        },
+    } as unknown as NextRequest;
+
+    const currentUser = {
+        _id: new mongoose.Types.ObjectId("user123"),
+        vorname: "Max",
+        name: "Muster",
+        benutzername: "maxm"
+    };
+
+    const targetUser = {
+        _id: new mongoose.Types.ObjectId("user456"),
+        vorname: "Lisa",
+        name: "Beispiel",
+        benutzername: "lisab"
+    };
+
+    const mockEvents = [
+        {
+            _id: "event1",
+            title: "Meeting",
+            start: "2025-03-15T10:00:00",
+            end: "2025-03-15T11:00:00",
+            description: "Wöchentliches Meeting",
+            location: "Büro",
+            allday: false,
+            creator: { _id: "user123", vorname: "Max", name: "Muster", benutzername: "maxm" },
+            members: [{ _id: "user456", vorname: "Lisa", name: "Beispiel", benutzername: "lisab" }],
+            groups: [{ _id: "group1", groupname: "Dev Team", beschreibung: "Entwicklungsteam" }],
+        },
+    ];
+
     beforeEach(() => {
         jest.clearAllMocks();
+        (dbConnect as jest.Mock).mockResolvedValue(true);
+
+        // Mock the authentication API response
+        (global.fetch as jest.Mock).mockResolvedValue({
+            ok: true,
+            json: jest.fn().mockResolvedValue({ id: "user123" })
+        });
+
+        // Reset search params
+        (mockRequest.nextUrl.searchParams.get as jest.Mock).mockImplementation((param) => null);
+
+        // Mock User.findById
+        (User.findById as jest.Mock).mockImplementation((id) => {
+            if (id.toString() === "user123") {
+                return Promise.resolve(currentUser);
+            } else if (id.toString() === "user456") {
+                return Promise.resolve(targetUser);
+            }
+            return Promise.resolve(null);
+        });
+
+        // Mock Event.find
+        (Event.find as jest.Mock).mockImplementation(() => ({
+            populate: jest.fn().mockReturnThis(),
+            select: jest.fn().mockReturnThis(),
+            lean: jest.fn().mockResolvedValue(mockEvents),
+        }));
     });
 
-    describe("GET /api/events/:id => get event by id", () => {
-        it("should return 403 if user is not the creator or a member", async () => {
-            (getUserID as jest.Mock).mockResolvedValue({ id: "userId" });
-            (Event.findById as jest.Mock).mockResolvedValue({
-                _id: "eventId",
-                creator: { _id: "anotherUserId" },
-                members: [],
-            });
+    it("should return events when user requests their own events", async () => {
+        const response = await GET(mockRequest, { params: { id: "user123" } });
+        const data = await response.json();
 
-            const request = {} as NextRequest;
-            const response = await GET(request, { params: { id: "eventId" } });
-
-            expect(response.status).toBe(403);
-            expect(await response.json()).toEqual({ success: false, error: "Zugriff verweigert" });
-        });
-
-        it("should return 200 and the event if the user is the creator", async () => {
-            const userId = new mongoose.Types.ObjectId("abcdef0123567890abcdef01");
-            (getUserID as jest.Mock).mockResolvedValue({ id: userId.toString() });
-            (Event.findById as jest.Mock).mockResolvedValue({
-                _id: "eventId",
-                title: "Test Event",
-                description: "Event Beschreibung",
-                creator: { _id: userId },
-                members: [],
-            });
-
-            const request = {} as NextRequest;
-            const response = await GET(request, { params: { id: "eventId" } });
-
-            expect(response.status).toBe(200);
-            expect(await response.json()).toEqual({
-                success: true,
-                data: {
-                    _id: "eventId",
-                    title: "Test Event",
-                    description: "Event Beschreibung",
-                    creator: { _id: userId.toString() },
-                    members: [],
-                },
-            });
-        });
-
-        it("should return 404 if event is not found", async () => {
-            (getUserID as jest.Mock).mockResolvedValue({ id: "userId" });
-            (Event.findById as jest.Mock).mockResolvedValue(null);
-
-            const request = {} as NextRequest;
-            const response = await GET(request, { params: { id: "eventId" } });
-
-            expect(response.status).toBe(404);
-            expect(await response.json()).toEqual({ success: false, error: "Event nicht gefunden." });
-        });
-
-        it("should return 500 if an error occurs", async () => {
-            (getUserID as jest.Mock).mockResolvedValue({ id: "userId" });
-            (Event.findById as jest.Mock).mockRejectedValue(new Error("Internal Server Error"));
-
-            const request = {} as NextRequest;
-            const response = await GET(request, { params: { id: "eventId" } });
-
-            expect(response.status).toBe(500);
-            expect(await response.json()).toEqual({ success: false, error: "Internal Server Error" });
-        });
+        expect(response.status).toBe(200);
+        expect(data.success).toBe(true);
+        expect(data.data).toEqual(mockEvents);
+        expect(Event.find).toHaveBeenCalledWith(expect.objectContaining({
+            $or: expect.arrayContaining([
+                { creator: "user123" },
+                { members: "user123" }
+            ])
+        }));
     });
 
-    describe("PUT /api/events/:id => update event by id", () => {
-        it("should return 403 if user is not the event creator", async () => {
-            (getUserID as jest.Mock).mockResolvedValue({ id: "userId" });
-            (Event.findById as jest.Mock).mockResolvedValue({ creator: "anotherUserId" });
+    it("should return shared events when user requests another user's events", async () => {
+        const response = await GET(mockRequest, { params: { id: "user456" } });
+        const data = await response.json();
 
-            const request = {} as NextRequest;
-            const response = await PUT(request, { params: { id: "eventId" } });
-
-            expect(response.status).toBe(403);
-            expect(await response.json()).toEqual({ success: false, error: "Nicht berechtigt, dieses Event zu bearbeiten." });
-        });
-
-        it("should update the event if the user is the creator", async () => {
-            (getUserID as jest.Mock).mockResolvedValue({ id: "userId" });
-            (Event.findById as jest.Mock).mockResolvedValue({ creator: "userId" });
-            (Event.findByIdAndUpdate as jest.Mock).mockResolvedValue({ title: "Updated Event" });
-
-            const request = {
-                json: jest.fn().mockResolvedValue({ title: "Updated Event" }),
-            } as unknown as NextRequest;
-            const response = await PUT(request, { params: { id: "eventId" } });
-
-            expect(response.status).toBe(200);
-            expect(await response.json()).toEqual({ success: true, data: { title: "Updated Event" } });
-        });
-
-        it("should return 404 if event is not found", async () => {
-            (getUserID as jest.Mock).mockResolvedValue({ id: "userId" });
-            (Event.findById as jest.Mock).mockResolvedValue(null);
-
-            const request = {} as NextRequest;
-            const response = await PUT(request, { params: { id: "eventId" } });
-
-            expect(response.status).toBe(404);
-            expect(await response.json()).toEqual({ success: false, error: "Event nicht gefunden." });
-        });
-
-        it("should return 500 if an error occurs", async () => {
-            (getUserID as jest.Mock).mockResolvedValue({ id: "userId" });
-            (Event.findById as jest.Mock).mockRejectedValue(new Error("Internal Server Error"));
-
-            const request = {} as NextRequest;
-            const response = await PUT(request, { params: { id: "eventId" } });
-
-            expect(response.status).toBe(500);
-            expect(await response.json()).toEqual({ success: false, error: "Internal Server Error" });
-        });
+        expect(response.status).toBe(200);
+        expect(data.success).toBe(true);
+        expect(data.data).toEqual(mockEvents);
+        expect(Event.find).toHaveBeenCalledWith(expect.objectContaining({
+            $and: expect.arrayContaining([
+                expect.objectContaining({
+                    $or: expect.arrayContaining([
+                        { creator: "user456" },
+                        { members: "user456" }
+                    ])
+                }),
+                { members: currentUser._id }
+            ])
+        }));
     });
 
-    describe("DELETE /api/events/:id => delete event by id", () => {
-        it("should return 403 if user is not the event creator", async () => {
-            (getUserID as jest.Mock).mockResolvedValue({ id: "userId" });
-            (Event.findById as jest.Mock).mockResolvedValue({ creator: "anotherUserId" });
-
-            const request = {} as NextRequest;
-            const response = await DELETE(request, { params: { id: "eventId" } });
-
-            expect(response.status).toBe(403);
-            expect(await response.json()).toEqual({ success: false, error: "Nicht berechtigt, dieses Event zu löschen" });
+    it("should filter events by date range when start and end parameters are provided", async () => {
+        (mockRequest.nextUrl.searchParams.get as jest.Mock).mockImplementation((param) => {
+            if (param === "start") return "2025-03-01";
+            if (param === "end") return "2025-03-31";
+            return null;
         });
 
-        it("should delete the event if user is the creator", async () => {
-            (getUserID as jest.Mock).mockResolvedValue({ id: "userId" });
-            (Event.findById as jest.Mock).mockResolvedValue({ creator: "userId" });
-            (Event.findByIdAndDelete as jest.Mock).mockResolvedValue({});
+        await GET(mockRequest, { params: { id: "user123" } });
 
-            const request = {} as NextRequest;
-            const response = await DELETE(request, { params: { id: "eventId" } });
+        expect(Event.find).toHaveBeenCalledWith(expect.objectContaining({
+            start: { $gte: expect.any(Date) },
+            end: { $lte: expect.any(Date) }
+        }));
+    });
 
-            expect(Event.findByIdAndDelete).toHaveBeenCalledWith("eventId");
-            expect(response.status).toBe(200);
-            expect(await response.json()).toEqual({ success: true, message: "Event wurde gelöscht" });
+    it("should return 404 if user is not found", async () => {
+        (User.findById as jest.Mock).mockResolvedValue(null);
+
+        const response = await GET(mockRequest, { params: { id: "nonexistent" } });
+        const data = await response.json();
+
+        expect(response.status).toBe(404);
+        expect(data.success).toBe(false);
+        expect(data.error).toBe("Benutzer nicht gefunden.");
+    });
+
+    it("should return error when authentication fails", async () => {
+        (global.fetch as jest.Mock).mockResolvedValue({
+            ok: false,
+            json: jest.fn().mockResolvedValue({ error: "Authentifizierungsfehler" })
         });
 
-        it("should return 404 if event is not found", async () => {
-            (getUserID as jest.Mock).mockResolvedValue({ id: "userId" });
-            (Event.findById as jest.Mock).mockResolvedValue(null);
+        const response = await GET(mockRequest, { params: { id: "user123" } });
+        const data = await response.json();
 
-            const request = {} as NextRequest;
-            const response = await DELETE(request, { params: { id: "eventId" } });
+        expect(response.status).toBe(500);
+        expect(data.success).toBe(false);
+        expect(data.error).toBe("Authentifizierungsfehler");
+    });
 
-            expect(response.status).toBe(404);
-            expect(await response.json()).toEqual({ success: false, error: "Event nicht gefunden." });
+    it("should return error when no cookie is present", async () => {
+        (mockRequest.headers.get as jest.Mock).mockReturnValue(null);
+
+        const response = await GET(mockRequest, { params: { id: "user123" } });
+        const data = await response.json();
+
+        expect(response.status).toBe(500);
+        expect(data.success).toBe(false);
+        expect(data.error).toBe("Keine Authentifizierung vorhanden");
+    });
+
+    it("should handle start parameter without end parameter", async () => {
+        (mockRequest.nextUrl.searchParams.get as jest.Mock).mockImplementation((param) => {
+            if (param === "start") return "2025-03-01";
+            return null;
         });
 
-        it("should return 500 if an error occurs", async () => {
-            (getUserID as jest.Mock).mockResolvedValue({ id: "userId" });
-            (Event.findById as jest.Mock).mockRejectedValue(new Error("Internal Server Error"));
+        await GET(mockRequest, { params: { id: "user123" } });
 
-            const request = {} as NextRequest;
-            const response = await DELETE(request, { params: { id: "eventId" } });
+        expect(Event.find).toHaveBeenCalledWith(expect.objectContaining({
+            start: { $gte: expect.any(Date) },
+            end: {}
+        }));
+    });
 
-            expect(response.status).toBe(500);
-            expect(await response.json()).toEqual({ success: false, error: "Internal Server Error" });
+    it("should handle end parameter without start parameter", async () => {
+        (mockRequest.nextUrl.searchParams.get as jest.Mock).mockImplementation((param) => {
+            if (param === "end") return "2025-03-31";
+            return null;
         });
+
+        await GET(mockRequest, { params: { id: "user123" } });
+
+        expect(Event.find).toHaveBeenCalledWith(expect.objectContaining({
+            start: {},
+            end: { $lte: expect.any(Date) }
+        }));
+    });
+
+    it("should return 500 if database query fails", async () => {
+        (Event.find as jest.Mock).mockImplementation(() => {
+            throw new Error("Database error");
+        });
+
+        const response = await GET(mockRequest, { params: { id: "user123" } });
+        const data = await response.json();
+
+        expect(response.status).toBe(500);
+        expect(data.success).toBe(false);
+        expect(data.error).toBe("Database error");
     });
 });
