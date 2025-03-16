@@ -12,7 +12,6 @@ let secondaryUser: any;
 describe("Integration Test: Events API", () => {
     beforeAll(async () => {
         await dbConnect();
-        await User.deleteMany({ email: { $in: ["testuser@example.com", "memberuser@example.com"] } });
         await Event.deleteMany({ title: { $in: ["Test Event", "New Event"] } });
 
         primaryUser = await User.create({
@@ -33,7 +32,6 @@ describe("Integration Test: Events API", () => {
     });
 
     afterAll(async () => {
-        await User.deleteMany({ email: { $in: ["testuser@example.com", "memberuser@example.com"] } });
         await Event.deleteMany({ title: { $in: ["Test Event", "New Event"] } });
         await mongoose.connection.close();
     });
