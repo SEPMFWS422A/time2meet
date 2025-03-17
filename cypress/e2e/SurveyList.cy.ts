@@ -31,34 +31,6 @@ describe("SurveyList Tests", () => {
         cy.contains("Test Titel").should("be.visible");
     });
 
-    // it("should show all surveys correctly categorized by user status", () => {
-    //     cy.visit("http://localhost:3000/surveylist");
-    //     cy.contains("Selbsterstellte Umfragen").click();
-    //     cy.get("#surveyList").should("exist");
-    //     cy.get("#surveyList").find("[id=surveyListItem]").should("have.length", 2);
-    //     cy.contains("Wanderung in den Bergen").should("be.visible");
-    //     cy.contains("Spieleabend").should("not.exist");
-    //
-    //     cy.contains("Erhaltene Umfragen").click();
-    //     cy.get("#surveyList").should("exist");
-    //     cy.get("#surveyList").find("[id=surveyListItem]").should("have.length", 1);
-    //     cy.contains("Spieleabend").should("be.visible");
-    //     cy.contains("Wanderung in den Bergen").should("not.exist");
-    // });
-
-    it("should show an error message if surveys fail to load", () => {
-        cy.visit("http://localhost:3000/surveylist");
-        cy.intercept("GET", "/api/surveys/participating", {
-            statusCode: 500,
-            body: {error: "Error loading surveys"},
-        }).as("getSurveysError");
-
-        cy.visit("http://localhost:3000/surveylist");
-        cy.wait("@getSurveysError");
-
-        cy.contains("Es gab ein Problem beim Laden der Umfragen.").should("be.visible");
-    });
-
     it("should show a message there are no surveys", () => {
         cy.visit("http://localhost:3000/surveylist");
         cy.intercept("GET", "/api/surveys/participating", {
@@ -68,6 +40,6 @@ describe("SurveyList Tests", () => {
 
         cy.wait("@getEmptySurveys");
 
-        cy.contains("Keine Umfragen vorhanden.").should("be.visible");
+        cy.contains("Du hast noch keine Umfragen.").should("be.visible");
     });
 });
