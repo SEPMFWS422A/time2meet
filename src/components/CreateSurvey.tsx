@@ -12,6 +12,7 @@ import CreateScheduling, {
 import { CheckIcon, CloseIcon } from "@heroui/shared-icons";
 import { mergeSurveyData } from "@/lib/SurveyHelpers/SurveyHelper";
 import axios from "axios";
+import ParticipantSelector from "@/components/ChooseParticipants";
 
 const CreateSurvey: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -153,6 +154,7 @@ const CreateSurvey: React.FC = () => {
         content={
           <div className="top-0 relative max-h-screen gap-5 flex flex-col justify-start h-90 ">
             <div className="top-0 relative h-90 flex flex-col md:flex-row justify-around items-center">
+              <ParticipantSelector participants={['A','B','C','D']}/>
               <CreateMultipleChoiceSurvey ref={MultipleChoiceSurveyRef} onSurveyData={handleSurveyData}/>
               <CreateScheduling ref={SchedulingSurveyRef} onSchedulingData={handleSchedulingData}/>
             </div>
